@@ -219,7 +219,7 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 > 想知道某段代码的来历，用 `git log --follow -- <路径>` 比记哈希可靠。
 
 分支：`feat/fe-b-web`（已 rebase 到 `origin/main` = `496c1ef`，工作区干净，14 个提交含本笔文档）。
-远端状态：`feat/fe-b-web` **尚未推送**；认证问题已在 2026-11-06 下午解决（见 §11 开头），当前排队等 §12 的集成收尾。
+远端状态：`feat/fe-b-web` **已推送**（`d3b5d3e`，14 个提交），upstream 已建立；PR 待开（Blocking 项见议题 Q10）。
 
 ---
 
@@ -244,6 +244,8 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 cd /d/work/projects/nutritionist-prototype
 git push -u origin feat/fe-b-web
 ```
+
+**2026-11-06 结果**：完成浏览器授权后推送成功，`feat/fe-b-web` 已在远端（`d3b5d3e`），upstream 自动建立；后续 push 不再需要交互。
 
 核验（`cmdkey /list` 在 Git Bash 里必须加 `MSYS2_ARG_CONV_EXCL='*'`，否则 `/list` 被 MSYS 当路径转换，会得到「凭据列表为空」的假象——FE-A 踩过同一个坑）：
 
