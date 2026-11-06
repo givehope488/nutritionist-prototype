@@ -211,6 +211,35 @@ describe('POST /api/v1/meal-logs', () => {
     expect(['ok', 'warn']).toContain(body.verdict.level);
   });
 
+  it('本餐目标由引擎按档案计算，不再是写死的 730（PROGRESS §2.1 BE-B #3）', async () => {
+    await post('/api/v1/profiles', validProfile); // 男 172cm 65kg 20 岁 health
+    const first = await post('/api/v1/meal-logs', { ...payload, id: 'log-target-a' });
+    const targetA = (first.json as MealLogResponse).target;
+
+    expect(targetA.kcal).not.toBe(730);
+    expect(targetA.kcal).toBeGreaterThan(0);
+    expect(targetA.protein_g).toBeGreaterThan(0);
+
+    // 换一份档案（女 / 更轻 / 减脂）→ 目标必须跟着变，证明是档案驱动而非常量
+    await post('/api/v1/profiles', {
+      ...validProfile,
+      session_id: 'sess-b',
+      sex: 'female',
+      height_cm: 160,
+      weight_kg: 50,
+      goal: 'lose',
+    });
+    const second = await post('/api/v1/meal-logs', {
+      ...payload,
+      id: 'log-target-b',
+      session_id: 'sess-b',
+    });
+    const targetB = (second.json as MealLogResponse).target;
+
+    expect(targetB.kcal).toBeGreaterThan(0);
+    expect(targetB.kcal).not.toBe(targetA.kcal);
+  });
+
   it('重复 id 幂等：第二次 duplicate=true 且 totals 不变', async () => {
     const first = await post('/api/v1/meal-logs', payload);
     const second = await post('/api/v1/meal-logs', payload);

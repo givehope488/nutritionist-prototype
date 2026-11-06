@@ -5,7 +5,6 @@ import type {
   Dish,
   DishTag,
   Meal,
-  MealTarget,
   NutritionTotals,
 } from '@canteen/shared';
 import { AVOID_OPTIONS } from './avoid-options';
@@ -25,25 +24,6 @@ const MAX_COMBOS = 3;
  * Mock 阶段用轮转偏移模拟（同一个菜品池、不同起点）。
  */
 let requestCounter = 0;
-
-/**
- * 占位目标值：**不是营养计算**，只是让前端在引擎接入前有数可渲染。
- *
- * 真正的 BMR / TDEE / 目标热量 / 蛋白分配只能来自
- * `server/src/engines/`（BE-A 的所有权，ARCHITECTURE §1「口径唯一来源」）。
- * 这里若"顺手算一遍"，等引擎接入就会出现两份互相打架的数字。
- *
- * TODO(BE-A 引擎就绪后)：删掉本常量，改调 engines/calcTarget。
- */
-export const PLACEHOLDER_TARGET: MealTarget = {
-  day_kcal: 1826,
-  kcal: 730,
-  protein_g: 31,
-  fat_g: 55,
-  carbs_g: 96,
-  sodium_mg: 1600,
-  meal_ratio: 0.4,
-};
 
 const AVOID_TO_TAG = new Map<string, DishTag>(
   AVOID_OPTIONS.map((option) => [option.key, option.excludes_tag]),
