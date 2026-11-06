@@ -362,3 +362,31 @@ git diff --stat origin/main origin/feat/fe-a-api-review-w1
 - **`cmdkey` 里的 token 内容我没有读取**（只确认条目存在与所属用户），token 有效期与 scope 未查——若后续推送突然 403，先分清是 token 过期还是权限被改；
 - Desktop 上的 `FE-A-W1-deliverables.zip` 与 `fe-a/handoff/` 现在只是冗余备份：远端已有分支，交接包不再必需。若 BE-B 需要离线包，可再 `git format-patch` 一次（注意：本地 commit 已重写，旧 patch 序列与新 HEAD 哈希不一致，用旧包 `git am` 仍能复现内容，但 commit 号对不上）。
 - 本轮**没有推送 `main`**，也没有动任何人的文件。
+
+### 11.6 交接包重做并验证（纠正 §11.5 第四条）
+
+推送成功后，`fe-a/handoff/` 与 Desktop 的 `FE-A-W1-deliverables.zip` 里还是 rebase/改署名**之前**的 4 条 patch 和旧文档，属于会误导人的过期副本。已重建并核验：
+
+```
+git format-patch origin/main..HEAD -o fe-a/handoff/     → 5 条（0001..0005）
+git bundle create fe-a-api-review.bundle feat/fe-a-api-review-w1
+  → bundle verify: tip 0c23c76…, "records a complete history", is okay
+    注：--branches=feat/fe-a-api-review-w1 这个写法会得到空 bundle 并被拒绝，
+        直接把分支名作为参数传即可。
+cp nutritionist-prototype/reviews/fe-a/*.md fe-a/handoff/   → 顶层文档副本同步为最新版
+Compress-Archive → Desktop/FE-A-W1-deliverables.zip（15 项，181,563 B）
+    注：Git Bash 里没有 zip 命令，用 powershell Compress-Archive；
+        校验清单用 System.IO.Compression.ZipFile 读，才能看到每项字节数。
+```
+
+**离线复现验证**（这条决定交接包能不能给 BE-B 用）：在临时克隆里 checkout `1275782`，按序 `git am` 五条 patch，然后比对内容 ——
+
+```
+git diff --stat HEAD 0c23c76 -- reviews/fe-a   → 空输出
+```
+
+即 5 条 patch 应用后的文件内容与远端分支**逐字节一致**；commit 号不同（`4584d8e` 等）是 `git am` 重新签名所致，属预期，不影响内容。这也把 §11.5 里那句「用旧包仍能复现内容但 commit 号对不上」的顾虑消掉了：现在包就是新的，patch 序列、bundle、zip 三者都对应 `0c23c76`。
+
+未验证的一点：patch 应用时 `0001` 报了一条 `warning: 1 line adds whitespace errors`（表格行尾空格），是风格提示不是错误，我没有为了消警告去改文档内容。
+
+补一句避免以后对不上号：上面记录的 `5 条 patch` / `tip 0c23c76` 是**本节写入前**的状态。按 §6 的追加规则，本节自己 commit 之后 tip 前移、patch 条数 +1，这是必然的，不代表包坏了 —— 任何时候想让离线包对齐远端，重跑本节开头的三条命令（format-patch / bundle / Compress-Archive）即可，判据始终是末尾那条 `git diff --stat HEAD <新tip> -- reviews/fe-a` 输出为空。
