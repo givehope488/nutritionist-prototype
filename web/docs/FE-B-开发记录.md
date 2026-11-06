@@ -221,13 +221,14 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 | 2026-11-06 | 本笔 docs: 二轮评审对齐与结案 | §13 记录 4 条评审意见的处置；§5 标记 Q2/Q10/Q11 已解决；PROGRESS §5 追加一行 | §13，PROGRESS §5 |
 | 2026-11-06 | `d6f2e4d` Merge `origin/main`（#13 API v1.2.1、#14 PROGRESS 同步） | 合并后本分支拿到 `portion_grams` 一律不下发的正式口径；PROGRESS 冲突处保留 PD 行 + 我在最上追加的一行 | §13，PROGRESS §5 |
 | 2026-11-06 | `200bcc8` test: 补 W3 三类边界（429 / 下架菜品 / 跨天） | 新增 `w3Edges.test.ts`：429 包络经 client 解成 `RATE_LIMITED`；下架菜品从菜单消失但旧记录可提交且保留原名；昨晚/今天记录分条、统计按日期窗口计入、草稿按日期隔离 | §14 |
+| 2026-11-06 | `41c4caa` Merge `origin/main`（#15 分工表改写） | 再并一次最新 main 并解决 PROGRESS 追加行冲突；顺带把 Q8（`.nvmrc`=22）、Q9（CODEOWNERS 覆盖 composables/utils/tests/dev）标记结案 | §5 |
 
 > **提交号会变**：上表的哈希是 rebase 之后的值。rebase 会重写哈希，所以引用提交号时**先确认分支没再 rebase**；
 > 想知道某段代码的来历，用 `git log --follow -- <路径>` 比记哈希可靠。
 
-分支：`feat/fe-b-web`（已并入 `origin/main` = `b29deff`，21 个提交领先 main）。
+分支：`feat/fe-b-web`（已并入 `origin/main` = `be2c1b0`，截至 2026-11-06 19:10 领先 main 23 个提交）。
 远端状态：`feat/fe-b-web` **已推送**；**PR #6** 已开（https://github.com/givehope488/nutritionist-prototype/pull/6）。
-CI：`d6f2e4d` 上 lint / typecheck / test 三项已全绿。
+CI：`41c4caa` 上 lint / typecheck / test 三项全绿；PR 状态 `blocked`，等 1 位非作者批准。
 
 ---
 
@@ -330,4 +331,4 @@ PR #6 评审给出 3 处契约不一致 + 1 条建议，逐条处理如下。
 | 跨天回填（凌晨填昨晚） | 同一会话分别提交昨天晚餐、今天早餐 | 两条独立成记录、按日期倒序；`/insights/summary?days=1` 只计今天，`days=2` 计两条 |
 | 跨天草稿隔离 | `useLogDraft` 同一实例把日期从今天切到昨天 | 今天已选份数不带到昨天，幂等 id 也不同 |
 
-复跑：lint 无告警、typecheck 0 错、**54/54 用例**（新增 4 条）、build 通过；`d6f2e4d` 的 CI 三项全绿。
+复跑：lint 无告警、typecheck 0 错、**54/54 用例**（新增 4 条）、build 通过；`41c4caa` 的 CI 三项全绿。
