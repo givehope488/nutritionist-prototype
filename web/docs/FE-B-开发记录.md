@@ -129,6 +129,7 @@ FE-B 名下目录（CODEOWNERS 口径）：`web/src/views/log|feedback|history/`
 | P13 | 反馈页对比条显示「目标 0」 | 契约 `MealLog.target` 无脂肪/碳水/钠目标（议题 Q4），传 0 进来被当成真目标 | `MacroBar` 区分「无目标」：文案「暂无目标」、不画目标虚线、`data-state=neutral`；补单测 |
 | P14 | 回填页副标题显示 `今天 · lunch` | 直接把契约枚举值渲染给用户 | 加 `mealLabel` 走 `MEAL_OPTIONS` 的中文标签（历史页/反馈页原本就对了） |
 | P15 | 根页面有个点了没反应的「‹返回」 | 见决策 B9 | `AppNavBar` 的 `backLabel` 默认空、空则不渲染；反馈页补 `@back` |
+| P16 | `git push` 挂住十几分钟、日志空、`git ls-remote` 却 2 秒成功 | 本机用的是 Qoder 自带 Git（`C:/Users/27370/.qoder-cn/bin/git`），其 `credential.helper=helper-selector` 会弹一个**看不见的 GUI 选择框**；凭据库里没有任何 github 条目，于是 git 一直等输入。读操作不需要凭据，所以 `ls-remote` 正常 —— 别把「读得通」当成「认证通了」 | 见 §11：改由本人在自己的终端跑 device 授权；Agent 侧不再重试（重试只会留下僵尸 git.exe，需 `taskkill //IM git.exe //F` 清场） |
 
 ---
 
@@ -202,5 +203,38 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 > **提交号会变**：上表的哈希是 rebase 之后的值。rebase 会重写哈希，所以引用提交号时**先确认分支没再 rebase**；
 > 想知道某段代码的来历，用 `git log --follow -- <路径>` 比记哈希可靠。
 
-分支：`feat/fe-b-web`（已 rebase 到 `origin/main` = `1275782`，工作区干净）。
-远端状态：`main` 与本地一致；`feat/fe-b-web` **尚未推送**。
+分支：`feat/fe-b-web`（已 rebase 到 `origin/main` = `1275782`，工作区干净，10 个提交）。
+远端状态：`main` 与本地一致；`feat/fe-b-web` **尚未推送**——推送卡在认证（踩坑 P16），需本人完成一次交互式授权，步骤见 §11。
+
+---
+
+## 11. 推送前置：一次性 GitHub 授权（待本人执行）
+
+Agent 侧无法完成这一步：device 授权流要人在浏览器里输验证码，而本机的 `helper-selector` 弹的是不可见 GUI（P16）。在自己的终端（Git Bash）里执行：
+
+```bash
+cd /d/work/projects/nutritionist-prototype
+GCM_AUTHMODE=device git push -u origin feat/fe-b-web
+# 输出会给出 https://github.com/login/device 和一个形如 707C-BB63 的一次性代码
+# 浏览器打开该地址、填代码、授权 → 推送自动继续
+```
+
+授权成功后凭据会落进 Windows 凭据库，之后不必再来一次。核验（`cmdkey /list` 在 Git Bash 里必须加
+`MSYS2_ARG_CONV_EXCL='*'`，否则 `/list` 被 MSYS 当路径转换，会得到「凭据列表为空」的假象——FE-A 踩过同一个坑）：
+
+```bash
+MSYS2_ARG_CONV_EXCL='*' cmdkey /list | grep -i github
+```
+
+推送前如果想改署名（提交尚未公开，重写零风险）：
+
+```bash
+git rebase -i origin/main --exec   'git commit --amend --no-edit --author="你的名字 <你的 noreply 邮箱>"'
+```
+
+> 建议用 GitHub 的 noreply 邮箱（账号设置里勾了「Keep my email addresses private」时，
+> 写真实邮箱等于把私邮放进公开历史）。当前 10 个提交沿用了仓库既有作者
+> `zhang san <66499532+givehope488@users.noreply.github.com>`，未改动任何 git 配置。
+
+推完之后：按 `.github/PULL_REQUEST_TEMPLATE.md` 开 PR（五项自检 + AI Agent 使用声明都要勾），
+Reviewer 找 BE-B；`web/src/api/` 是 FE-A/FE-B 双所有者，PR 记得同时 @ FE-A。
