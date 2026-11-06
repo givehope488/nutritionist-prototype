@@ -651,3 +651,29 @@ npm run check:progress → exit 0（新增：PROGRESS.md 指纹校验，「✓ d
 - 分支 `feat/fe-a-review-v3`：从 `origin/main`（`b29deff`）切出，`reviews/fe-a/` 与 main 逐字节一致后开始改。
 - 改动四份文档：API-REVIEW.md（v1.4 二次复核增补 + 签字条件更新）、CONTRACT-NOTES.md（契约基准改 v1.2.1，§3/§4/§5 重写，§5.1 重抓）、AGENT-PROMPT.md（铁律 3 目录、B1/B3 决议、附录 D、client.ts 4 单测）、WORKLOG.md（本节）。
 - 新 PR 创建与回读校验、交接包刷新记录在后续续节。
+
+### 15.6 新 PR 创建与回读校验（PR #16）
+
+```
+POST /repos/givehope488/nutritionist-prototype/pulls   → create_http=201
+  number=16  state=open  draft=no  base=main  head=feat/fe-a-review-v3 (5ce0074)
+  commits=1  +181/-63  files=4
+GET /pulls/16（回读）：
+  body 与我提交的 JSON 逐字节一致（vrfy16.pl，双方先落字节再比）  YES
+  title identical  YES
+  requested_reviewers = givehope488   （连续第二次：CODEOWNERS /reviews/ 自动请求 PD 生效）
+```
+
+回读校验脚本这次直接按 §14.6 立下的规矩写（双方都落到字节再比），没有再踩字符/字节混比的坑。
+
+### 15.7 交接包对齐（沿用同一判据）
+
+离线复现包按三条命令刷新（format-patch / bundle / Compress-Archive），判据不变：临时克隆 checkout `b29deff` 后 `git am` 全序列，`git diff --stat HEAD origin/feat/fe-a-review-v3 -- reviews/fe-a` 输出为空。包内文件数 = `reviews/fe-a/` 4 份 + patch 序列，与 PR #16 的 files=4 一致。
+
+### 15.8 乱码事故：PR #16 标题与正文双编码（已修复）
+
+- **现象**：PR #16 在 GitHub 页面与通知邮件中标题/正文均显示乱码（如「ä¸‰è½®」）。复核同仓另外两个 PR：**#1 正常**；**#5 的正文此前已由 PD 手工重写并留了说明**——我这一轮开工前没看它，等于同一个坑踩了第二次。
+- **根因**（本地 payload 十六进制复核）：`/tmp/mkpr3.pl` 用 `encode_json($payload)` 生成 JSON，该函数等价于 `JSON::PP->new->utf8->encode`，**输出已经是 UTF-8 字节**；脚本第 13 行又套了一层 `encode('UTF-8', …)`，把每个字节当字符再编码一次。证据：「三」的单编码是 `E4 B8 89`，payload 里实际是 `C3 A4 C2 B8 C2 89`。
+- **为什么 §15.6 的回读没拦住**：字节级「提交 == 回读」只证明两处一致，双编码本身是自洽的；一致性检查不能替代正确性检查。→ 自检补两条：①固定中文子串必须命中；②双编码特征串（如 `C3 A4 C2 B8 C2 89`）计数必须为 0。
+- **修复**：重写 payload（`use utf8` 处理标题字面量 + `decode('UTF-8', $raw, FB_CROAK)` 读正文 + `JSON::PP->new->utf8->encode` 只编一次），`PATCH /pulls/16` → **200**。回读：标题「reviews: FE-A 三轮复核——对 API v1.2.1 签字（B1/B2/B3/Y5 全部结案）」，正文 3200 字、`mojibake_pairs=0`，首段为新增的一行编码说明（处置方式与 PR #5 一致）。
+- **不可撤回项**：已发出的 GitHub 通知邮件无法撤回；修正后重新触发一次 review request（先 DELETE 再 POST `requested_reviewers`），让收件人收到干净标题的通知。以后含中文的提交一律 `git commit -F <UTF-8 文件>`，不再经 shell 命令行拼中文。
