@@ -77,9 +77,11 @@
 | # | 做什么 | 为什么急 | 截止 |
 |---|---|---|---|
 | 1 | **定前端怎么装**：`web` 并进根 workspace，还是让 `web/` 独立 `npm ci`。定了就改 `.github/workflows/ci.yml` | FE-B 的 9467 行卡在这一个决定上，不定他就无法进主干 | **11-08（周日）** |
-| 2 | 顺手把 `.github/CODEOWNERS` 里 `/scripts/` 的归属补上（管理端 CLI 要放这） | 一人 5 分钟 | 11-08 |
 
 > 建议选独立安装：只改 CI 两行，不动根 lock 文件，风险最小。但这是你的决定，你改完在 §5 记一行就行。
+> 若选并进 workspace，必须同时重生成根 `package-lock.json` 并删掉 `web/package-lock.json`，否则 `npm ci` 会报 lock 不一致。
+>
+> `.github/CODEOWNERS` 里 `/scripts/` 的归属我已经补了，不用你管。
 
 #### PD（givehope488）
 
