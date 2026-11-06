@@ -71,6 +71,7 @@ export async function request<T>(
   const url = `${BASE}${API_PREFIX}${path}`;
   let status: number;
   let payload: unknown;
+  let parseFailed = false;
 
   try {
     if (isMockMode) {
@@ -88,12 +89,21 @@ export async function request<T>(
         signal: options.signal,
       });
       status = res.status;
-      payload = res.ok ? await res.json().catch(() => null) : await res.json().catch(() => null);
+      try {
+        payload = await res.json();
+      } catch {
+        // 2xx 但不是 JSON：契约违约，不能把 null 当业务对象返回
+        payload = null;
+        parseFailed = true;
+      }
     }
   } catch (cause) {
     return transportError(cause);
   }
 
+  if (parseFailed) {
+    return { ok: false, error: toApiError(status, payload) };
+  }
   if (status >= 200 && status < 300) {
     // 成功直接返回业务对象，不剥包装层
     return { ok: true, data: payload as T };
