@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { MINOR_AGE, PROFILE_BOUNDS } from '@canteen/shared';
 import type { Activity, Goal, Meal, Profile, Sex } from '@canteen/shared';
 import { AVOID_OPTIONS } from '../data/avoid-options';
-import { profileStore } from '../data/stores';
+import { profileRepository } from '../data/repositories';
 import { PLACEHOLDER_TARGET } from '../data/recommendations';
 import { HttpError } from '../http/errors';
 import {
@@ -78,7 +78,7 @@ profilesRouter.post('/', (req, res) => {
     warnings,
   };
 
-  profileStore.save(profile);
+  profileRepository.save(profile);
   res.json(profile);
 });
 
@@ -87,7 +87,7 @@ profilesRouter.post('/', (req, res) => {
  */
 profilesRouter.get('/me', (req, res) => {
   const sessionId = queryString(req.query, 'session_id');
-  const profile = profileStore.get(sessionId);
+  const profile = profileRepository.find(sessionId);
   if (profile === undefined) {
     throw new HttpError('NOT_FOUND', '档案不存在');
   }

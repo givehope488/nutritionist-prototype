@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import type { InsightsSummaryResponse } from '@canteen/shared';
-import { mealLogStore } from '../data/stores';
+import { mealLogRepository } from '../data/repositories';
 import { queryInt, queryString } from '../http/validation';
 
 export const insightsRouter: Router = Router();
@@ -19,7 +19,7 @@ insightsRouter.get('/summary', (req, res) => {
   since.setDate(since.getDate() - days);
   const sinceDate = since.toISOString().slice(0, 10);
 
-  const logs = mealLogStore.listBySession(sessionId).filter((log) => log.date >= sinceDate);
+  const logs = mealLogRepository.listBySession(sessionId).filter((log) => log.date >= sinceDate);
   const loggedMeals = logs.length;
   const adopted = logs.filter((log) => log.adopted).length;
   const average = (pick: (log: (typeof logs)[number]) => number): number =>

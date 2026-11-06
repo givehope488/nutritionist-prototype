@@ -2,7 +2,7 @@ import { Router } from 'express';
 import type { Goal, Meal, RecommendationResponse } from '@canteen/shared';
 import { AVOID_OPTIONS } from '../data/avoid-options';
 import { PLACEHOLDER_TARGET, buildMockRecommendation } from '../data/recommendations';
-import { profileStore } from '../data/stores';
+import { profileRepository } from '../data/repositories';
 import { bodyObject, invalid, optionalEnum, requireEnum, requireString } from '../http/validation';
 
 const MEALS: readonly Meal[] = ['breakfast', 'lunch', 'dinner'];
@@ -46,7 +46,7 @@ recommendationsRouter.post('/', (req, res) => {
     }
   }
 
-  const profile = profileStore.get(sessionId);
+  const profile = profileRepository.find(sessionId);
   const avoid = overrideAvoid ?? profile?.avoid ?? [];
 
   // goal 目前不参与 Mock 组合（真实评分在引擎里），保留变量以便引擎接入时直接接上

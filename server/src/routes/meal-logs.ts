@@ -10,7 +10,7 @@ import type {
 } from '@canteen/shared';
 import { getAllDishes } from '../data/dishes';
 import { PLACEHOLDER_TARGET } from '../data/recommendations';
-import { mealLogStore } from '../data/stores';
+import { mealLogRepository } from '../data/repositories';
 import {
   bodyObject,
   invalid,
@@ -78,9 +78,9 @@ mealLogsRouter.post('/', (req, res) => {
       ? null
       : requireString(body, 'adopted_combo_id', 'adopted_combo_id', 64);
 
-  const existing = mealLogStore.get(id);
+  const existing = mealLogRepository.find(id);
   if (existing !== undefined) {
-    res.json({ ...existing.log, duplicate: true } satisfies MealLogResponse);
+    res.json({ ...existing, duplicate: true } satisfies MealLogResponse);
     return;
   }
 
@@ -151,7 +151,7 @@ mealLogsRouter.post('/', (req, res) => {
     adopted: adoptedComboId !== null,
   };
 
-  mealLogStore.save(sessionId, log);
+  mealLogRepository.save(sessionId, log);
   res.json(log);
 });
 
@@ -165,7 +165,7 @@ mealLogsRouter.get('/', (req, res) => {
   const page = queryInt(req.query, 'page', 1, { min: 1 });
   const pageSize = queryInt(req.query, 'page_size', 20, { min: 1, max: 100 });
 
-  const matched = mealLogStore
+  const matched = mealLogRepository
     .listBySession(sessionId)
     .filter((log) => (from === undefined ? true : log.date >= from))
     .filter((log) => (to === undefined ? true : log.date <= to));

@@ -4,8 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
+    "dev": "npm run seed && tsx watch src/index.ts",
     "start": "tsx src/index.ts",
+    "seed": "tsx scripts/seed.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "smoke": "tsx scripts/smoke.ts"

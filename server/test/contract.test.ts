@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import { AVOID_OPTIONS } from '../src/data/avoid-options';
 import { getAllDishes } from '../src/data/dishes';
+import { seedDishes } from '../src/data/seed';
 
 /**
  * 契约一致性测试。
@@ -15,6 +16,10 @@ import { getAllDishes } from '../src/data/dishes';
 
 const API_MD_PATH = new URL('../../docs/API.md', import.meta.url);
 const API_MD = readFileSync(API_MD_PATH, 'utf8');
+
+// 数据源已从 JSON 改为 SQLite：本文件的断言在「收集阶段」就要读菜品，所以先灌种子。
+// 测试进程用的是内存库（server/vitest.config.ts 设了 DATABASE_URL=:memory:）。
+seedDishes();
 
 interface AvoidRow {
   key: string;

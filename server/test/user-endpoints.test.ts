@@ -10,12 +10,15 @@ import type {
   RecommendationResponse,
 } from '@canteen/shared';
 import { createApp } from '../src/app';
-import { resetStores } from '../src/data/stores';
+import { resetDatabase } from '../src/data/db';
+import { seedDishes } from '../src/data/seed';
 
 let server: Server | undefined;
 let baseUrl = '';
 
 beforeAll(async () => {
+  // 每次测试进程一份内存库（vitest.config.ts 设了 DATABASE_URL=:memory:）
+  seedDishes();
   server = createApp().listen(0);
   await new Promise<void>((resolve) => server?.once('listening', () => resolve()));
   const address = server.address();
@@ -38,7 +41,7 @@ afterAll(
 );
 
 beforeEach(() => {
-  resetStores();
+  resetDatabase();
 });
 
 const validProfile = {

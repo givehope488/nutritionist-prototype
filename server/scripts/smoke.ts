@@ -10,6 +10,7 @@ import type {
   RecommendationResponse,
 } from '@canteen/shared';
 import { createApp } from '../src/app';
+import { seedDishes } from '../src/data/seed';
 
 /**
  * 契约巡检（`npm run smoke`）。
@@ -21,6 +22,10 @@ import { createApp } from '../src/app';
  * 任何人改了返回结构（比如给成功响应套一层 data），这里第一个炸，不用等到联调。
  * 手工排查也方便：直接 `npm run smoke`，不需要起端口。
  */
+
+// 独立进程里跑，用内存库 + 现场灌种子，不污染 server/data/runtime
+process.env.DATABASE_URL ??= ':memory:';
+seedDishes();
 
 const checks: Array<{ name: string; run: () => Promise<void> }> = [];
 const check = (name: string, run: () => Promise<void>): void => {

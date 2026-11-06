@@ -1,50 +1,60 @@
-import { readFileSync } from 'node:fs';
-import { fileURLToPath } from 'node:url';
-import type { Dish, Meal } from '@canteen/shared';
+import type { Dish, DishTag, Meal } from '@canteen/shared';
+import { getDb } from './db';
 
 /**
- * 菜品数据访问层（临时实现）。
+ * 菜品数据访问层。
  *
- * TODO(BE-B, W2)：改为 SQLite 查询，seed 仅在 `npm run seed` 时写入一次。
- * 在此之前保持「只读 + 启动即加载」的形态，保证前端能立刻对着真实字段开发。
+ * W1 起数据源是 SQLite（`npm run seed` 从 menu-seed.json 灌入），
+ * 不再是每次请求读 JSON —— 这是「接口读库」验收项。
+ *
+ * 种子文件里的 `source` / `portion_grams` 等治理字段不入库、不出接口，
+ * 因此 DTO 投影在写入时就完成，读出来天然是契约形状。
  */
-const SEED_PATH = fileURLToPath(new URL('../../data/menu-seed.json', import.meta.url));
 
-/**
- * 种子文件里的记录比契约多若干元数据字段（如 `source` 来源说明）。
- * 这类字段只用于数据治理，**不得出现在 API 响应里**（DoD：无未记载字段），
- * 因此在数据边界上做一次显式投影，而不是把整行 JSON 直接吐出去。
- */
-type SeedDish = Dish & Record<string, unknown>;
+interface DishRow {
+  id: string;
+  name: string;
+  category: string;
+  portion_label: string;
+  meals: string;
+  kcal: number;
+  protein_g: number;
+  fat_g: number;
+  carbs_g: number;
+  sodium_mg: number;
+  price_yuan: number;
+  tags: string;
+  drink: number;
+  reliability: string;
+  status: string;
+}
 
-function toDishDto(row: SeedDish): Dish {
+function toDish(row: DishRow): Dish {
   return {
     id: row.id,
     name: row.name,
-    category: row.category,
+    category: row.category as Dish['category'],
     portion_label: row.portion_label,
-    meals: row.meals,
+    meals: JSON.parse(row.meals) as Meal[],
     kcal: row.kcal,
     protein_g: row.protein_g,
     fat_g: row.fat_g,
     carbs_g: row.carbs_g,
     sodium_mg: row.sodium_mg,
     price_yuan: row.price_yuan,
-    tags: row.tags,
-    drink: row.drink,
-    reliability: row.reliability,
-    status: row.status,
+    tags: JSON.parse(row.tags) as DishTag[],
+    drink: row.drink === 1,
+    reliability: row.reliability as Dish['reliability'],
+    status: row.status as Dish['status'],
   };
 }
 
-let cache: Dish[] | null = null;
-
 export function getAllDishes(): Dish[] {
-  if (cache === null) {
-    const raw = JSON.parse(readFileSync(SEED_PATH, 'utf8')) as { dishes: SeedDish[] };
-    cache = raw.dishes.map(toDishDto);
+  const rows = getDb().prepare('SELECT * FROM dishes ORDER BY id').all() as unknown as DishRow[];
+  if (rows.length === 0) {
+    throw new Error('菜品表为空：请先运行 npm run seed');
   }
-  return cache;
+  return rows.map(toDish);
 }
 
 export function getDishesByMeal(meal: Meal, includeInactive: boolean): Dish[] {
