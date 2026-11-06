@@ -166,10 +166,30 @@ describe('POST /api/v1/recommendations', () => {
     expect(res.status).toBe(200);
   });
 
-  it('早餐无素菜也不 500（Mock 用水果兜底）', async () => {
+  it('午晚按 v1.2.2：每套必须含主食、主菜、素菜', async () => {
+    const res = await post('/api/v1/recommendations', { session_id: 'sess-a', meal: 'lunch' });
+    const body = res.json as RecommendationResponse;
+    expect(body.combos.length).toBeGreaterThan(0);
+    for (const combo of body.combos) {
+      const categories = combo.dishes.map((dish) => dish.category);
+      expect(categories).toContain('staple');
+      expect(categories).toContain('protein');
+      expect(categories).toContain('veg');
+    }
+  });
+
+  it('早餐按 v1.2.2：主食×主菜即可，素菜 0 道也不该出空', async () => {
     const res = await post('/api/v1/recommendations', { session_id: 'sess-a', meal: 'breakfast' });
     expect(res.status).toBe(200);
-    expect(Array.isArray((res.json as RecommendationResponse).combos)).toBe(true);
+
+    const body = res.json as RecommendationResponse;
+    expect(body.combos.length).toBeGreaterThan(0);
+    for (const combo of body.combos) {
+      const categories = combo.dishes.map((dish) => dish.category);
+      expect(categories).toContain('staple');
+      expect(categories).toContain('protein');
+      expect(categories).not.toContain('veg');
+    }
   });
 });
 

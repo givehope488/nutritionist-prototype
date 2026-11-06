@@ -112,7 +112,12 @@ export interface MockRecommendation {
 }
 
 /**
- * 确定性假推荐：按份额轮流取 主食 / 主菜 / 第三件，凑 3 套。
+ * 确定性假推荐：按份轮流取菜，凑 3 套。
+ *
+ * 组合结构按 API v1.2.2 的类目规则（此前文档没定义，引擎各写各的）：
+ *   - lunch / dinner：主食 × 主菜 × 素菜，**汤是可选件**，不进必备件
+ *   - breakfast：主食 × 主菜，**不要求素菜、不要求汤**，水果可选
+ *   （依据：55 道种子中早餐 14 道，素菜 0、汤 0，沿用午晚规则会恒为 0 套）
  *
  * 刻意不做的事（留给 BE-A 的引擎）：
  *   - 不按热量/蛋白打分排序
@@ -127,19 +132,13 @@ export function buildMockRecommendation(meal: Meal, avoid: readonly string[]): M
 
   const staples = pool.filter((dish) => dish.category === 'staple');
   const mains = pool.filter((dish) => dish.category === 'protein');
+  const greens = pool.filter((dish) => dish.category === 'veg');
+  const fruits = pool.filter((dish) => dish.category === 'fruit');
 
-  /**
-   * 早餐数据里没有素菜、也没有汤（55 道种子中早餐 14 道：主食 7 / 主菜 5 / 水果 2）。
-   * 沿用午晚的「主食×主菜×素菜」会直接得到 0 套，所以这里对早餐放宽为
-   * 主食×主菜×水果。**这是 Mock 的临时兜底，真实结构待 API v1.3 定**
-   * （已登记在 docs/PROGRESS.md §5 的风险条目）。
-   */
-  const thirdSlot =
-    meal === 'breakfast'
-      ? pool.filter((dish) => dish.category === 'fruit')
-      : pool.filter((dish) => dish.category === 'veg');
+  // 早餐的素菜不是必备件（API v1.2.2），其余餐段必须有素菜才成组
+  const needsVeg = meal !== 'breakfast';
 
-  if (staples.length === 0 || mains.length === 0 || thirdSlot.length === 0) {
+  if (staples.length === 0 || mains.length === 0 || (needsVeg && greens.length === 0)) {
     return {
       combos: [],
       notice: '符合忌口条件的菜品太少，建议放宽一两个限制或换个时段',
@@ -151,17 +150,28 @@ export function buildMockRecommendation(meal: Meal, avoid: readonly string[]): M
   for (let index = 0; index < MAX_COMBOS; index++) {
     const staple = staples[(index + offset) % staples.length];
     const main = mains[(index * 2 + 1 + offset) % mains.length];
-    const third = thirdSlot[(index + offset) % thirdSlot.length];
-    if (staple === undefined || main === undefined || third === undefined) continue;
+    if (staple === undefined || main === undefined) continue;
 
-    const dishes = [toComboDish(staple), toComboDish(main), toComboDish(third)];
+    const dishes = [toComboDish(staple), toComboDish(main)];
+
+    if (needsVeg) {
+      const green = greens[(index + offset) % greens.length];
+      if (green === undefined) continue;
+      dishes.push(toComboDish(green));
+    } else if (fruits.length > 0) {
+      // 水果是可选件：有就加一份，没有也成组
+      const fruit = fruits[(index + offset) % fruits.length];
+      if (fruit !== undefined) dishes.push(toComboDish(fruit));
+    }
+
     const totals = sumTotals(dishes);
+    const names = dishes.map((dish) => dish.name).join('、');
     combos.push({
       id: hashCombo(dishes),
       dishes,
       totals,
       // 理由只引用已经算出的合计值，不引入新数字（ARCHITECTURE §4 的硬约束）
-      reason: `这一餐约 ${totals.kcal} kcal，蛋白质 ${totals.protein_g}g、脂肪 ${totals.fat_g}g；由${staple.name}、${main.name}、${third.name}搭配而成。`,
+      reason: `这一餐约 ${totals.kcal} kcal，蛋白质 ${totals.protein_g}g、脂肪 ${totals.fat_g}g；由${names}搭配而成。`,
       engine: 'template',
     });
   }
