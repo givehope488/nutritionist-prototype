@@ -219,7 +219,8 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 > 想知道某段代码的来历，用 `git log --follow -- <路径>` 比记哈希可靠。
 
 分支：`feat/fe-b-web`（已 rebase 到 `origin/main` = `496c1ef`，工作区干净，14 个提交含本笔文档）。
-远端状态：`feat/fe-b-web` **已推送**（`d3b5d3e`，14 个提交），upstream 已建立；PR 待开（Blocking 项见议题 Q10）。
+远端状态：`feat/fe-b-web` **已推送**（upstream 已建立）；**PR #6** 已开（https://github.com/givehope488/nutritionist-prototype/pull/6）。
+CI 首跑：`lint` ✅ / `typecheck` ❌ / `test` ❌ —— 失败原因即议题 Q10（`No workspaces found: --workspace=web`），已在 PR 评论里给出日志与两种修法，等 BE-B 结论；`mergeable_state: blocked`。
 
 ---
 
