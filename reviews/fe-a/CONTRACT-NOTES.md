@@ -14,7 +14,7 @@
 | 类型只能从 `shared/` 导入，禁止在 view 里手写同名 interface | COLLAB 防线 1 | `import type { Dish } from 'shared/types'`；`shared/` 未就绪前，本任务不开工 |
 | 成功 2xx 直返业务对象；失败 4xx/5xx 返单一 `error`；解包只在 `web/src/api/client.ts` 一处 | §0.8 | view 只见 `ApiResult<T>` 的两种形态，不判 `res.data` |
 | `session_id` 前端首次生成 UUID 存 localStorage，透传所有需身份接口 | §0.6 | **归属未定，见评审单流程问题一节**，未认领前不写这个 util |
-| 忌口过滤后无解不是错误：200 + 空 `combos[]` + `notice` | §1 注 | 空态是正常分支，按 W5 要求做引导（引导强度依赖 Y3 结论） |
+| 忌口过滤后无解不是错误：200 + 空 `combos[]` + `notice` | §1 注 | 空态是正常分支，按 W3 要求做引导（引导强度依赖 Y3 结论） |
 | 未成年：`age<18 && goal=lose` 服务端强制 `health` + `warnings`；前端须同时禁用减脂选项 | §2.2 | 双保险的前端半边：`age<18` 时 `goal=lose` 选项 disabled + 说明文案 |
 
 ## 1. 建档页（`POST /api/v1/profiles`，upsert 以 session_id 为键）
@@ -38,7 +38,7 @@
 - `bmi` / `bmi_tag` / `day_kcal` 是**派生值，直接展示，不得重算**。
 - `warnings` 目前是中文句子数组（Y2）：先按「整句展示」实现，结构化 code 等 BE-A 结论再改分支。
 - 400 `VALIDATION_ERROR` 的 `fields[].path` 直接对应表单字段名（如 `height_cm`）→ 定位到输入框做行内提示，这是 §1 表里「按定位提示用户修正」的实现方式。
-- `GET /api/v1/profiles/me?session_id=...` 返回同结构，档案不存在返回 **404** → 首访无档案是正常路径，不能当错误页处理（W5 空态）。
+- `GET /api/v1/profiles/me?session_id=...` 返回同结构，档案不存在返回 **404** → 首访无档案是正常路径，不能当错误页处理（W3 空态）。
 
 待澄清前不定稿的两点：BMI 实时刷新方式（Y1）、`bmi_tag` 值域与配色（Y1）。
 
@@ -71,7 +71,7 @@
 | `dishes[]`（`id/name/category/portion_label/servings/kcal/protein_g/fat_g/carbs_g/sodium_mg`） | 卡片行 | 槽位排版**依赖 B3 结论**，暂按 `category` 排序渲染 |
 | `totals` | 宏量条实际值（与 `target` 同轴对比） | 缺价格合计，见 G2 |
 | `reason` | 理由文案 | 服务端生成，**不得截断改写**（V1~V5 校验在服务端，ARCH §4.2） |
-| `engine` | 小字标记 `template` / `llm` | 如实展示，不自行猜测；W4 埋点会统计降级率 |
+| `engine` | 小字标记 `template` / `llm` | 如实展示，不自行猜测；LLM 层已整体后移出 3 周计划（TEAM v1.2 §3.4），首版实际恒为 `template` |
 
 **`notice`**：`combos` 为空时展示引导文案（见 B3/Y3，结构化放宽建议未定）。
 
@@ -85,28 +85,43 @@
 
 | 事项 | FE-A | FE-B |
 |---|---|---|
-| 色板 / 卡片 / 步骤条 / 表单组件 | 消费 | 提供（TEAM.md W1） |
+| 色板 / 卡片 / 步骤条 / 表单组件 | 消费 | 提供（TEAM.md v1.2 W1） |
 | 建档 → 推荐 的表单与响应式状态 | 主责 | — |
 | 推荐卡骨架（槽位） | 主责（但依赖 B3） | 回填页按同一骨架预填 |
-| 宏量条组件 vs 反馈对比条 | 本餐目标对比 | 实际摄入 vs 目标判定 | 
-| `client.ts` / session / router | 待认领（见评审单） | 待认领 |
+| 宏量条组件 vs 反馈对比条 | 本餐目标对比 | 实际摄入 vs 目标判定 |
+| `client.ts` 解包 + session_id 工具 | CODEOWNERS 判为**共担**（`web/src/api/` = @fe-a @fe-b）；建议 FE-A 主笔 | 建议只加自己的 `*.api.ts`，不改 `client.ts` |
+| `router/`、`App.vue`、`main.ts` | 未在 CODEOWNERS 列出 → 落 `* @be-b` 兜底 | 同左 |
 
-两处最容易分叉的是 **槽位结构**（B3）和 **`ApiResult` 解包判据**（G3）——必须共用同一份，否则周五集成演示当场暴露。
+两处最容易分叉的是 **槽位结构**（B3）和 **`ApiResult` 解包判据**（G3）——必须共用同一份，否则集成演示当场暴露（v1.2 的集成点是 **W2 周三中途集成**，不是周五）。
 
-## 5. 上游依赖清单（W2 开工前必须到位）
+我的三个页面在 CODEOWNERS 里的确切路径（**不是我原先猜的 `views/onboarding/`**）：
 
-| 依赖 | 负责人 | TEAM.md 出处 | 当前状态（2026-11-06） |
+```
+web/src/views/profile/     建档
+web/src/views/goal/        目标与忌口
+web/src/views/recommend/   推荐
+```
+
+## 5. 上游依赖清单（v1.2 压缩为 3 周后，W2 周二就要对接真实 API）
+
+| 依赖 | 负责人 | TEAM.md 出处 | 当前状态（2026-11-06，已核对 `origin/main` @ `1275782`） |
 |---|---|---|---|
-| `shared/types.ts` + `shared/constants.ts` | BE-B | W1 共享类型包 | 仓库中不存在 |
+| `shared/types.ts` + `shared/constants.ts` | BE-B | W1 共享类型包 | **文件树里没有 `shared/`** |
 | Mock API（按契约返假数据） | BE-B | W1 Mock API | 不存在；FE-A 无法脱离后端开发 |
-| `VITE_API_BASE` 切换机制 | BE-B | COLLAB 防线 4 | 不存在（无 `web/`） |
+| `VITE_API_BASE` 切换机制 | BE-B | COLLAB 防线 4 | 不存在（无 `web/`、无 `package.json`） |
 | 前端脚手架 + 设计系统组件 | FE-B | W1 前端脚手架 | 不存在 |
+| CI 三件套 + lint 规范 | BE-B | W1 仓库脚手架；§3.4 **不可砍项** | 无 workflow 文件（`.github/` 只有 CODEOWNERS 与 PR 模板） |
+| `.nvmrc` | BE-B | COLLAB 防线 3，CODEOWNERS 已列为 BE-B 所有 | **不存在** → 我本机 v26.13.0 属自便，需对齐 |
 | B1 / B2 / B3 契约结论 | BE-A | W1 接口冻结 | 待本次评审答复 |
-| Y5 可信度展示矩阵 | PD | W5 合规自查（提前） | 待 PD |
-| Node 环境 | FE-A 本机自装 | COLLAB 防线 3 | 已装 v26.13.0，**待与 BE-B 的 `.nvmrc` 对齐** |
+| Y5 可信度展示矩阵 | PD | 合规自查在 **W3**，但卡片设计 W2 末就要用 → 需提前 | 待 PD |
+| CODEOWNERS 占位符替换为真实用户名 | BE-B | 防线 2 的平台强制前提 | 仍是 `@fe-a` 式占位符（评审单 C1） |
+| Node 环境 | FE-A 本机自装 | COLLAB 防线 3 | 已装 v26.13.0 + npm 11.20.0 |
+
+TEAM.md v1.2 §4.1 的原话是「W1 是全局瓶颈：接口冻结、`shared/`、Mock API 三样任何一样晚一天，五个人全部原地等待」。从 FE-A 侧看，这三样现在**一样都没有**，且 §4.4 写明「3 周无缓冲：预计延期 >2 天当天亮红」。所以我按 §4.4 的口径，把这条依赖缺失当作需要当天亮红的项，而不是自己等。
 
 ## 6. 变更记录
 
 | 日期 | 变更 | 触发 |
 |---|---|---|
 | 2026-11-06 | 首版，基于 API.md v1.1 摘录；标注 7 处待澄清依赖 | W1 接口评审 |
+| 2026-11-06 | 同步 `origin/main` `1275782`：页面路径改为 CODEOWNERS 的 `profile/goal/recommend`；`web/src/api/` 由「待认领」改为「FE-A+FE-B 共担」；依赖表按 3 周计划与 `.nvmrc`/CI 实况更新；集成点由周五改为 W2 周三 | TEAM.md v1.2 + CODEOWNERS 落地 |

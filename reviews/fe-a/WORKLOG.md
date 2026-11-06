@@ -224,3 +224,58 @@ TEAM.md §5.2 与 COLLAB.md 防线 2/4 整套机制建立在「每人能开 PR�
 | 越界检查 | 两个提交的 `--stat` | 只含 `reviews/fe-a/*`，未触碰 `docs/`、`shared/`、`web/`、`server/` |
 
 已知瑕疵：`CONTRACT-NOTES.md` 第 357 行表格有 1 处行尾空格（`git am` 报 trailing whitespace 警告）。纯 Markdown 排版，不影响内容；待 CI 的 markdownlint 上线后随下一次文档提交一并清掉。
+
+## 10. 2026-11-06 下午：认证诊断 + 远端 main 变更（影响重大）
+
+### 10.1 认证为什么没通（三条实测证据）
+
+| 探测 | 命令 | 结果 | 判读 |
+|---|---|---|---|
+| 凭据是否已存 | `cmdkey /list` 过滤 github | 无条目 | GCM 从未成功拿到 token |
+| 是否有 GCM 进程 | `tasklist //FI "IMAGENAME eq git-credential-manager.exe"` | 无 | 授权环节没起来或已退出 |
+| git 协议连通 | `git ls-remote --heads https://github.com/givehope488/nutritionist-prototype` | **2.4s 成功**，返回 `refs/heads/main` | 网络对 git 是通的，之前「卡住」不是网络 |
+
+结论：用户在**内置浏览器**登录 GitHub，只是登录了网页会话；GCM 的浏览器授权要回连它自己在本机监听的端口，两者不是同一条链路。所以「我在浏览器登过了」≠「git 能认证」。
+
+我自己的两个操作错误也记在这里（都属于方法缺陷，不是环境问题）：
+1. 第一次探测用了 `git push ... 2>&1 | tail -25` —— `tail` 要等 EOF 才输出，导致 10 分钟内我拿到的是空文件，白等；
+2. 第二次把命令放进 shell 的 `&` 后台，工具调用一结束子进程就被回收，所以日志空、进程消失，那次探测无效。
+正确做法：用工具自带的 run_in_background，并把输出**直接重定向到文件**（不接管道），再轮询文件。
+
+清场：`taskkill //IM git.exe //F` 后复查进程数为 0。
+
+### 10.2 FE-A 身份（读自内置浏览器的 GitHub 会话）
+
+- 用户名 `Aredjdhd`，用户 ID `161108928`；
+- 隐藏邮箱 `161108928+Aredjdhd@users.noreply.github.com`；
+- 「Keep my email addresses private」**已开启** → 提交署名必须用上面这串 noreply，用真实邮箱会把她私邮写进公开历史；
+- 「Block command line pushes that expose my email」**未开启**（所以错了不会被 GitHub 拦，只能靠我自己守）。
+
+### 10.3 远端 main 从 `037a9cd` 变成 `1275782`（我干活期间有人推了新提交）
+
+`git fetch origin` 后看到单条新提交：`docs: 排期压缩为 3 周（TEAM v1.2 裁剪清单+周三集成点）；API v1.1 统一响应包络；新增 CODEOWNERS 与 PR 模板`，改动 5 个文件 +113/-41。
+
+对 FE-A 产出物的实际冲击，以及我做的适配：
+
+| 变更事实 | 对我原判断的影响 | 我改了什么 |
+|---|---|---|
+| 排期 6 周 → **3 周**，FE-A 里程碑变为「W2 二 对接真实 API」「W2 末 走通建档→推荐」 | 我所有引用 W2-W3 / W4 / W5 的地方全部失效；工期没有缓冲 | API-REVIEW 逐条改引用；CONTRACT-NOTES 依赖表按新里程碑重排 |
+| 「换一批」**没有被砍**，仍在我的 W2 末验收里 | B1 依然成立且更急 | 保留 B1，标注新时限 |
+| 新增 `.github/CODEOWNERS` | 我原先写的「`web/src/api`、router、session 四处无人认领」**不成立** | 删掉旧结论，改为 C1~C5 五个新问题（占位符未替换 / `web/src/api` 双所有者 / TEAM.md 落兜底与 §5.5 冲突 / `.nvmrc`+`shared`+CI 不存在 / §3 标题仍写「六周排期」） |
+| CODEOWNERS 给的我的路径是 `views/profile`、`views/goal`、`views/recommend` | 我原先假设是 `views/onboarding/` | AGENT-PROMPT 与 CONTRACT-NOTES 的「允许修改目录」全部改成真实路径 |
+| 新增 `.github/PULL_REQUEST_TEMPLATE.md`（含 AI Agent 使用声明五项必勾） | 我的 PR.md 格式不合规模板 | PR.md 整篇按官方模板五段重写 |
+| §3.4 裁剪：LLM 层 / 管理端 UI / 100 道数据 / 压测 / 埋点看板 / 30 人灰度 全部后移 | 我的 G4「埋点无契约」范围缩小为「确认 `insights/summary` 是否就是那条采纳率接口」 | G4 重写；CONTRACT-NOTES 里 `engine` 说明改为「首版实际恒为 template」 |
+| §3.4 声明 CI 三件套 / smoke / 接口冻结 / 三查 为**不可砍项** | 我 PR 里「CI 跑不了」不能算我自评通过 | 自检五项如实标成「无法执行」而非「通过」，并 @ BE-B |
+| §4.4「延期 >2 天当天亮红」 | 给了我上报依赖缺失的正确姿势 | PR.md 末尾按亮红格式写了 W2 依赖告警 |
+
+`docs/API.md` 本次只加了 2 行（§3 管理端：3 周计划无 UI，改由 `scripts/dish-admin.mjs` CLI 调用），**契约字段一个没动** → 我的 B/Y/G 各条结论与字段引用不受影响，无需重做评审。
+
+### 10.4 分支需要 rebase（尚未推送，重写历史零风险）
+
+我的 `feat/fe-a-api-review-w1` 基于 `037a9cd`，`origin/main` 已在 `1275782`。未推送，故 rebase 安全；推送前必须 rebase，否则 PR diff 会把别人的新提交算进来。
+
+### 10.5 待办（本轮未完成）
+
+- 认证仍未打通 → 需重新尝试（改用 run_in_background + 实时日志文件）；
+- 三个 commit 的作者署名仍是占位 `FE-A <fe-a@users.noreply.github.com>`，应改为 `Aredjdhd <161108928+Aredjdhd@users.noreply.github.com>`；
+- push 与开 PR 仍未执行。

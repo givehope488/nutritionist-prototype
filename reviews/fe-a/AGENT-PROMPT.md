@@ -7,7 +7,7 @@
 
 1. **共用 `shared/` 类型**：前端 view 里不出现任何手写的接口类型或字段名常量，一律 `import type` 自 `shared/`。
 2. **CI 红不合并**：`lint` / `typecheck` / `test` 三件套必须全绿；不绕过、不注释规则、不加 `any` 骗过类型检查。
-3. **只动自己目录**：FE-A 只改 `web/src/views/` 下的建档 / 目标与忌口 / 推荐三个页面及其同名子目录。`shared/`、根配置、`package.json`、CI 配置、`web/src/components/`、别人的 view —— 一律只读。
+3. **只动自己目录**：按 `.github/CODEOWNERS`，FE-A 的地盘是 `web/src/views/profile/`、`web/src/views/goal/`、`web/src/views/recommend/` 三个目录；`web/src/api/` 与 FE-B **共担**（未约定主笔前不动）。`shared/`、根配置、`package.json`、`.nvmrc`、`.github/`、CI 配置、`web/src/components/`、别人的 view、`server/` —— 一律只读。越界文件 GitHub 会自动把所有者加成必需 Reviewer，所以越界不是「被骂」而是「合不进去」。
 
 ## 二、FE-A 专属禁止项（在 COLLAB.md §5 固定禁止项之上追加）
 
@@ -18,7 +18,7 @@
   立即停止编码，输出一段「接口变更申请」文字交给我，由我提给 BE-A 走附录 C 流程。
   依据：API.md 附录 C.5「AI Agent 无权发起变更」。
 - 禁止自创错误处理形态：失败只认 §1 的单一 error 对象，成功只认直返业务对象，
-  解包逻辑已存在于 web/src/api/client.ts（归属确定前不得自行创建该文件）。
+  解包逻辑应集中在 web/src/api/client.ts；该目录是 FE-A + FE-B 共担、主笔未定（评审单 C2），**定主笔之前不要创建或修改该文件**。
 - 禁止在页面里硬编码：身高/体重/年龄校验范围、餐段枚举、忌口选项。
   前三者应从 shared/constants.ts 导入；忌口选项必须运行时取 GET /menu 的 avoid_options。
 - 禁止新增依赖（含 devDependency）。需要库 → 停下来问 BE-B，由 BE-B 统一评估。
@@ -41,7 +41,7 @@
 <粘贴 shared/types.ts 相关段落；shared/ 未就绪时粘贴 docs/API.md 对应端点整段>
 补充上下文：<粘贴 fe-a/CONTRACT-NOTES.md 对应小节>
 
-范围：只允许修改 <目录，例：web/src/views/onboarding/>，不改其他任何文件。
+范围：只允许修改 <目录，例：web/src/views/profile/（CODEOWNERS 已给我的是 profile / goal / recommend 三个）>，不改其他任何文件。
 禁止：新增依赖；改 shared/；改接口结构；自定义错误格式；写营养计算公式；
       硬编码校验范围与枚举；实现未决交互（B1/B2/B3/Y2/Y5）。
 完成标准：<验收命令，例：npm run lint && npm run typecheck && npm run test> 通过；
@@ -68,8 +68,22 @@
 - Agent 需要 `shared/` 里的类型但 `shared/` 还没建 → 这是上游依赖未到，回来找我按依赖表推进，不要就地手写类型「先跑起来」。
 - Agent 建议装个新库来解决 → 问 BE-B。
 
-## 六、变更记录
+## 六、PR 必须附的「AI Agent 使用声明」（`.github/PULL_REQUEST_TEMPLATE.md` 新增硬性段落）
+
+模板要求每个 PR 勾这四项，其中最后一项是**给你自己填的**，不是给 Agent 填的：
+
+```
+- [x] 本次任务给 Agent 的提示词附带了契约上下文（API.md 段落或 shared/ 类型）
+- [x] Agent 产出的代码我已逐字段核对过字段名（对照 API.md / shared 类型）
+- [x] Agent 未新增依赖、未修改接口结构
+- 使用的 Agent / 模型：<如实填写>
+```
+
+FE-A 的执行方式：每次开工就把本文件第三节模板整段贴给 Agent，PR 时把用了什么模型如实写进声明。这条不是形式 —— TEAM.md §3.4 把它归到「不可砍项」，而且出问题时「是模型能力问题还是契约理解问题」只能靠这行判断。
+
+## 七、变更记录
 
 | 日期 | 变更 |
 |---|---|
-| 2026-11-06 | 首版，含 9 条 FE-A 专属禁止项 + 4 张字段核对表 |
+| 2026-11-06 | 首版：三条铁律 + 9 条 FE-A 专属禁止项 + 字段核对表 + 停手判据 |
+| 2026-11-06 | 同步 `origin/main` `1275782`：目录改为 CODEOWNERS 实际路径（profile/goal/recommend）；`web/src/api/` 由待认领改为共担；新增第六节 PR 的 Agent 使用声明要求 |
