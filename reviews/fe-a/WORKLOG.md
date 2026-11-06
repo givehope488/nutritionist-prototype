@@ -492,3 +492,11 @@ curl -s -H "Authorization: Bearer <owner token>" \
 ### 13.3 交接包最终对齐
 
 7 条 patch（现随本节 +1）、bundle（tip 与远端一致，`bundle verify` okay）、Desktop zip 重新打包；离线复现判据同 §11.6，即临时克隆 checkout `1275782` 后 `git am` 全序列，`git diff --stat HEAD <远端tip> -- reviews/fe-a` 输出为空。
+
+### 13.4 更正 §13.1 的 `mergeable_state`（新增于同晚，写完后复查发现的）
+
+push 本节之后的同一次回读里，`mergeable_state` 从 `blocked` 变成了 `unknown` —— GitHub 每次新 commit 都会重算 merge 状态，`unknown` 就是「还在算」。所以 §13.1 里那句「是 `blocked` 而不是 `clean`/`behind`，说明仓库有合并前置要求」**证据强度被我写高了**：那只是一个瞬时值，不能当结论用。
+
+真正站得住的只有一条，而且它不随重算变化：`requested_reviewers = 0`，而 CODEOWNERS 内容确实是 `@be-a/@fe-a/…` 字面占位符（`git show origin/main:.github/CODEOWNERS` 可复现）。C1 的判断据此成立，无需依赖 `mergeable_state`。查 branch protection 的那条 curl 仍然要做，但它的目的从「证实 blocked」降为「查清合并前置到底是哪一条」。
+
+顺手把这条也立成规矩：**只观测到一次的瞬时字段值，要写就写明时间戳和「未复查」**，别让它长成结论。本轮最终核验值：PR #1 open、8 commits、+894/−0、4 files、head `d5fa8ed`、回读 body 与我提交的 JSON 逐字一致；本地 `git status --porcelain` 为空。
