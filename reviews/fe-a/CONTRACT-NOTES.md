@@ -2,7 +2,8 @@
 
 > 来源：`docs/API.md` v1.1（唯一事实源）。本文件是 FE-A 三页的字段绑定基准，也是给 Agent 喂的「契约上下文」裁剪件。
 > 维护规则：本文件**只做摘录与映射，不新增字段**。API.md 变了先改 API.md（走附录 C），再同步这里。
-> 更新日期：2026-11-06（W1）
+> 代码侧镜像：`shared/src/types.ts`（其文件头自述「由 docs/API.md v1.1 逐字段固化」，但契约正文仍是 API.md——两者已出现差异 F1/F2，见评审单复核增补）。
+> 更新日期：2026-11-06（W1；晚复核 `origin/main` @ `496c1ef`，§5 重写 + §5.1 新增实测样本）
 
 ## 0. 全局约束（每页都适用，逐条抄自契约）
 
@@ -11,7 +12,7 @@
 | 前端不做任何营养计算（BMR / 目标 / 评分 / 判定），只提交输入、渲染响应 | API.md §0.1；ARCH D1 | 页面里禁止出现公式；数值一律取服务端响应字段 |
 | 字段 snake_case，枚举值小写 | §0.3 | 绑定时逐字段比对拼写，不驼峰化 |
 | 单位：kcal / g / mg / cm / kg / 元（1 位小数） | §0.4 | 展示层加单位后缀，不做单位换算 |
-| 类型只能从 `shared/` 导入，禁止在 view 里手写同名 interface | COLLAB 防线 1 | `import type { Dish } from 'shared/types'`；`shared/` 未就绪前，本任务不开工 |
+| 类型只能从 `@canteen/shared` 导入，禁止在 view 里手写同名 interface | COLLAB 防线 1 | `import type { Dish } from '@canteen/shared'`；`shared/` 已随 PR #2 就绪（npm workspaces 包名 `@canteen/shared`），本任务可开工 |
 | 成功 2xx 直返业务对象；失败 4xx/5xx 返单一 `error`；解包只在 `web/src/api/client.ts` 一处 | §0.8 | view 只见 `ApiResult<T>` 的两种形态，不判 `res.data` |
 | `session_id` 前端首次生成 UUID 存 localStorage，透传所有需身份接口 | §0.6 | **归属未定，见评审单流程问题一节**，未认领前不写这个 util |
 | 忌口过滤后无解不是错误：200 + 空 `combos[]` + `notice` | §1 注 | 空态是正常分支，按 W3 要求做引导（引导强度依赖 Y3 结论） |
@@ -24,14 +25,14 @@
 | 字段 | 类型 | 取值 / 范围（§2.2 校验规则） | 控件 | 备注 |
 |---|---|---|---|---|
 | `session_id` | string | 首次生成的 UUID | 无（自动） | 不展示给用户 |
-| `sex` | string | `male` / `female` | 单选 | 枚举表见 §2.2 之外的空白，Y7 |
-| `height_cm` | number | 140~210 | 数字输入 | 范围应从 `shared/` 常量导入（G1），勿硬编码 |
+| `sex` | string | `male` / `female` | 单选 | 枚举已固化在 `@canteen/shared` 的 `Sex`（Y7 部分落地；API.md 仍缺枚举表） |
+| `height_cm` | number | 140~210 | 数字输入 | 范围应从 `@canteen/shared` 的 `PROFILE_BOUNDS` 导入（G1 部分落地），勿硬编码 |
 | `weight_kg` | number | 35~150 | 数字输入 | 同上 |
-| `age` | number | 14~70 | 数字输入 | 同上；`<18` 触发目标联动 |
+| `age` | number | 14~70 | 数字输入 | 同上；`<18` 触发目标联动（`MINOR_AGE=18` 也在 shared） |
 | `activity` | string | `low` / `mid` / `high` | 三选 | 展示名与值的映射放页面，值不本地化 |
 | `goal` | string | `health` / `lose` / `gain` | 三选 | `age<18` 时 `lose` 禁用 |
-| `avoid` | string[] | 取自 `GET /menu` 的 `avoid_options[].key` | 多选 | 选项**不得**本地硬编码（§2.1 设计意图）；语义依赖 B2 |
-| `default_meal` | string | 示例 `lunch`；枚举待明文（Y7） | 三选 | 推荐页默认餐段 |
+| `avoid` | string[] | 取自 `GET /menu` 的 `avoid_options[].key` | 多选 | 选项**不得**本地硬编码（§2.1 设计意图）；语义依赖 B2；实测 8 个 key（§5.1），**无 `vegan`**、素食 key 是 `nomeat`（F1） |
+| `default_meal` | string | `breakfast` / `lunch` / `dinner`（`Meal` 已固化在 shared，Y7 部分落地） | 三选 | 推荐页默认餐段 |
 
 响应字段（FE-A 渲染侧，含服务端派生值）：`session_id`、回显的全部请求字段、`bmi`、`bmi_tag`、`day_kcal`、`warnings[]`。
 
@@ -45,7 +46,7 @@
 ## 2. 目标与忌口页（同一份档案的第二个入口）
 
 - 数据源：`GET /api/v1/profiles/me` 回显 → 编辑 → `POST /api/v1/profiles`（upsert，无需区分新建/更新）。
-- 忌口选项唯一来源：`GET /api/v1/menu?meal=<默认餐段>` 的 `avoid_options[]`（`key` / `label` / `excludes_tag`）。
+- 忌口选项唯一来源：`GET /api/v1/menu?meal=<默认餐段>` 的 `avoid_options[]`（`key` / `label` / `excludes_tag`，即 shared 的 `AvoidOption`；`excludes_tag` 目前仍是单值，B2 待 BE-A 结论）。实测 8 条清单见 §5.1。
 - 页面不得自己判断「选了这些忌口还有没有解」——那是服务端推荐时才知道的事（§1 注 + B2/B3）。
 - 未成年联动：`age` 改动即时影响 `goal` 可选项；**这是 UI 可用性约束，不是营养计算**，可以放前端；一旦服务端返回 `goal` 与用户所选不同，以服务端值为准并展示 `warnings`。
 
@@ -68,7 +69,7 @@
 | 字段 | 渲染 | 状态 |
 |---|---|---|
 | `id` | 不展示；跳转回填页时作为 `adopted_combo_id` 传递 | 有效期 24h，交接方式见 Y4 |
-| `dishes[]`（`id/name/category/portion_label/servings/kcal/protein_g/fat_g/carbs_g/sodium_mg`） | 卡片行 | 槽位排版**依赖 B3 结论**，暂按 `category` 排序渲染 |
+| `dishes[]`（= shared 的 `ComboDish`：`id/name/category/portion_label/servings/kcal/protein_g/fat_g/carbs_g/sodium_mg`） | 卡片行 | 槽位排版**依赖 B3 结论**，暂按 `category` 排序渲染 |
 | `totals` | 宏量条实际值（与 `target` 同轴对比） | 缺价格合计，见 G2 |
 | `reason` | 理由文案 | 服务端生成，**不得截断改写**（V1~V5 校验在服务端，ARCH §4.2） |
 | `engine` | 小字标记 `template` / `llm` | 如实展示，不自行猜测；LLM 层已整体后移出 3 周计划（TEAM v1.2 §3.4），首版实际恒为 `template` |
@@ -104,20 +105,40 @@ web/src/views/recommend/   推荐
 
 ## 5. 上游依赖清单（v1.2 压缩为 3 周后，W2 周二就要对接真实 API）
 
-| 依赖 | 负责人 | TEAM.md 出处 | 当前状态（2026-11-06，已核对 `origin/main` @ `1275782`） |
-|---|---|---|---|
-| `shared/types.ts` + `shared/constants.ts` | BE-B | W1 共享类型包 | **文件树里没有 `shared/`** |
-| Mock API（按契约返假数据） | BE-B | W1 Mock API | 不存在；FE-A 无法脱离后端开发 |
-| `VITE_API_BASE` 切换机制 | BE-B | COLLAB 防线 4 | 不存在（无 `web/`、无 `package.json`） |
-| 前端脚手架 + 设计系统组件 | FE-B | W1 前端脚手架 | 不存在 |
-| CI 三件套 + lint 规范 | BE-B | W1 仓库脚手架；§3.4 **不可砍项** | 无 workflow 文件（`.github/` 只有 CODEOWNERS 与 PR 模板） |
-| `.nvmrc` | BE-B | COLLAB 防线 3，CODEOWNERS 已列为 BE-B 所有 | **不存在** → 我本机 v26.13.0 属自便，需对齐 |
-| B1 / B2 / B3 契约结论 | BE-A | W1 接口冻结 | 待本次评审答复 |
-| Y5 可信度展示矩阵 | PD | 合规自查在 **W3**，但卡片设计 W2 末就要用 → 需提前 | 待 PD |
-| CODEOWNERS 占位符替换为真实用户名 | BE-B | 防线 2 的平台强制前提 | 仍是 `@fe-a` 式占位符（评审单 C1） |
-| Node 环境 | FE-A 本机自装 | COLLAB 防线 3 | 已装 v26.13.0 + npm 11.20.0 |
+> 2026-11-06 晚复核重写：基准 `origin/main` @ `496c1ef`（本单 PR #1 合入 + BE-B 脚手架/shared/CI 三件套 PR + COLLAB 防线 7 PR + PD 种子 v2 PR）。凡「已就绪」项均经过**本地实跑**，命令与输出见 WORKLOG §14。
 
-TEAM.md v1.2 §4.1 的原话是「W1 是全局瓶颈：接口冻结、`shared/`、Mock API 三样任何一样晚一天，五个人全部原地等待」。从 FE-A 侧看，这三样现在**一样都没有**，且 §4.4 写明「3 周无缓冲：预计延期 >2 天当天亮红」。所以我按 §4.4 的口径，把这条依赖缺失当作需要当天亮红的项，而不是自己等。
+| 依赖 | 负责人 | 出处 | 当前状态（2026-11-06 晚，`496c1ef` + 本地实测） |
+|---|---|---|---|
+| `@canteen/shared`（types + constants） | BE-B | W1 共享类型包 | **已就绪**（PR #2）：npm workspaces 包，`shared/src/types.ts`（`Dish` / `AvoidOption` / `Profile` / `Combo` / `ApiResult<T>` 等）+ `shared/src/constants.ts`（`API_PREFIX` / `PROFILE_BOUNDS` / `MINOR_AGE` / `ERROR_STATUS` / `SESSION_HEADER`）。**导入名是 `@canteen/shared`，不是 `shared/`** |
+| Mock API | BE-B | W1 Mock API | 无独立 Mock；改为**真实服务端可直接本地起**（`npm run dev`，Express，端口 8787）。目前只实现 `GET /api/v1/menu` + `/healthz`，其余端点未实现（404）。实测 /menu 见 §5.1 |
+| `VITE_API_BASE` 切换机制 | BE-B | COLLAB 防线 4 | **仍缺**：仓库无 `web/` 目录、无 Vite 脚手架（C4 只结了后端半边） |
+| 前端脚手架 + 设计系统组件 | FE-B | W1 前端脚手架 | **仍缺**：`web/` 未建 |
+| CI 三件套 + lint 规范 | BE-B | W1 仓库脚手架；§3.4 不可砍项 | **已就绪**（PR #2）：`.github/workflows/ci.yml` 三个 job（lint / typecheck / test），Node 22（`node-version-file: .nvmrc`），全绿。我本机 Node 26 复跑 `lint/typecheck/test/check:data` 全部 exit 0，与 CI 无版本分歧 |
+| `.nvmrc` | BE-B | COLLAB 防线 3 | **已就绪**：`.nvmrc` = 22，根 `package.json` `engines.node >=22`。本机 v26.13.0 实测通过 |
+| smoke / e2e / seed 脚本 | BE-B | COLLAB 防线 3/4 + DoD 第 1 条 | **仍缺**：根 scripts 只有 `lint/typecheck/test/check:data/dev/start`（评审单 F3） |
+| B1 / B2 / B3 契约结论 | BE-A | W1 接口冻结 | **仍全开**。B2 的种子证据已由 PD 修复（s11/s12/s13 补标 `meat`），但 `excludes_tag` 单值结构、`vegan` vs `nomeat`（F1）未定 |
+| Y5 可信度展示矩阵 | PD | 合规自查 W3，卡片设计 W2 末就要用 | **仍待 PD**。种子 v2 已把份量标签全改为「1 份/1 个/半份」类（F2 的代码半边），PD 数据审计提出 `portion_grams?` 仅 A 级下发的 API v1.2 提案 |
+| CODEOWNERS 实名 | BE-B | 防线 2 | **已结案**（C1）：BE-A `pigQAQ` / BE-B `yangelect` / FE-A `Aredjdhd` / FE-B `wyf-111` / PD `givehope488`；`/reviews/ @givehope488` → **我改 review 文档需 PD 批准**；`* @yangelect` 兜底（yangelect 尚无写权限，已提请 BE-B 处理） |
+| Node 环境 | FE-A 本机 | COLLAB 防线 3 | v26.13.0 + npm 11.20.0，四命令实测全绿 |
+
+TEAM.md v1.2 §4.1 的「W1 三样瓶颈」（接口冻结、`shared/`、Mock API）：`shared/` 与 CI/`.nvmrc` 已随 PR #2 落地，只剩**接口冻结结论**（B1/B2/B3）未动。当前真正的缺口换成：`web/` 脚手架 + `VITE_API_BASE`、smoke/e2e/seed、以及真实服务端只有 `/menu` 一个业务端点。按 §4.4 口径，缺口项保持亮红，不等不猜。
+
+### 5.1 实测样本：真实服务端 `GET /api/v1/menu`（2026-11-06 晚，本机 Node 26 实跑，非 Mock）
+
+- 起服务：`npm run start -w @canteen/server`（Express，端口 8787）。`GET /api/v1/menu?meal=lunch` → **200**，`dishes` 41 道、`avoid_options` 8 条；`GET /api/v1/menu?meal=brunch` → **400**，实测包络（已落文件）：
+
+```json
+{"error":{"code":"VALIDATION_ERROR","message":"meal 取值须为 breakfast / lunch / dinner","fields":[{"path":"meal","issue":"取值非法"}]}}
+```
+- 单条 dish 真实响应（注意与 API.md v1.1 示例的差异，标注 F1/F2）：
+
+```json
+{"id":"s01","name":"白米饭","category":"staple","portion_label":"1 份","meals":["lunch","dinner"],"kcal":232,"protein_g":4.4,"fat_g":0.6,"carbs_g":51.6,"sodium_mg":2,"price_yuan":1,"tags":[],"drink":false,"reliability":"B","status":"active"}
+```
+
+- 与契约 v1.1 的两处代码侧差异（评审单 F1/F2）：`portion_label` 现在是「1 份/1 个/半份」等，**没有克重/毫升**（v1.1 示例是 `"200g"`；`server/test/app.test.ts:107` 断言份量标签不得匹配克重正则）；`vegan` 这个 key **不存在**，素食 key 是 `nomeat`（v1.1 §2.3 示例写的是 `vegan`，前端若照契约写会拿 400）。
+- `avoid_options` 实测 8 条（`key` → `label` / `excludes_tag`，**每 key 单 tag，B2 结构未变**）：`nospicy` 不吃辣/`spicy`、`nopork` 不吃猪肉/`pork`、`nobeef` 不吃牛肉/`beef`、`noseafood` 不吃海鲜/`seafood`、`noegg` 不吃鸡蛋/`egg`、`nomilk` 不吃奶制品/`milk`、`nopeanut` 不吃花生/`peanut`、`nomeat` 素食/`meat`。
+- 份量标签枚举（种子 v2 实测）：`1 份 / 1 碗 / 1 个 / 1 只 / 1 根 / 半份`；`reliability` 全部 55 道 = `B`（Y5 展示矩阵未出前，按团队合规边界处理克重展示，见评审单 Y5）。
 
 ## 6. 变更记录
 
@@ -125,3 +146,4 @@ TEAM.md v1.2 §4.1 的原话是「W1 是全局瓶颈：接口冻结、`shared/`�
 |---|---|---|
 | 2026-11-06 | 首版，基于 API.md v1.1 摘录；标注 7 处待澄清依赖 | W1 接口评审 |
 | 2026-11-06 | 同步 `origin/main` `1275782`：页面路径改为 CODEOWNERS 的 `profile/goal/recommend`；`web/src/api/` 由「待认领」改为「FE-A+FE-B 共担」；依赖表按 3 周计划与 `.nvmrc`/CI 实况更新；集成点由周五改为 W2 周三 | TEAM.md v1.2 + CODEOWNERS 落地 |
+| 2026-11-06 | 复核 `origin/main` `496c1ef`：§0/§1/§2/§3 导入路径与类型名对齐 `@canteen/shared`（含 `PROFILE_BOUNDS`/`MINOR_AGE`）；§5 依赖表按 PR #2 实况重写（shared/CI/.nvmrc 已就绪，web/、smoke/e2e/seed、接口结论仍缺）；新增 §5.1 真实服务端 `/menu` 实测样本（含 F1 `vegan`→`nomeat`、F2 份量标签两处契约-代码差异） | main 前移 4 个 PR + 本机实跑服务端 |
