@@ -1,35 +1,48 @@
 # 目录所有权（GitHub CODEOWNERS）
 # 作用：改动越界目录时，GitHub 会自动把对应所有者加成必需 Reviewer，
 # 让「只改自己目录」这条规则由平台强制，而不是靠人记。
-# 用法：把下面的 @占位符 替换成各成员的 GitHub 用户名。
+#
+# 维护人：BE-B（.github/ 归 BE-B）。新增目录时同步这里。用户名对应关系：
+#   BE-A = pigQAQ   BE-B = yangelect   FE-A = Aredjdhd   FE-B = wyf-111   PD = givehope488
 
 # 默认兜底：任何未明确归属的文件都要 BE-B 过目
-*                                   @be-b
+*                                   @yangelect
 
 # ---- 共享契约（绝不允许多人随意改）----
-/shared/                            @be-b
-/docs/API.md                        @be-a
-/docs/ARCHITECTURE.md               @be-b
-/package.json                       @be-b
-/.github/                           @be-b
-/.nvmrc                             @be-b
+/shared/                            @yangelect
+/package.json                       @yangelect
+/package-lock.json                  @yangelect
+/tsconfig.base.json                 @yangelect
+/eslint.config.mjs                  @yangelect
+/.nvmrc                             @yangelect
+/.github/                           @yangelect
+
+# ---- 文档（TEAM.md §5.5 文档维护责任）----
+/docs/API.md                        @pigQAQ
+/docs/ARCHITECTURE.md               @yangelect
+/docs/COLLAB.md                     @yangelect
+/docs/TEAM.md                       @givehope488
+/README.md                          @givehope488
+/reviews/                           @givehope488
 
 # ---- 前端 ----
-/web/src/views/profile/             @fe-a
-/web/src/views/goal/                @fe-a
-/web/src/views/recommend/           @fe-a
-/web/src/api/                       @fe-a @fe-b
-/web/src/views/log/                 @fe-b
-/web/src/views/feedback/            @fe-b
-/web/src/views/history/             @fe-b
-/web/src/components/                @fe-b
+/web/src/views/profile/             @Aredjdhd
+/web/src/views/goal/                @Aredjdhd
+/web/src/views/recommend/           @Aredjdhd
+/web/src/api/                       @Aredjdhd @wyf-111
+/web/src/views/log/                 @wyf-111
+/web/src/views/feedback/            @wyf-111
+/web/src/views/history/             @wyf-111
+/web/src/components/                @wyf-111
 
 # ---- 后端 ----
-/server/src/engines/                @be-a
-/server/src/services/               @be-b
-/server/src/llm/                    @be-b
-/server/src/admin/                  @be-b
-/server/src/routes/                 @be-b
+/server/src/engines/                @pigQAQ
+/server/src/services/               @yangelect
+/server/src/llm/                    @yangelect
+/server/src/admin/                  @yangelect
+/server/src/routes/                 @yangelect
+/server/src/http/                   @yangelect
+/server/test/                       @yangelect
 
 # ---- 数据 ----
-/server/data/                       @pd
+/server/data/                       @givehope488
