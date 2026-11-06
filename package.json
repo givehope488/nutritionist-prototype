@@ -1,0 +1,27 @@
+{
+  "name": "canteen-nutritionist",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "食堂营养师 —— 团队版（前后端分离）",
+  "engines": {
+    "node": ">=22"
+  },
+  "workspaces": [
+    "shared",
+    "server"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "dev": "npm run dev -w @canteen/server",
+    "start": "npm run start -w @canteen/server"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.14.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.1"
+  }
+}
