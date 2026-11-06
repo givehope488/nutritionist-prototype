@@ -448,3 +448,47 @@ MSYS2_ARG_CONV_EXCL='*' git show origin/main:.github/CODEOWNERS | head -30
 - `mergeable_state=unknown` 是 GitHub 刚建完还没算完 merge 状态，不是冲突；无 CI 所以也不会有 check 结果；
 - 本节 commit 会作为第 7 个 commit 进入 pull/1（PR 跟着分支自动更新，这是 §11.6 那条 tip 漂移说明的具体样子）；
 - Desktop 的 zip 与 `fe-a/handoff/` 本节写完后再刷新一次，判据同 §11.6。
+
+## 13. 2026-11-06 晚：PR 描述里自己踩的「写死数字」坑 + PATCH 修正
+
+§12 的 commit 推上去之后，`pull/1` 变成 7 个 commit，而**我提交进 PR 正文第一行写的是「tip `c8eb3a4`，6 个 commit，+792 行」** —— 描述当场过期，是我自己一分钟前刚在 §11.6 提醒过的那个毛病（绝对值会随追加节漂移）。整份评审单都在讲契约要可核对，结果自己的 PR 头一句就核不上，这是真错，不是巧合。
+
+修法不是把数字改成 7 —— 那只会再过期一次。改成不随时间失效的**判据**：
+
+> commit 数与 tip 不写死；判据恒为一条 —— `git diff --stat origin/main..feat/fe-a-api-review-w1` 只含 `reviews/fe-a/` 4 个文档、只有新增行、无删除、无越界文件。
+
+```
+perl /tmp/mkpayload.pl（正文从 PR.md 的 `---` 之后取，头一行换成上面这句）
+  → payload_bytes=8685 body_chars=4811 lines=103 has_FFFFD=no
+PATCH /repos/givehope488/nutritionist-prototype/pulls/1   → patch_http=200
+GET  /pulls/1（回读）                                    → body identical: YES
+  state=open draft=0 commits=7 +850/-0 files=4 requested_reviewers=0
+  mergeable_state=blocked   updated=2026-11-06T05:04:33Z
+```
+
+标题、base/head、正文其余 9 段一字未动（`body identical` 是拿提交前的 JSON 与回读的 JSON 直接字符串比较，不是我目测）。
+
+### 13.1 新观测：`mergeable_state=blocked` 且 `requested_reviewers=0`
+
+两条一起看才有意义，且它们互证 §12.4 的结论：仓库对 PR 有合并前置要求（所以是 `blocked` 而不是 `clean`/`behind`），但 GitHub **一个 Reviewer 都没请求到**，因为 CODEOWNERS 里 `@be-a/@fe-a/@fe-b/@be-b/@pd` 是字面占位符、解析不到真实账号。也就是说 C1 不替换的后果不只是「规范不好看」，而是**这个 PR 在平台上永远处于「等一个等不到的必需评审」状态**。
+
+需要说清的边界：`blocked` 的具体触发项（是 branch protection 的 required review，还是 code-owner 规则，还是 required status check）我没有权限查 —— `GET /repos/.../branches/main/protection` 需要 admin 权限，owner 是 `givehope488`。所以「blocked 由 CODEOWNERS 占位符导致」是**推断**（依据是 0 个 reviewer 被请求 + 文件内容确实是占位符），不是实测；请 BE-B 或 owner 用一条命令定性：
+
+```
+curl -s -H "Authorization: Bearer <owner token>" \
+  https://api.github.com/repos/givehope488/nutritionist-prototype/branches/main/protection
+```
+
+### 13.2 我这轮做的写操作清单（可核对，无遗漏）
+
+| # | 操作 | 对象 | 结果 |
+|---|---|---|---|
+| 1 | `git push` ×3 | `refs/heads/feat/fe-a-api-review-w1` | 200，tip 现 `4ca45b7`→本节 commit 后前移 |
+| 2 | `POST /pulls` | 新建 `pull/1` | 201 |
+| 3 | `PATCH /pulls/1` | 改 `pull/1` 正文首行 | 200 |
+
+**没有做过**：merge、加 comment、@ 任何人、设 Reviewer、加 label、动 `main`、动别人目录。授权范围是「开 PR」，我没有把它扩张成「替团队走完评审」。
+
+### 13.3 交接包最终对齐
+
+7 条 patch（现随本节 +1）、bundle（tip 与远端一致，`bundle verify` okay）、Desktop zip 重新打包；离线复现判据同 §11.6，即临时克隆 checkout `1275782` 后 `git am` 全序列，`git diff --stat HEAD <远端tip> -- reviews/fe-a` 输出为空。
