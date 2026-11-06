@@ -677,3 +677,46 @@ GET /pulls/16（回读）：
 - **为什么 §15.6 的回读没拦住**：字节级「提交 == 回读」只证明两处一致，双编码本身是自洽的；一致性检查不能替代正确性检查。→ 自检补两条：①固定中文子串必须命中；②双编码特征串（如 `C3 A4 C2 B8 C2 89`）计数必须为 0。
 - **修复**：重写 payload（`use utf8` 处理标题字面量 + `decode('UTF-8', $raw, FB_CROAK)` 读正文 + `JSON::PP->new->utf8->encode` 只编一次），`PATCH /pulls/16` → **200**。回读：标题「reviews: FE-A 三轮复核——对 API v1.2.1 签字（B1/B2/B3/Y5 全部结案）」，正文 3200 字、`mojibake_pairs=0`，首段为新增的一行编码说明（处置方式与 PR #5 一致）。
 - **不可撤回项**：已发出的 GitHub 通知邮件无法撤回；修正后重新触发一次 review request（先 DELETE 再 POST `requested_reviewers`），让收件人收到干净标题的通知。以后含中文的提交一律 `git commit -F <UTF-8 文件>`，不再经 shell 命令行拼中文。
+
+## 16. 2026-11-06 晚：推进 W1 交付 #1（client.ts 解包单测）
+
+### 16.1 远端复查（`origin/main` = `be2c1b0`）
+
+- main 再前移 1 个 PR：#15「分工表按今天实际进展改写」——只动 `docs/PROGRESS.md` 与 `.github/progress-pd.sha256`。要点：BE-B 的「定前端怎么装」已由 PR #12 落地（独立安装），他 W0 改为提前起 SQLite/seed；FE-B 从「等 BE-B」改为「改 PR #6 那 3 处」，六条全部无依赖。**FE-A 的 W1 三件交付不变**，无新增阻塞。
+- 开放 PR 复核：`GET /pulls?state=open` → #16（本评审单，head `feat/fe-a-review-v3`）、#6（FE-B web，head `feat/fe-b-web`，updated 11:28Z）。#6 仍未合入，`web/` 只存在于它的分支上。
+
+### 16.2 W1 交付 #1：client.ts 4 类解包单测 + 1 个真缺陷
+
+- 现状：`web/src/api/client.ts` 已由 FE-B 在 #6 中实现（解包 + `transportError`），但无单测；且 fetch 分支 `payload = res.ok ? await res.json().catch(() => null) : …` 让 **2xx 非 JSON** 返回 `{ ok: true, data: null }`，业务层会把 `null` 当业务对象。
+- 分支 `feat/fe-a-client-tests`：从 `origin/feat/fe-b-web`（`08be145`）切出，只改 2 个文件：
+  - 新增 `web/src/tests/unit/client.test.ts`：5 个用例（200 直返 / 400 转 error 带 fields / 非 JSON 2xx / fetch 拒绝 / 非 JSON 5xx）。用 `vi.stubEnv` + `vi.resetModules()` 切真实传输模式，用 `vi.stubGlobal('fetch')` 造非 JSON 与断网。
+  - `client.ts`：解析失败置 `parseFailed`，按 §1 收敛为 `INTERNAL`（2xx → 「响应格式不符合接口协定」；5xx → 「服务暂时不可用」），不再把 `null` 当成功。
+- 未改：错误码集合（无新增）、`ApiResult` 形态、`endpoints.ts`、mock、`views/`。
+
+### 16.3 本地实测（Node v26.13.0，`web/` 独立安装）
+
+```
+cd web
+npm ci             → exit 0（250 packages）
+npx vitest run src/tests/unit/client.test.ts → 5 passed
+npm run lint       → exit 0
+npm run typecheck  → exit 0
+npm run test       → 7 files / 52 tests passed
+```
+
+### 16.4 PR #17（叠加在 #6 上）
+
+```
+POST /pulls → 201  number=17  head=feat/fe-a-client-tests  base=feat/fe-b-web
+回读：title 正确；body 2018 字、mojibake_pairs=0；requested_reviewers=wyf-111（/web/ CODEOWNERS 自动请求）
+CI（head 849e134）：lint / typecheck / test 三个 job 全 success
+```
+
+- base 选 `feat/fe-b-web` 而非 `main`：#6 未合入前，对 main 开 PR 会把 FE-B 的 9467 行算进来。**#6 合入后我会把 base 转 `main` 并 rebase**，本 PR 始终只含 2 个文件。
+- 未改 `/reviews/` 内的任何评审结论；本 PR 不请求 PD。
+
+### 16.5 下一步（W1 剩余）
+
+- 建档页 + 目标页：`web/src/views/profile/`、`web/src/views/goal/`（依赖 #6 合入，或继续做叠加分支）
+- 推荐页：`web/src/views/recommend/`（3 套卡片、换一批=重新请求、无解 notice）
+- 两页均须消费 `@canteen/shared` 类型与 `client.ts`，禁止页面内公式/硬编码枚举。
