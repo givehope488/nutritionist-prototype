@@ -202,16 +202,34 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 | 2026-11-06 | `6781916` + `32c5c66` docs: 本开发记录 | 记录决策 / 议题 / 踩坑 / 验收证据 | — |
 | 2026-11-06 | 拉取 `origin/main` → `1275782`（TEAM v1.2 三周排期 + CODEOWNERS + PR 模板 + API.md 管理端说明） | 本地 main 原落后 1 个提交；`git merge --ff-only` 更新 main 后把本分支 rebase 到新 main | 决策 B10/B11 |
 | 2026-11-06 | `bed3472` web: 三页移入 `log/` `feedback/` `history/` 目录 | 让 CODEOWNERS 的按目录授权真正生效；同步改 `router` 与 e2e 的 import 路径；CI 三件套复跑全绿 | 决策 B10，议题 Q9 |
+| 2026-11-06 | `1524931` docs: 开发记录对齐 TEAM v1.2 | 补决策 B10/B11、议题 Q9、rebase 后的提交号 | 决策 B10/B11 |
+| 2026-11-06 | `746569a` docs: 记录推送认证受阻的根因与一次性授权步骤 | 新增 §11 | 踩坑 P16 |
+| 2026-11-06 | `9e19d0f` docs: 议题与 FE-A 接口评审意见合并对照 | B3/Y4/G3 ↔ Q1/Q3/Q4/Q7 对照块 | §5 |
+| 2026-11-06 | 本笔：§11 补「延后推送」决定与三条已试认证路径 | 记录 device 流在无头会话拿不到验证码、浏览器无 GitHub 会话，及两条被放弃的路子 | 踩坑 P16，§11 |
 
 > **提交号会变**：上表的哈希是 rebase 之后的值。rebase 会重写哈希，所以引用提交号时**先确认分支没再 rebase**；
 > 想知道某段代码的来历，用 `git log --follow -- <路径>` 比记哈希可靠。
 
-分支：`feat/fe-b-web`（已 rebase 到 `origin/main` = `1275782`，工作区干净，10 个提交）。
+分支：`feat/fe-b-web`（已 rebase 到 `origin/main` = `1275782`，工作区干净，13 个提交）。
 远端状态：`main` 与本地一致；`feat/fe-b-web` **尚未推送**——推送卡在认证（踩坑 P16），需本人完成一次交互式授权，步骤见 §11。
 
 ---
 
 ## 11. 推送前置：一次性 GitHub 授权（待本人执行）
+
+**2026-11-06 决定：延后推送**（本人不在电脑旁）。当夜尝试过的三条路都不通，记录在此免得下次重复试：
+
+| 试法 | 结果 |
+|---|---|
+| `git push`（默认 helper） | 挂住无输出——`helper-selector` 弹不可见 GUI（P16） |
+| `GCM_AUTHMODE=device` 直接跑 `git-credential-manager.exe get` | 走到 `Creating new credential...` 后停住，**始终没有吐出一次性验证码**；本机是无头会话，OAuth 授权页起不来 |
+| 内置浏览器打开 `github.com/login/device` | 跳登录页——这台机器的浏览器**没有 GitHub 会话**，不能替本人完成授权 |
+
+放弃的方向及原因：装 GitHub CLI 走 device 流（要往本机塞一个新工具和一份 OAuth token）、
+让本人从手机粘 PAT（密钥经聊天传递）——都不如等回电脑跑一条命令。
+
+**结论：本地分支状态完好（13 个提交、工作区干净、CI 全绿），推送延后到本人回到电脑旁。**
+
 
 Agent 侧无法完成这一步：device 授权流要人在浏览器里输验证码，而本机的 `helper-selector` 弹的是不可见 GUI（P16）。在自己的终端（Git Bash）里执行：
 
