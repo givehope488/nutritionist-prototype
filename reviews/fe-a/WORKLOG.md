@@ -164,3 +164,50 @@ node -v          （在当前工具的 shell 里）→ command not found
 | `git commit` | 暂存完毕，等身份；提交后 push 与开 PR 由 FE-A 本人执行 |
 | CI 三件套 | **无法运行**：仓库无 CI、无 `package.json`、无 `.nvmrc`（BE-B 的 W1 脚手架未落地）。已在 PR 描述「查护栏」一节如实标注，不作为我的 DoD 缺失 |
 | 页面代码 | 未写。上游 `shared/`、Mock API、脚手架均不存在，且 B1/B2/B3 未决 |
+
+## 8. 2026-11-06 仓库权限受阻记录（重要：这是 W1 的未登记依赖）
+
+起因：需要把评审产出推到 `github.com/givehope488/nutritionist-prototype`，但 FE-A 本机没有 GitHub 账号。
+
+实测的认证条件（全部为空，可复现）：
+
+```
+which gh                    → 未安装（GitHub CLI 不存在）
+ls ~/.ssh                   → 目录不存在（无 SSH key）
+git config --get credential.helper → helper-selector（无已存凭据）
+git config --global user.email     → 空（无 git 身份）
+仓库 owner                → givehope488 / zhang san（唯一贡献者，1 人）
+```
+
+结论与处置：
+
+| 事项 | 能不能做 | 原因 |
+|---|---|---|
+| 由 Agent 代注册 GitHub 账号 | **不做** | 注册需真实邮箱验证 + 人机验证 + 本人同意服务条款，属必须由本人完成的动作；自动化注册也违反 GitHub 服务条款 |
+| 由 Agent 直接 push | **不能** | 既无账号也无凭据；且该仓库 owner 是 zhang san，即使有账号，非 collaborator 也只有读权限 |
+| 本地 commit | **已做** | `9f4dfa1`，分支 `feat/fe-a-api-review-w1`。身份临时用 `FE-A <fe-a@users.noreply.github.com>`（未推送，可随时改，命令见下） |
+| 离线交接 | **已做** | 见 §8.2 三个产物 |
+
+### 8.1 提交与改身份（本地已完成，等真人 push）
+
+```
+# 已完成（用 -c 临时身份，没有改动任何 git 配置）
+git -c user.name="FE-A" -c user.email="fe-a@..." commit -m "reviews: ..."
+
+# 若日后拿到真实账号，推送前改成自己的署名（历史未公开，可安全重写）
+git commit --amend --author="你的名字 <你的邮箱>" --no-edit
+```
+
+### 8.2 三条可行路径（按成本排序）
+
+| 路径 | 操作 | 适合 |
+|---|---|---|
+| A. 交给有权限的人 | 把 `handoff/fe-a-api-review.bundle` 发给 BE-A/zhang san，他执行 `git fetch <bundle> main..feat/fe-a-api-review-w1` 后 push | 今天就想让团队看到，零账号成本 |
+| B. 申请 collaborator | 自己花 2 分钟注册账号 → 请 zhang san 在 Settings → Collaborators 邀请 → 我再帮你配 HTTPS 令牌或 SSH key → 正常 push 开 PR | 6 周项目里还要提很多次 PR，推荐尽快走通 |
+| C. Fork + PR | 注册后 fork 到自己名下，push 到 fork，向原仓库发 PR | owner 不方便给权限时 |
+
+### 8.3 要上报的团队问题（不是我个人环境问题）
+
+TEAM.md §5.2 与 COLLAB.md 防线 2/4 整套机制建立在「每人能开 PR、CI 必跑」上，但 W1 的**成员仓库权限发放**在任务表里没有责任人（W1 只有 BE-B 的「仓库脚手架」一项）。FE-A 现在的状态是：产出物已就绪，但没有账号 → 无法提 PR → DoD 第 3/4 条（PR 范围、Reviewer 三查）无法履行。建议在站会/评审会上把「5 人 GitHub 权限 + 提交身份 + 认证方式」补为 W1 的显式任务并指派给 BE-B，否则 W2 的「对接真实 API」会卡在同一个地方。
+
+另：`shared/`、Mock API、CI、`.nvmrc` 均未落地，加上本条权限问题 —— FE-A 侧 W2 开工前的依赖是 4 项而不是 3 项。
