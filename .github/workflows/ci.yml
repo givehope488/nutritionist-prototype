@@ -21,6 +21,15 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run lint
+      # web/ 自带 eslint.config.js，且根配置已排除 web/**，必须单独跑一遍
+      - name: web 依赖
+        if: hashFiles('web/package.json') != ''
+        working-directory: web
+        run: npm ci
+      - name: web 代码检查
+        if: hashFiles('web/package.json') != ''
+        working-directory: web
+        run: npm run lint
 
   typecheck:
     name: typecheck
@@ -33,9 +42,15 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run typecheck
-      - name: typecheck web
+      # web/ 不在根 workspaces 里（自带 Vue 工具链与独立 lock），按独立项目安装后再检查
+      - name: web 依赖
         if: hashFiles('web/package.json') != ''
-        run: npm run typecheck -w web
+        working-directory: web
+        run: npm ci
+      - name: web 类型检查
+        if: hashFiles('web/package.json') != ''
+        working-directory: web
+        run: npm run typecheck
 
   test:
     name: test
@@ -48,7 +63,13 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run check:data
+      - run: npm run check:progress
       - run: npm run test
-      - name: test web
+      - name: web 依赖
         if: hashFiles('web/package.json') != ''
-        run: npm run test -w web
+        working-directory: web
+        run: npm ci
+      - name: web 测试
+        if: hashFiles('web/package.json') != ''
+        working-directory: web
+        run: npm run test

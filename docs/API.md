@@ -1,6 +1,8 @@
 # 接口协定（API Contract）
 
-> 版本 v1.1（2026-11-05），W1 评审冻结。**本文档是前后端并行开发的唯一事实源：先改文档、评审通过、再改代码。** 修改流程见附录 C。开发行为规范见 `docs/COLLAB.md`。
+> 版本 v1.2（2026-11-06），一致性修正版。**本文档是前后端并行开发的唯一事实源：先改文档、评审通过、再改代码。** 修改流程见附录 C。开发行为规范见 `docs/COLLAB.md`。
+>
+> **v1.2 只做「让文档、类型、实现三者对齐」，不含字段结构变更。** 具体改了四处：示例里的 `vegan` 改为实现使用的 `nomeat`、份量示例改为展示用语、新增附录 D 忌口全表、补 `meal` 枚举。B1/B2/B3、Y1~Y4 等结构性议题仍留待 v1.3，不在本版解决。
 
 ## 0. 总则
 
@@ -51,7 +53,7 @@
   "dishes": [
     {
       "id": "s01", "name": "白米饭", "category": "staple",
-      "portion_label": "200g", "meals": ["lunch", "dinner"],
+      "portion_label": "1 份", "meals": ["lunch", "dinner"],
       "kcal": 232, "protein_g": 4.4, "fat_g": 0.6, "carbs_g": 51.6, "sodium_mg": 2,
       "price_yuan": 1.0, "tags": [], "drink": false,
       "reliability": "B", "status": "active"
@@ -64,7 +66,15 @@
 ```
 
 `category` 枚举：`staple` / `protein` / `veg` / `soup` / `fruit`。
+`meal` 与 `default_meal` 枚举：`breakfast` / `lunch` / `dinner`。
+`status` 枚举：`active`（在架）/ `hidden`（下架）。
 `tags` 枚举（忌口过滤依据）：`pork` `beef` `seafood` `egg` `milk` `gluten` `peanut` `spicy` `meat` `vegprotein`。
+
+**份量字段（v1.2 明确）**：`portion_label` 只放展示用语（`1 份` / `1 碗` / `8 只` / `半份`），**不得包含克重数字**。这样「B 级以下不在前端展示精确克重」（README 合规条目 4）才真的成立——`reliability` 为 B / C 的菜品，前端没有克重可展示，也不会被用户误当成精确值。
+
+精确克重存放在内部字段 `portion_grams`，**仅当 `reliability = "A"` 时下发**。`portion_grams`、`ingredients`、`source` 三个字段只存在于数据文件，属于数据治理用途，**不出现在任何 API 响应中**（`server/test/app.test.ts` 有断言守着）。
+
+**忌口选项的全量 key 见附录 D，那是唯一事实源。** 前端不得硬编码，只能渲染 `avoid_options` 返回的列表。
 
 ### 2.2 档案 `POST /api/v1/profiles`（upsert，以 session_id 为键）
 
@@ -100,7 +110,7 @@
 {
   "session_id": "3f2b1c...",
   "meal": "lunch",
-  "overrides": { "goal": "lose", "avoid": ["vegan", "nospicy"] }
+  "overrides": { "goal": "lose", "avoid": ["nomeat", "nospicy"] }
 }
 ```
 
@@ -118,7 +128,7 @@
     {
       "id": "c9f31a02",
       "dishes": [
-        { "id": "s01", "name": "白米饭", "category": "staple", "portion_label": "200g",
+        { "id": "s01", "name": "白米饭", "category": "staple", "portion_label": "1 份",
           "servings": 1, "kcal": 232, "protein_g": 4.4, "fat_g": 0.6, "carbs_g": 51.6, "sodium_mg": 2 }
       ],
       "totals": { "kcal": 736, "protein_g": 32, "fat_g": 17, "carbs_g": 88, "sodium_mg": 1353 },
@@ -228,3 +238,27 @@
 |---|---|---|
 | v1.0 | 2026-11-03 | 首版冻结 |
 | v1.1 | 2026-11-05 | 总则新增 §0.8 统一响应包络（成功直返业务对象、失败单一 error 对象、`ApiResult<T>` 联合类型）；附录 C 补充 Agent 变更限制 |
+| v1.2 | 2026-11-06 | **一致性修正版，无字段结构变更。** §2.3 示例 `vegan` → `nomeat`（实现一直用后者，文档写错）；§2.1 §2.3 份量示例 `200g` → `1 份`，并明确 `portion_label` 禁含克重、`portion_grams` 仅 A 级下发；§2.1 补 `meal` / `status` 枚举；新增附录 D 忌口选项全表（9 项，含新增的 `nogluten`）及其两条硬约束 |
+
+### 附录 D：忌口选项全表（v1.2 新增，唯一事实源）
+
+**本表与 `GET /menu` 返回的 `avoid_options` 必须逐行一致。** `server/test/contract.test.ts` 会解析本表并与实现比对，不一致直接 CI 红。前端不得硬编码，只渲染服务端下发的列表。
+
+| key | label | excludes_tag |
+|---|---|---|
+| `nospicy` | 不吃辣 | `spicy` |
+| `nopork` | 不吃猪肉 | `pork` |
+| `nobeef` | 不吃牛肉 | `beef` |
+| `noseafood` | 不吃海鲜 | `seafood` |
+| `noegg` | 不吃鸡蛋 | `egg` |
+| `nomilk` | 不吃奶制品 | `milk` |
+| `nopeanut` | 不吃花生 | `peanut` |
+| `nogluten` | 不吃麸质（小麦制品） | `gluten` |
+| `nomeat` | 素食 | `meat` |
+
+两条硬约束（`npm run check:data` 与上述测试强制）：
+
+1. **`meat` 是「含动物性食材」的兜底标签。** 任何带 `pork` / `beef` / `seafood` 的菜品必须同时带 `meat`。否则用户勾「素食」时，`excludes_tag: meat` 的过滤会把这盘菜放行——早餐的猪肉包就曾因此被推给素食者。
+2. **新增或改名一个忌口 key，先改本表再改服务端**，两处不一致 CI 直接红。前端 Mock 也必须同步，禁止自造 key（曾有 `vegan` 这个文档里不存在、实现里也不存在的第三种写法）。
+
+> 已知局限：`excludes_tag` 是**单值**，一个 key 只能排除一类标签。所以「素食」排的是 `meat`（含鱼虾），**不代表纯素**——蛋、奶仍会出现在推荐里。纯素（连蛋奶一起排）在现有池子里午餐蛋白质只剩 2 道、汤 0 道，是否支持单独评估，见 v1.3 议题。
