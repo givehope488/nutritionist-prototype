@@ -105,6 +105,9 @@ FE-B 名下目录（CODEOWNERS 口径）：`web/src/views/log|feedback|history/`
 | Q7 | 传输层失败（断网/超时/取消）没有契约错误码 | `api/client.ts:48` 注释 | 前端只能借用 `INTERNAL`，与"服务端异常"混在同一文案桶 | 借 `INTERNAL` + 可操作文案；请评审是否补 `CLIENT_NETWORK_ERROR` |
 | Q8 | 根配置缺 `.nvmrc`，Node 版本未锁 | COLLAB.md 防线 3 要求；CODEOWNERS 已预留 `/.nvmrc @be-b` | 成员 Node 版本不一致时 CI 结果不可复现（本机 v22.23.4，文档示例 v24） | 无权限建根文件，等 BE-B 落 `.nvmrc` |
 | Q9 | CODEOWNERS 未覆盖 `web/src/composables/`、`web/src/utils/`、`web/src/dev/` | `.github/CODEOWNERS`（`1275782` 引入）只列了 views 子目录、`components/`、`api/` | 这三个目录的 PR 会被兜底规则派给 @be-b，FE-B 成了非所有者，Review 链条绕人 | 代码已按现状提交；请 BE-B 补三行归属（建议归 @fe-b） |
+> **与 FE-A 议题合并**（`origin/feat/fe-a-api-review-w1:reviews/fe-a/API-REVIEW.md`，评审时不要开两遍）：
+> FE-A 的 **B3**（combo 槽位结构未下发）= 我的 Q1 + Q4；**Y4**（`combo.id` 过期处置 + 采纳→回填交接路径）= 我的 Q3 + 决策 B3；
+> **G3**（`ApiResult` 边界形态给死）= 我的 Q7。四题同源，建议一次评审定完。
 
 ---
 
