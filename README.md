@@ -27,35 +27,57 @@
 | 数据库 | SQLite（起步）→ PostgreSQL（可平滑迁移） | 用 ORM（如 Drizzle/Prisma）隔离方言 |
 | LLM 文案层 | 可插拔（`template` / `llm`） | 数值全部由代码计算，LLM 仅润色理由文案，输出校验失败自动降级到模板 |
 
-## 快速开始（团队版，脚手架就绪后）
+## 快速开始
 
 ```bash
-# 后端
-cd server && npm install && npm run seed && npm run dev   # http://localhost:8787
+# Node 版本见 .nvmrc（22），依赖由 npm workspaces 统一管理，根目录装一次即可
+npm install
 
-# 前端
-cd web && npm install && npm run dev                      # http://localhost:5173
+# 后端（已实现 /healthz 与 GET /api/v1/menu 两个探针，其余端点按 W2 排期实装）
+npm run dev                       # http://localhost:8787
+
+# 护栏三件套：与 CI 执行的命令完全一致，提交前本地跑一遍
+npm run lint
+npm run typecheck
+npm test
 ```
+
+前端 `web/` 尚未建脚手架（W1 由 FE-B 落地）。建好后在需要时把它加入根 `package.json` 的 `workspaces`，CI 会自动接管它的 lint / typecheck / test（已写好条件判断，无需改 workflow）。
+
+> `npm run seed`（种子写入数据库）随 W2 的 SQLite 落库一并提供，当前后端直接读 `server/data/menu-seed.json`。
 
 ## 目录结构
 
 ```
 canteen-nutritionist/
 ├── README.md               # 本文件
+├── package.json            # 根工作区（workspaces: shared / server），护栏命令入口
+├── tsconfig.base.json      # 共享 TS 配置（strict 全开）
+├── eslint.config.mjs       # 全仓 lint 规则（含"类型必须 import type"约束）
+├── .nvmrc                  # 锁 Node 22
 ├── docs/
 │   ├── ARCHITECTURE.md     # 项目架构文档（模块职责、数据流、LLM 层设计、ADR）
 │   ├── TEAM.md             # 分工安排（角色矩阵、6 周排期、协作机制）
 │   ├── COLLAB.md           # AI 辅助开发协作规约（新手 + Agent 的六条防线）
 │   └── API.md              # 接口协定（端点定义、数据模型、错误码、变更流程）
+├── .github/
+│   ├── CODEOWNERS          # 目录所有权（**仍是 @占位符，须替换为真实 GitHub 用户名**）
+│   └── workflows/ci.yml    # CI 三件套：lint / typecheck / test
 ├── shared/                 # 前后端共享类型与常量（由 API.md 固化，唯一事实源）
+│   └── src/{types,constants}.ts
 ├── server/                 # 后端（Express + TS）
-│   ├── data/menu-seed.json # 菜品种子数据（数据资产起点）
+│   ├── data/menu-seed.json # 菜品种子数据（数据资产起点，只读）
+│   ├── test/               # vitest 契约断言（包络 / 字段 / 错误码）
 │   └── src/
-│       ├── engines/        # 营养计算引擎、推荐引擎（自原型迁移）
-│       ├── services/       # 用户档案、用餐记录、统计
-│       ├── llm/            # 理由生成（template / llm 双引擎 + 校验降级）
-│       └── admin/          # 管理端 API（菜品 CRUD、数据校准）
-└── web/                    # 前端（Vue 3）
+│       ├── app.ts          # createApp：中间件 → 路由 → 404 → 统一错误出口
+│       ├── http/errors.ts  # HttpError + 统一错误包络（禁止各模块自创格式）
+│       ├── routes/         # 端点（当前仅 menu）
+│       ├── data/           # 数据访问（当前读种子，W2 换 SQLite）
+│       ├── engines/        # 营养计算引擎、推荐引擎（自原型迁移）—— 待 BE-A
+│       ├── services/       # 用户档案、用餐记录、统计 —— 待 BE-B
+│       ├── llm/            # 理由生成（template / llm 双引擎 + 校验降级）—— 待 BE-B
+│       └── admin/          # 管理端 API（菜品 CRUD、数据校准）—— 待 BE-B
+└── web/                    # 前端（Vue 3）—— 待 FE-A / FE-B 建脚手架
     └── src/
         ├── views/          # 建档 / 目标 / 推荐 / 回填 / 反馈 / 历史
         └── components/
