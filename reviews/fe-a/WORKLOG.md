@@ -279,3 +279,86 @@ TEAM.md §5.2 与 COLLAB.md 防线 2/4 整套机制建立在「每人能开 PR�
 - 认证仍未打通 → 需重新尝试（改用 run_in_background + 实时日志文件）；
 - 三个 commit 的作者署名仍是占位 `FE-A <fe-a@users.noreply.github.com>`，应改为 `Aredjdhd <161108928+Aredjdhd@users.noreply.github.com>`；
 - push 与开 PR 仍未执行。
+
+## 11. 2026-11-06 傍晚：认证打通 + 署名修正 + 分支已推送（纠正 §8 与 §10.5）
+
+结论先说：**§10.5 的三条待办全部完成，分支已在远端**。开 PR 这一步由 FE-A 本人点，不由 Agent 执行。
+
+### 11.1 认证：device 授权流走通
+
+10.1 里两次失败的原因已确认（管道 `tail` 等 EOF、工具调用外的 `&` 子进程被回收）。本轮按纠正后的做法：GCM 强制 device 模式发起，日志直接落文件，再用内置浏览器输验证码。
+
+```
+GCM_AUTHMODE=device git push --dry-run -u origin feat/fe-a-api-review-w1
+  → 输出：To authenticate, visit: https://github.com/login/device
+          和一次性代码 707C-BB63
+浏览器：填入 707C-BB63 → 授权页 snapshot 显示已跳 /login/device/success
+```
+
+推送后凭据确实已持久化（此前 §8 记录「无已存凭据」，现已改变）：
+
+```
+MSYS2_ARG_CONV_EXCL='*' cmdkey /list
+  → 目标: LegacyGeneric:target=git:https://github.com
+     类型: 普通 / 用户: Aredjdhd
+```
+
+注意：`cmdkey /list` 在 Git Bash 里必须加 `MSYS2_ARG_CONV_EXCL='*'`，否则 `/list` 被 MSYS 当路径转换成 `C:/Program Files/Git/list`，cmdkey 只回一句「命令行参数不正确」——我第一轮就被这个假象骗过，误判成「凭据列表为空」。输出还带 GBK 编码，需要 `iconv -f GBK -t UTF-8` 才能看清中文。
+
+### 11.2 修正 §8 的结论：不是「没有写权限」，是「没有凭据」
+
+§8 当时的判断是「本机无 GitHub 账号 → 需要 owner 授予 collaborator 后才能推」。实测结果是：**`Aredjdhd` 这个账号对该仓库本来就有写权限**，`git push` 一次成功、未被 403 拦。也就是说 W1 卡了半天的真正缺口只是本机缺凭据，不涉及授权流程。被纠正的原条目：§8（起因段与结论段）、§10.5 第三条。
+
+另外，认证打通后先用 `git push --dry-run` 验了一次（exit=0，输出 `Would set upstream ... * [new branch]`）再真推——dry-run 不写数据，能在真正动手前把「凭据是否可用 + 远端是否可达 + ref 是否新建」三件事确认掉。这个顺序值得保留为惯例。
+
+### 11.3 rebase + 署名重写（§10.4 / §10.5 第二条）
+
+rebase 前 `git rebase origin/main` 因无 git 身份失败并留下中断的 rebase，`git rebase --abort` 后确认 4 个 commit 完好（HEAD 仍 `bf8db48` 链）。补齐身份变量后一条命令同时完成 rebase 与作者重写：
+
+```
+export GIT_COMMITTER_NAME=Aredjdhd
+export GIT_COMMITTER_EMAIL=161108928+Aredjdhd@users.noreply.github.com
+MSYS2_ARG_CONV_EXCL='*' git rebase origin/main --exec \
+  'git commit --amend --no-edit --author="Aredjdhd <161108928+Aredjdhd@users.noreply.github.com>"'
+```
+
+`--author=` 必须包在 `MSYS2_ARG_CONV_EXCL='*'` 里，不然等号和尖括号会被 shell/MSYS 拆坏。署名统一用 noreply 那串（10.2：账号开了「Keep my email addresses private」，用真实邮箱会把私邮写进公开历史）。
+
+### 11.4 推送与远端核验
+
+```
+git push -u origin feat/fe-a-api-review-w1
+  → remote: Create a pull request ... /pull/new/feat/fe-a-api-review-w1
+    To https://github.com/givehope488/nutritionist-prototype.git
+     * [new branch]      feat/fe-a-api-review-w1 -> feat/fe-a-api-review-w1
+    push_exit=0
+```
+
+核验（不信本地状态，重新 fetch 一遍再比对）：
+
+```
+git ls-remote --heads origin
+  → bf8db484a848e5ef8c7ca5431e18412c009d6381  refs/heads/feat/fe-a-api-review-w1
+    127578242ddf95b92e0dd07d36cd2c35401ca83c  refs/heads/main
+
+git fetch origin '+refs/heads/*:refs/remotes/origin/*'
+    注：git fetch origin <branch> 只写 FETCH_HEAD，不建 origin/<branch> 跟踪引用，
+        所以直接用 origin/feat/... 会报 unknown revision。要用完整 refspec 或配好的 fetch。
+
+git log --format='%h | %an <%ae> | %s' origin/feat/fe-a-api-review-w1 ^origin/main
+  → bf8db48 / ab5f020 / f211c91 / c4e73a6，四条全部 Aredjdhd <161108928+...@noreply>
+
+git diff --stat origin/main origin/feat/fe-a-api-review-w1
+  → reviews/fe-a/{AGENT-PROMPT,API-REVIEW,CONTRACT-NOTES,WORKLOG}.md
+    4 files changed, 681 insertions(+)   无删除、无越界文件
+```
+
+即：远端分支恰好在 `origin/main` 之上多 4 个 commit，且**只动 `reviews/fe-a/`**，符合 COLLAB 防线 2 的所有权规则。本节追加后 commit 数会变（+1），以 `git log origin/feat/fe-a-api-review-w1 ^origin/main` 实查为准。
+
+### 11.5 仍未验证 / 仍未做
+
+- **PR 未开**：按约定这一步由 FE-A 本人在浏览器点 `/pull/new/feat/fe-a-api-review-w1`，描述用 `fe-a/PR.md`（工作区草稿，不在仓库内）。PR 一旦创建，Reviewer 三查才算真的走起来；
+- **CI 三件套依然不存在**（`.github/workflows/` 无文件、无 `package.json`、无 `shared/`），所以 PR 自检五项里 lint/typecheck/test 仍是「无法执行」，这条不因推送成功而改变；
+- **`cmdkey` 里的 token 内容我没有读取**（只确认条目存在与所属用户），token 有效期与 scope 未查——若后续推送突然 403，先分清是 token 过期还是权限被改；
+- Desktop 上的 `FE-A-W1-deliverables.zip` 与 `fe-a/handoff/` 现在只是冗余备份：远端已有分支，交接包不再必需。若 BE-B 需要离线包，可再 `git format-patch` 一次（注意：本地 commit 已重写，旧 patch 序列与新 HEAD 哈希不一致，用旧包 `git am` 仍能复现内容，但 commit 号对不上）。
+- 本轮**没有推送 `main`**，也没有动任何人的文件。
