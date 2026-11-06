@@ -3,7 +3,7 @@ import { MINOR_AGE, PROFILE_BOUNDS } from '@canteen/shared';
 import type { Activity, Goal, Meal, Profile, Sex } from '@canteen/shared';
 import { AVOID_OPTIONS } from '../data/avoid-options';
 import { profileRepository } from '../data/repositories';
-import { PLACEHOLDER_TARGET } from '../data/recommendations';
+import { calcTargets } from '../engines/nutrition';
 import { HttpError } from '../http/errors';
 import {
   bodyObject,
@@ -61,6 +61,19 @@ profilesRouter.post('/', (req, res) => {
 
   const { bmi, bmi_tag } = deriveBmi(heightCm, weightKg);
 
+  // day_kcal 由 BE-A 营养引擎统一计算（口径唯一来源，见 ARCHITECTURE §1）
+  const { profile: derived } = calcTargets({
+    session_id: sessionId,
+    sex,
+    height_cm: heightCm,
+    weight_kg: weightKg,
+    age,
+    activity,
+    goal,
+    avoid,
+    default_meal: defaultMeal,
+  });
+
   const profile: Profile = {
     session_id: sessionId,
     sex,
@@ -73,8 +86,7 @@ profilesRouter.post('/', (req, res) => {
     default_meal: defaultMeal,
     bmi,
     bmi_tag,
-    // TODO(W2 引擎就绪)：day_kcal 必须由 engines/calcTarget 计算，这里是占位
-    day_kcal: PLACEHOLDER_TARGET.day_kcal,
+    day_kcal: derived.day_kcal,
     warnings,
   };
 
