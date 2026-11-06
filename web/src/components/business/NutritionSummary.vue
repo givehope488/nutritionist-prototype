@@ -1,12 +1,12 @@
 <script setup lang="ts">
 // 五项营养合计展示：热量 / 蛋白 / 脂肪 / 碳水 / 钠。
 // 输入完全来自服务端 totals + target，组件不做加减换算。
-import type { ComboTotals, MealTarget } from '@shared/types';
+import type { NutritionTotals, MealTarget } from '@canteen/shared';
 import MacroBar from './MacroBar.vue';
 
 withDefaults(
   defineProps<{
-    totals: ComboTotals;
+    totals: NutritionTotals;
     target?: Partial<MealTarget>;
     density?: 'compact' | 'normal';
   }>(),

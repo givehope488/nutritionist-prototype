@@ -1,8 +1,8 @@
 // 单条用餐记录读取：优先本地缓存（提交后立刻可见），回落 GET /meal-logs 查找。
 // 契约里没有 GET /meal-logs/:id，因此按 id 精确定位只能靠列表过滤（待评审议题 Q3）。
-import type { MealLog } from '@shared/types';
+import type { MealLogResponse } from '@canteen/shared';
 import { listMealLogs } from '@/api/endpoints';
-import type { ApiResult } from '@shared/types';
+import type { ApiResult } from '@canteen/shared';
 
 const NAMESPACE = 'cn.last_log';
 
@@ -10,14 +10,14 @@ function cacheKey(id: string): string {
   return `${NAMESPACE}.${id}`;
 }
 
-export function cacheMealLog(log: MealLog): void {
+export function cacheMealLog(log: MealLogResponse): void {
   sessionStorage.setItem(cacheKey(log.id), JSON.stringify(log));
 }
 
-function readCache(id: string): MealLog | null {
+function readCache(id: string): MealLogResponse | null {
   try {
     const raw = sessionStorage.getItem(cacheKey(id));
-    return raw ? (JSON.parse(raw) as MealLog) : null;
+    return raw ? (JSON.parse(raw) as MealLogResponse) : null;
   } catch {
     return null;
   }
@@ -26,7 +26,7 @@ function readCache(id: string): MealLog | null {
 export async function findMealLog(
   sessionId: string,
   id: string,
-): Promise<ApiResult<MealLog>> {
+): Promise<ApiResult<MealLogResponse>> {
   const cached = readCache(id);
   if (cached) return { ok: true, data: cached };
   const result = await listMealLogs({ session_id: sessionId, page: 1, page_size: 50 });

@@ -3,8 +3,8 @@
 // 数字全部来自 /insights/summary 与 /meal-logs，本页只做格式化展示。
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { MEAL_OPTIONS } from '@shared/constants';
-import type { ApiError, InsightsSummary, MealLog } from '@shared/types';
+import { MEAL_OPTIONS } from '@/utils/labels';
+import type { ApiError, InsightsSummaryResponse, MealLogResponse } from '@canteen/shared';
 import { getInsightsSummary, listMealLogs } from '@/api/endpoints';
 import AppButton from '@/components/base/AppButton.vue';
 import AppCard from '@/components/base/AppCard.vue';
@@ -20,8 +20,8 @@ import { formatDateLabel, formatGram, formatKcal, toDateStr } from '@/utils/disp
 const router = useRouter();
 
 const days = ref(7);
-const logs = ref<MealLog[]>([]);
-const summary = ref<InsightsSummary | null>(null);
+const logs = ref<MealLogResponse[]>([]);
+const summary = ref<InsightsSummaryResponse | null>(null);
 const total = ref(0);
 const page = ref(1);
 const pageSize = 10;
@@ -59,8 +59,8 @@ async function loadAll(): Promise<void> {
     error.value = failure;
     return;
   }
-  summary.value = (summaryResult as { ok: true; data: InsightsSummary }).data;
-  const list = (listResult as { ok: true; data: { total: number; logs: MealLog[] } }).data;
+  summary.value = (summaryResult as { ok: true; data: InsightsSummaryResponse }).data;
+  const list = (listResult as { ok: true; data: { total: number; logs: MealLogResponse[] } }).data;
   logs.value = list.logs;
   total.value = list.total;
 }

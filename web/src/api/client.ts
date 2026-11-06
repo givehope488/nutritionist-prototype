@@ -1,7 +1,7 @@
 // 唯一 HTTP 出口：契约解包逻辑只写在这一处（API.md §0.8）。
 // 业务代码只见 ApiResult<T> 两种形态，禁止各自判断 res.data / res。
-import { API_PREFIX } from '@shared/constants';
-import type { ApiError, ApiResult } from '@shared/types';
+import { API_PREFIX } from '@canteen/shared';
+import type { ApiError, ApiResult } from '@canteen/shared';
 import { handleMockRequest } from './__mock__';
 
 const RAW_BASE = import.meta.env.VITE_API_BASE ?? 'mock://local';

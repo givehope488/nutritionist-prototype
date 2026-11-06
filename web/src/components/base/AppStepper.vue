@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 份数步进器：0.5 步进、上限 5（API.md §2.4），0 表示未选。
 // 数值口径仍由服务端在提交后计算，这里只维护「份数」这一用户输入。
-import { SERVINGS_MAX, SERVINGS_STEP } from '@shared/constants';
+import { MAX_SERVINGS, SERVING_STEP } from '@canteen/shared';
 import { clampServings, formatServings } from '@/utils/display';
 
 const props = withDefaults(
@@ -28,7 +28,7 @@ function step(delta: number): void {
       type="button"
       aria-label="减少份数"
       :disabled="disabled || modelValue <= 0"
-      @click="step(-SERVINGS_STEP)"
+      @click="step(-SERVING_STEP)"
     >
       −
     </button>
@@ -39,8 +39,8 @@ function step(delta: number): void {
       class="stepper__btn"
       type="button"
       aria-label="增加份数"
-      :disabled="disabled || modelValue >= SERVINGS_MAX"
-      @click="step(SERVINGS_STEP)"
+      :disabled="disabled || modelValue >= MAX_SERVINGS"
+      @click="step(SERVING_STEP)"
     >
       +
     </button>

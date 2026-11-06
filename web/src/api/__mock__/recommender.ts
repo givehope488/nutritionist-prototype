@@ -1,7 +1,7 @@
 // 推荐引擎替身（真实实现在 server/src/engines/recommender.ts，属 BE-A）。
 // 这里按 API.md §2.3 的响应形态 + 附录 B 权重的简化版本产出可演示组合，
 // 目标只有两个：字段齐、组合合理，让 FE-B/FE-A 能脱离后端开发。评分口径以 BE-A 实装为准。
-import type { Dish, DishTag, MealTarget, MealType, RecommendRequest } from '@shared/types';
+import type { Dish, DishTag, MealTarget, Meal, RecommendationRequest } from '@canteen/shared';
 import { activeDishes, comboIdOf, type CachedCombo } from './db';
 import { AVOID_TAG_MAP } from './avoidOptions';
 import { sumNutrition, scale } from './nutrition';
@@ -32,7 +32,7 @@ interface Pool {
   fruit: Dish[];
 }
 
-function pickPool(meal: MealType, avoid: string[]): Pool {
+function pickPool(meal: Meal, avoid: string[]): Pool {
   const dishes = filterAvoid(activeDishes(meal), avoid);
   const group = (category: Dish['category']) => dishes.filter((dish) => dish.category === category);
   return {
@@ -45,7 +45,7 @@ function pickPool(meal: MealType, avoid: string[]): Pool {
 }
 
 /** 餐次结构：早/午晚不同（ARCHITECTURE.md §3.b） */
-function enumerate(pool: Pool, meal: MealType): Dish[][] {
+function enumerate(pool: Pool, meal: Meal): Dish[][] {
   const sets: Dish[][] = [];
   const staples = pool.staple.length ? pool.staple : [undefined];
   const mains = pool.protein.length ? pool.protein : [undefined];
@@ -102,7 +102,7 @@ export function scoreCombo(dishes: Dish[], target: MealTarget, goal: string): nu
 }
 
 export function buildCombos(
-  request: Pick<RecommendRequest, 'meal'> & { goal: string },
+  request: Pick<RecommendationRequest, 'meal'> & { goal: string },
   avoid: string[],
   target: MealTarget,
 ): ScoredCombo[] {
@@ -144,7 +144,7 @@ export function reasonTemplate(
   combo: ScoredCombo,
   target: MealTarget,
   names: string[],
-  meal: MealType,
+  meal: Meal,
 ): string {
   const mealLabel = meal === 'breakfast' ? '早餐' : meal === 'lunch' ? '午餐' : '晚餐';
   const diff = combo.totals.kcal - target.kcal;
@@ -167,7 +167,7 @@ export function reasonTemplate(
 
 export function comboToCached(
   sessionId: string,
-  meal: MealType,
+  meal: Meal,
   combo: ScoredCombo,
 ): CachedCombo {
   return {

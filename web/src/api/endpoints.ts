@@ -1,21 +1,21 @@
 // 用户端接口封装（docs/API.md §2）。字段名与 API.md 一字不改。
 import type {
-  InsightsSummary,
-  MealLog,
-  MealLogInput,
+  InsightsSummaryResponse,
+  MealLogResponse,
+  MealLogRequest,
   MealLogListResponse,
-  MealType,
+  Meal,
   MenuResponse,
   Profile,
   ProfileInput,
-  RecommendRequest,
+  RecommendationRequest,
   RecommendationResponse,
-} from '@shared/types';
+} from '@canteen/shared';
 import { buildQuery, request } from './client';
 import type { QueryValue } from './client';
 
 export interface MenuQuery {
-  meal?: MealType;
+  meal?: Meal;
   include_inactive?: boolean;
 }
 
@@ -31,12 +31,12 @@ export function getProfile(sessionId: string) {
   return request<Profile>('GET', `/profiles/me${buildQuery({ session_id: sessionId })}`);
 }
 
-export function createRecommendation(input: RecommendRequest) {
+export function createRecommendation(input: RecommendationRequest) {
   return request<RecommendationResponse>('POST', '/recommendations', { body: input });
 }
 
-export function createMealLog(input: MealLogInput) {
-  return request<MealLog>('POST', '/meal-logs', { body: input });
+export function createMealLog(input: MealLogRequest) {
+  return request<MealLogResponse>('POST', '/meal-logs', { body: input });
 }
 
 export function listMealLogs(query: {
@@ -50,5 +50,5 @@ export function listMealLogs(query: {
 }
 
 export function getInsightsSummary(query: { session_id: string; days?: number }) {
-  return request<InsightsSummary>('GET', `/insights/summary${buildQuery(query)}`);
+  return request<InsightsSummaryResponse>('GET', `/insights/summary${buildQuery(query)}`);
 }

@@ -1,19 +1,20 @@
 // Mock 后端路由：按 docs/API.md v1.1 逐端点实现，响应形态严格遵循 §0.8 包络。
 // 后端（BE-A/BE-B）实装后本目录整体删除，切换只需改 VITE_API_BASE。
-import { API_PREFIX, DATE_PATTERN, PROFILE_LIMITS, SERVINGS_MAX, SERVINGS_STEP } from '@shared/constants';
+import { API_PREFIX, MAX_SERVINGS, PROFILE_BOUNDS, SERVING_STEP } from '@canteen/shared';
+import { DATE_PATTERN } from '@/utils/labels';
 import type {
-  ActivityLevel,
+  Activity,
   Combo,
   ComboDish,
   Goal,
-  MealLog,
-  MealLogInput,
-  MealType,
+  MealLogResponse,
+  MealLogRequest,
+  Meal,
   Profile,
   ProfileInput,
-  RecommendRequest,
+  RecommendationRequest,
   Sex,
-} from '@shared/types';
+} from '@canteen/shared';
 import { AVOID_OPTIONS, isKnownAvoidKey } from './avoidOptions';
 import {
   comboIdOf,
@@ -39,9 +40,9 @@ export interface MockResponse {
   body: unknown;
 }
 
-const MEALS: MealType[] = ['breakfast', 'lunch', 'dinner'];
+const MEALS: Meal[] = ['breakfast', 'lunch', 'dinner'];
 const SEXES: Sex[] = ['male', 'female'];
-const ACTIVITIES: ActivityLevel[] = ['low', 'mid', 'high'];
+const ACTIVITIES: Activity[] = ['low', 'mid', 'high'];
 const GOALS: Goal[] = ['health', 'lose', 'gain'];
 
 function fail(
@@ -57,7 +58,7 @@ function invalid(fields: { path: string; issue: string }[]): MockResponse {
   return fail(400, 'VALIDATION_ERROR', '请求参数不合法', fields);
 }
 
-function mealLabel(meal: MealType): string {
+function mealLabel(meal: Meal): string {
   return meal === 'breakfast' ? '早餐' : meal === 'lunch' ? '午餐' : '晚餐';
 }
 
@@ -74,12 +75,12 @@ function isoDate(offsetDays = 0): string {
 function getMenu(query: URLSearchParams): MockResponse {
   const meal = query.get('meal');
   const includeInactive = query.get('include_inactive') === 'true';
-  if (meal !== null && !MEALS.includes(meal as MealType)) {
+  if (meal !== null && !MEALS.includes(meal as Meal)) {
     return invalid([{ path: 'meal', issue: `取值须为 ${MEALS.join('/')}` }]);
   }
   const dishes = includeInactive
     ? allDishes()
-    : activeDishes(meal === null ? undefined : (meal as MealType));
+    : activeDishes(meal === null ? undefined : (meal as Meal));
   return { status: 200, body: { dishes, avoid_options: AVOID_OPTIONS } };
 }
 
@@ -92,16 +93,16 @@ function validateProfileInput(input: Partial<ProfileInput>): { path: string; iss
 
   if (!input.session_id) push('session_id', '不能为空');
   if (!SEXES.includes(input.sex as Sex)) push('sex', `取值须为 ${SEXES.join('/')}`);
-  if (!ACTIVITIES.includes(input.activity as ActivityLevel)) {
+  if (!ACTIVITIES.includes(input.activity as Activity)) {
     push('activity', `取值须为 ${ACTIVITIES.join('/')}`);
   }
   if (!GOALS.includes(input.goal as Goal)) push('goal', `取值须为 ${GOALS.join('/')}`);
-  if (!MEALS.includes(input.default_meal as MealType)) {
+  if (!MEALS.includes(input.default_meal as Meal)) {
     push('default_meal', `取值须为 ${MEALS.join('/')}`);
   }
   const check = (field: 'height_cm' | 'weight_kg' | 'age') => {
     const value = input[field];
-    const { min, max } = PROFILE_LIMITS[field];
+    const { min, max } = PROFILE_BOUNDS[field];
     if (typeof value !== 'number' || Number.isNaN(value) || value < min || value > max) {
       push(field, `取值须在 ${min}~${max}`);
     }
@@ -153,7 +154,7 @@ function getProfileMe(query: URLSearchParams): MockResponse {
 // ---------------------------------------------------------------------------
 // §2.3 推荐
 // ---------------------------------------------------------------------------
-function postRecommendation(body: Partial<RecommendRequest>): MockResponse {
+function postRecommendation(body: Partial<RecommendationRequest>): MockResponse {
   if (!body?.session_id) return invalid([{ path: 'session_id', issue: '不能为空' }]);
   const requestedMeal = body.meal;
   if (requestedMeal !== undefined && !MEALS.includes(requestedMeal)) {
@@ -165,7 +166,7 @@ function postRecommendation(body: Partial<RecommendRequest>): MockResponse {
   if (body.overrides?.goal && !GOALS.includes(body.overrides.goal)) {
     return invalid([{ path: 'overrides.goal', issue: `取值须为 ${GOALS.join('/')}` }]);
   }
-  const meal = (requestedMeal ?? profile.default_meal) as MealType;
+  const meal = (requestedMeal ?? profile.default_meal) as Meal;
   const goal = body.overrides?.goal ?? profile.goal;
   const avoid = body.overrides?.avoid ?? profile.avoid;
   // overrides 仅本次请求生效、不落库（API.md §2.3）
@@ -216,13 +217,13 @@ function postRecommendation(body: Partial<RecommendRequest>): MockResponse {
 // ---------------------------------------------------------------------------
 // §2.4 回填
 // ---------------------------------------------------------------------------
-function validateMealLog(body: Partial<MealLogInput>): { path: string; issue: string }[] {
+function validateMealLog(body: Partial<MealLogRequest>): { path: string; issue: string }[] {
   const issues: { path: string; issue: string }[] = [];
   const push = (path: string, issue: string) => issues.push({ path, issue });
   if (!body.id) push('id', '客户端 UUID 不能为空（幂等键）');
   if (!body.session_id) push('session_id', '不能为空');
   if (!body.date || !DATE_PATTERN.test(body.date)) push('date', '格式须为 YYYY-MM-DD');
-  if (!MEALS.includes(body.meal as MealType)) push('meal', `取值须为 ${MEALS.join('/')}`);
+  if (!MEALS.includes(body.meal as Meal)) push('meal', `取值须为 ${MEALS.join('/')}`);
   if (!Array.isArray(body.items) || body.items.length === 0) push('items', '至少回填一个菜品');
   else {
     body.items.forEach((item, index) => {
@@ -231,17 +232,17 @@ function validateMealLog(body: Partial<MealLogInput>): { path: string; issue: st
       if (
         typeof servings !== 'number' ||
         servings <= 0 ||
-        servings > SERVINGS_MAX ||
-        Math.abs(servings / SERVINGS_STEP - Math.round(servings / SERVINGS_STEP)) > 1e-9
+        servings > MAX_SERVINGS ||
+        Math.abs(servings / SERVING_STEP - Math.round(servings / SERVING_STEP)) > 1e-9
       ) {
-        push(`items[${index}].servings`, `取值须为 ${SERVINGS_STEP} 的整数倍且不超过 ${SERVINGS_MAX}`);
+        push(`items[${index}].servings`, `取值须为 ${SERVING_STEP} 的整数倍且不超过 ${MAX_SERVINGS}`);
       }
     });
   }
   return issues;
 }
 
-function postMealLog(body: MealLogInput): MockResponse {
+function postMealLog(body: MealLogRequest): MockResponse {
   const issues = validateMealLog(body);
   if (issues.length > 0) return invalid(issues);
 
@@ -299,7 +300,7 @@ function getMealLogs(query: URLSearchParams): MockResponse {
   const page = Math.max(1, Number(query.get('page') ?? 1));
   const pageSize = Math.max(1, Number(query.get('page_size') ?? 20));
   const all = listLogs(sessionId, query.get('from') ?? undefined, query.get('to') ?? undefined);
-  const logs: MealLog[] = all.slice((page - 1) * pageSize, page * pageSize).map((log) => {
+  const logs: MealLogResponse[] = all.slice((page - 1) * pageSize, page * pageSize).map((log) => {
     const { session_id: _drop, ...rest } = log;
     return rest;
   });
@@ -347,9 +348,9 @@ export async function handleMockRequest(
   if (method === 'POST' && path === '/profiles') return postProfile(body as Partial<ProfileInput>);
   if (method === 'GET' && path === '/profiles/me') return getProfileMe(query);
   if (method === 'POST' && path === '/recommendations') {
-    return postRecommendation(body as Partial<RecommendRequest>);
+    return postRecommendation(body as Partial<RecommendationRequest>);
   }
-  if (method === 'POST' && path === '/meal-logs') return postMealLog(body as MealLogInput);
+  if (method === 'POST' && path === '/meal-logs') return postMealLog(body as MealLogRequest);
   if (method === 'GET' && path === '/meal-logs') return getMealLogs(query);
   if (method === 'GET' && path === '/insights/summary') return getInsightsSummary(query);
   return fail(404, 'NOT_FOUND', `接口不存在：${method} ${path}`);

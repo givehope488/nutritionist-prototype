@@ -56,7 +56,8 @@ describe('分层边界', () => {
 
   it('接口类型只能来自 shared/，禁止各自手写同名 interface（防线 1）', () => {
     const allFiles = filesUnder('.', (p) => /\.(vue|ts)$/.test(p));
-    const pattern = /\b(?:interface|type)\s+(Dish|Profile|Combo|MealLog|MenuResponse|ApiResult)\b/;
+    const pattern =
+      /\b(?:interface|type)\s+(Dish|Profile|Combo|ComboDish|MealLogResponse|MealLogRequest|MenuResponse|ApiResult|NutritionTotals|MealTarget|RecommendationResponse|InsightsSummaryResponse)\b/;
     const offenders = allFiles
       .filter((path) => !rel(path).startsWith('tests'))
       .filter((path) => pattern.test(sourceOf(path)))

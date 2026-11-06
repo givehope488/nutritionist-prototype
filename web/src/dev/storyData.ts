@@ -1,5 +1,5 @@
 // 故事页元数据：把 tokens 变成可走查的清单（设计系统交付物的一部分）
-import type { ApiErrorCode } from '@shared/types';
+import type { ErrorCode } from '@canteen/shared';
 
 export interface Swatch {
   token: string;
@@ -40,7 +40,7 @@ export const TYPOGRAPHY_ROWS: TypographyRow[] = [
   { token: '--font-size-xs', sample: '12 免责/提示文案，仅非关键', use: '提示' },
 ];
 
-export const APP_ERROR_CODES: ApiErrorCode[] = [
+export const APP_ERROR_CODES: ErrorCode[] = [
   'UNAUTHORIZED',
   'NOT_FOUND',
   'CONFLICT',

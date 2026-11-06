@@ -18,14 +18,14 @@
     "types": ["vite/client", "node"],
     "paths": {
       "@/*": ["./src/*"],
-      "@shared/*": ["../shared/*"],
+      "@canteen/shared": ["../shared/src/index.ts"],
       "@menu-seed": ["../server/data/menu-seed.json"]
     }
   },
   "include": [
     "src/**/*.ts",
     "src/**/*.vue",
-    "../shared/**/*.ts",
+    "../shared/src/**/*.ts",
     "../server/data/menu-seed.json",
     "vite.config.ts"
   ],

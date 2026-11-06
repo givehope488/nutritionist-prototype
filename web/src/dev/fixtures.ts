@@ -1,5 +1,5 @@
 // 组件故事页用的展示样例：结构与 API.md 响应一致，数值为手写占位（不做任何计算）。
-import type { Combo, ComboTotals, Dish, MealLog, MealTarget, Profile } from '@shared/types';
+import type { Combo, NutritionTotals, Dish, MealLogResponse, MealTarget, Profile } from '@canteen/shared';
 
 export const sampleDishA: Dish = {
   id: 's01',
@@ -61,7 +61,7 @@ export const sampleTarget: MealTarget = {
   meal_ratio: 0.4,
 };
 
-const totals: ComboTotals = {
+const totals: NutritionTotals = {
   kcal: 872,
   protein_g: 40,
   fat_g: 23,
@@ -127,7 +127,7 @@ export const sampleCombo: Combo = {
   engine: 'template',
 };
 
-export const sampleMealLog: MealLog = {
+export const sampleMealLog: MealLogResponse = {
   id: 'b7e2-client-uuid-0001',
   duplicate: false,
   date: '2026-11-04',

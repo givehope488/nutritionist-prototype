@@ -1,10 +1,10 @@
 <script setup lang="ts">
 // 反馈页：对比条 + 判定文案（TEAM.md W2-W3「反馈页」）。
-// 判定、合计、目标全部来自服务端 MealLog 响应；本页不计算任何营养数值（架构 D1）。
+// 判定、合计、目标全部来自服务端 MealLogResponse 响应；本页不计算任何营养数值（架构 D1）。
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { MEAL_OPTIONS } from '@shared/constants';
-import type { ApiError, MealLog } from '@shared/types';
+import { MEAL_OPTIONS } from '@/utils/labels';
+import type { ApiError, MealLogResponse } from '@canteen/shared';
 import AppButton from '@/components/base/AppButton.vue';
 import AppCard from '@/components/base/AppCard.vue';
 import AppErrorBanner from '@/components/base/AppErrorBanner.vue';
@@ -19,7 +19,7 @@ import { formatGram, formatKcal, formatSodium, formatDateLabel, formatServings }
 const route = useRoute();
 const router = useRouter();
 
-const log = ref<MealLog | null>(null);
+const log = ref<MealLogResponse | null>(null);
 const error = ref<ApiError | null>(null);
 const loading = ref(true);
 
@@ -29,7 +29,7 @@ const mealLabel = computed(() => {
 });
 
 /**
- * MealLog.target 按契约只含 kcal 与 protein_g（API.md §2.4），
+ * MealLogResponse.target 按契约只含 kcal 与 protein_g（API.md §2.4），
  * 所以脂肪/碳水/钠三条只显示数值、标注「暂无目标」；补齐目标字段需走接口变更流程（待评审议题 Q4）。
  */
 const comparisonTarget = computed(() => {

@@ -2,21 +2,21 @@
 // 契约里没有 GET /recommendations/:combo_id，combo.id 只做关联提交的标识，
 // 因此组合明细只能由前端在推荐响应里自取（API.md §2.3「有效期 24 小时」按本地缓存实现）。
 // 调用约定：FE-A 推荐页在拿到响应后调用 saveRecommendationResponse(response, meal)。
-import type { MealType, RecommendationResponse } from '@shared/types';
+import type { Meal, RecommendationResponse } from '@canteen/shared';
 
 const STORAGE_KEY = 'cn.last_recommendation';
 const TTL_MS = 24 * 60 * 60 * 1000;
 
 interface CachedRecommendation {
   session_id: string;
-  meal: MealType;
+  meal: Meal;
   cached_at: number;
   response: RecommendationResponse;
 }
 
 export function saveRecommendationResponse(
   sessionId: string,
-  meal: MealType,
+  meal: Meal,
   response: RecommendationResponse,
 ): void {
   const payload: CachedRecommendation = {

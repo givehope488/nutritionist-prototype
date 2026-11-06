@@ -10,7 +10,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': shared('./src'),
-      '@shared': shared('../shared'),
+      '@canteen/shared': shared('../shared/src/index.ts'),
       '@menu-seed': shared('../server/data/menu-seed.json'),
     },
   },

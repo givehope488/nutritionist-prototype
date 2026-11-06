@@ -1,6 +1,6 @@
 // 展示层数值格式化：只做取整与单位拼接，不做任何营养口径计算（架构 D1）。
 // 对比条的百分比属于「渲染比例」，不是营养数值，统一收敛在这里，便于 Review 时一眼扫完。
-import { SERVINGS_STEP } from '@shared/constants';
+import { SERVING_STEP } from '@canteen/shared';
 
 export function formatKcal(value: number): string {
   return `${Math.round(value)} kcal`;
@@ -34,7 +34,7 @@ export function formatServings(servings: number): string {
 }
 
 export function clampServings(servings: number): number {
-  const stepped = Math.round(servings / SERVINGS_STEP) * SERVINGS_STEP;
+  const stepped = Math.round(servings / SERVING_STEP) * SERVING_STEP;
   return Math.min(Math.max(stepped, 0), 5);
 }
 

@@ -1,7 +1,7 @@
 // 契约护栏：响应包络与字段名必须与 docs/API.md 一致（COLLAB.md 防线 1/6 的「查契约」自动化）。
 import { describe, expect, it } from 'vitest';
-import { API_PREFIX } from '@shared/constants';
-import type { ProfileInput } from '@shared/types';
+import { API_PREFIX } from '@canteen/shared';
+import type { ProfileInput } from '@canteen/shared';
 import { handleMockRequest } from '@/api/__mock__';
 import { getMenu, getProfile, saveProfile } from '@/api/endpoints';
 

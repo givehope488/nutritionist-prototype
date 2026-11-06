@@ -5,7 +5,7 @@
 import { flushPromises, mount } from '@vue/test-utils';
 import { createMemoryHistory, createRouter } from 'vue-router';
 import { beforeEach, describe, expect, it } from 'vitest';
-import type { ProfileInput } from '@shared/types';
+import type { ProfileInput } from '@canteen/shared';
 import { createRecommendation, saveProfile } from '@/api/endpoints';
 import FeedbackView from '@/views/feedback/FeedbackView.vue';
 import HistoryView from '@/views/history/HistoryView.vue';
@@ -78,7 +78,7 @@ describe('回填 → 反馈 → 历史', () => {
     await submit?.trigger('click');
     await settle();
 
-    // 契约里反馈页的数据来自 MealLog 响应，跳转时带上记录 id
+    // 契约里反馈页的数据来自 MealLogResponse 响应，跳转时带上记录 id
     expect(router.currentRoute.value.name).toBe('feedback');
     const feedback = mount(FeedbackView, { global: { plugins: [router] } });
     await settle();

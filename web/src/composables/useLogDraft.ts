@@ -2,7 +2,7 @@
 // 为什么存：弱网下提交失败、页面刷新或用户重进时，必须用同一个 id 重试，
 // 服务端才能按幂等键判重（API.md §0.7）；否则每次刷新都会生成一条新记录。
 import { computed, ref, watch, type Ref } from 'vue';
-import type { MealType } from '@shared/types';
+import type { Meal } from '@canteen/shared';
 
 const NAMESPACE = 'cn.draft';
 
@@ -21,7 +21,7 @@ function newClientId(): string {
   return `draft-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
-function keyOf(sessionId: string, date: string, meal: MealType): string {
+function keyOf(sessionId: string, date: string, meal: Meal): string {
   return `${NAMESPACE}.${sessionId}.${date}.${meal}`;
 }
 
@@ -50,7 +50,7 @@ export interface UseLogDraft {
 export function useLogDraft(
   sessionId: string,
   date: Ref<string>,
-  meal: Ref<MealType>,
+  meal: Ref<Meal>,
 ): UseLogDraft {
   const key = computed(() => keyOf(sessionId, date.value, meal.value));
   const initial = load(key.value);

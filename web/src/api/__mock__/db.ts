@@ -2,7 +2,7 @@
 // 重要边界：架构 D1 规定营养计算只在服务端。本目录是「服务端替身」，
 // 因此视图 / 组件禁止 import 本目录（由 src/tests/unit/layerBoundary.test.ts 把关）。
 import rawSeed from '@menu-seed';
-import type { Dish, MealLog, MealType, Profile } from '@shared/types';
+import type { Dish, MealLogResponse, Meal, Profile } from '@canteen/shared';
 
 const KEYS = {
   profiles: 'cn.mock.v1.profiles',
@@ -17,13 +17,13 @@ export const COMBO_TTL_MS = 24 * 60 * 60 * 1000;
 export interface CachedCombo {
   combo_id: string;
   session_id: string;
-  meal: MealType;
+  meal: Meal;
   dish_ids: string[];
   created_at: number;
 }
 
 /** 落库记录比响应多一个 session_id（响应结构里没有，存储需要它做用户隔离） */
-export interface StoredLog extends MealLog {
+export interface StoredLog extends MealLogResponse {
   session_id: string;
 }
 
@@ -48,7 +48,7 @@ export function dishById(id: string): Dish | undefined {
   return allDishes().find((dish) => dish.id === id);
 }
 
-export function activeDishes(meal?: MealType): Dish[] {
+export function activeDishes(meal?: Meal): Dish[] {
   return allDishes().filter(
     (dish) => dish.status === 'active' && (meal === undefined || dish.meals.includes(meal)),
   );
@@ -102,7 +102,7 @@ function cachedCombos(): Record<string, CachedCombo> {
   );
 }
 
-export function saveCombos(sessionId: string, meal: MealType, dishIdSets: string[][]): void {
+export function saveCombos(sessionId: string, meal: Meal, dishIdSets: string[][]): void {
   const next = cachedCombos();
   for (const dish_ids of dishIdSets) {
     const combo_id = comboIdOf(dish_ids);

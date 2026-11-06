@@ -1,6 +1,6 @@
 // 闭环三端点（推荐 / 回填 / 统计）的契约断言：字段名与取值范围逐条对齐 API.md §2.3~§2.5。
 import { describe, expect, it } from 'vitest';
-import type { MealLogInput, MealType, ProfileInput } from '@shared/types';
+import type { MealLogRequest, Meal, ProfileInput } from '@canteen/shared';
 import { createMealLog, createRecommendation, getInsightsSummary, listMealLogs, saveProfile } from '@/api/endpoints';
 
 const baseProfile: ProfileInput = {
@@ -21,7 +21,7 @@ async function seed(overrides: Partial<ProfileInput> = {}) {
   return result.data;
 }
 
-async function recommend(meal: MealType) {
+async function recommend(meal: Meal) {
   const result = await createRecommendation({ session_id: baseProfile.session_id, meal });
   if (!result.ok) throw new Error(JSON.stringify(result.error));
   return result.data;
@@ -83,7 +83,7 @@ describe('推荐（§2.3）', () => {
 });
 
 describe('回填（§2.4）', () => {
-  function logInput(overrides: Partial<MealLogInput> = {}): MealLogInput {
+  function logInput(overrides: Partial<MealLogRequest> = {}): MealLogRequest {
     return {
       id: 'client-uuid-1',
       session_id: baseProfile.session_id,

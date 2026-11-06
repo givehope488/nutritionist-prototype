@@ -3,8 +3,8 @@
 // 边界：本页不展示任何热量数字——营养合计只在提交后由服务端给出（架构 D1）。
 import { computed, onMounted, ref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { DISH_CATEGORY_LABEL, DISH_CATEGORY_ORDER, MEAL_OPTIONS } from '@shared/constants';
-import type { ApiError, Dish, DishCategory, MealType } from '@shared/types';
+import { DISH_CATEGORY_LABEL, DISH_CATEGORY_ORDER, MEAL_OPTIONS } from '@/utils/labels';
+import type { ApiError, Dish, Category, Meal } from '@canteen/shared';
 import { createMealLog, getMenu, getProfile } from '@/api/endpoints';
 import AppButton from '@/components/base/AppButton.vue';
 import AppCard from '@/components/base/AppCard.vue';
@@ -24,7 +24,7 @@ import { formatDateLabel, toDateStr } from '@/utils/display';
 const route = useRoute();
 const router = useRouter();
 
-const meal = ref<MealType>((route.query.meal as MealType) || 'lunch');
+const meal = ref<Meal>((route.query.meal as Meal) || 'lunch');
 const date = ref<string>(
   typeof route.query.date === 'string' && route.query.date ? route.query.date : toDateStr(new Date()),
 );
@@ -35,13 +35,13 @@ const dishes = ref<Dish[]>([]);
 const menuLoading = ref(false);
 const menuError = ref<ApiError | null>(null);
 const noProfile = ref(false);
-const activeCategory = ref<DishCategory>('staple');
+const activeCategory = ref<Category>('staple');
 const prefillNotice = ref<string | null>(null);
 const submitting = ref(false);
 const submitError = ref<ApiError | null>(null);
 
 function setMeal(value: string): void {
-  meal.value = value as MealType;
+  meal.value = value as Meal;
 }
 
 const mealItems = MEAL_OPTIONS.map((option) => ({ value: option.value, label: option.label }));
@@ -54,7 +54,7 @@ const dateItems = [0, 1].map((offset) => {
 });
 
 const grouped = computed(() => {
-  const map = new Map<DishCategory, Dish[]>();
+  const map = new Map<Category, Dish[]>();
   for (const dish of dishes.value) {
     const list = map.get(dish.category) ?? [];
     list.push(dish);

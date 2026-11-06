@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // 判定卡：level / title / body 全部来自服务端 verdict（API.md §2.4），前端不判断达标与否。
-import type { Verdict } from '@shared/types';
+import type { Verdict } from '@canteen/shared';
 import AppBadge from '../base/AppBadge.vue';
 
 withDefaults(

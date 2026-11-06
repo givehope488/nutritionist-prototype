@@ -2,7 +2,7 @@
 // 菜品行卡（回填页）：名称 + 份量 + 价格 + 份数步进器。
 // 合规：reliability 非 A 级不展示精确克重（README 合规边界 4 / 架构 D5）。
 import { computed } from 'vue';
-import type { Dish } from '@shared/types';
+import type { Dish } from '@canteen/shared';
 import { formatYuan } from '@/utils/display';
 import AppStepper from '../base/AppStepper.vue';
 import AppBadge from '../base/AppBadge.vue';

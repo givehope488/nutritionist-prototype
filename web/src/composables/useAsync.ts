@@ -1,6 +1,6 @@
 // 请求状态机：把 loading / error / 空态 / 重复提交收敛到一处，页面不各写一套。
 import { ref, type Ref } from 'vue';
-import type { ApiError, ApiResult } from '@shared/types';
+import type { ApiError, ApiResult } from '@canteen/shared';
 
 export type AsyncStatus = 'idle' | 'loading' | 'success' | 'error';
 

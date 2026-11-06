@@ -1,6 +1,6 @@
 // 忌口选项：契约规定由服务端下发，避免前后端硬编码两份（API.md §2.1）。
 // BE-B 实装后此文件随 __mock__ 目录一起删除；key 与 excludes_tag 是前后端约定的取值，勿随意改名。
-import type { AvoidOption } from '@shared/types';
+import type { AvoidOption } from '@canteen/shared';
 
 export const AVOID_OPTIONS: AvoidOption[] = [
   { key: 'nopork', label: '不吃猪肉', excludes_tag: 'pork' },

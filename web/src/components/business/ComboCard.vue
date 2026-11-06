@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 推荐组合卡（供 FE-A 推荐页消费）：3 套搭配中的 1 套。
 // 卡片只做展示与「采纳」事件上报，不判断营养达标与否——判定在服务端。
-import type { Combo, MealTarget } from '@shared/types';
+import type { Combo, MealTarget } from '@canteen/shared';
 import AppBadge from '../base/AppBadge.vue';
 import AppButton from '../base/AppButton.vue';
 import AppCard from '../base/AppCard.vue';

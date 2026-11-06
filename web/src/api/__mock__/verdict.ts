@@ -1,12 +1,12 @@
 // 回填判定替身：level 枚举与判定归属服务端（API.md §2.4），视图层禁止 import 本目录。
-import type { ComboTotals, MealTarget, Verdict } from '@shared/types';
+import type { NutritionTotals, MealTarget, Verdict } from '@canteen/shared';
 
 const KCAL_OK_BAND = 0.1;
 const PROTEIN_OK_RATIO = 0.9;
 
 type TargetPair = Pick<MealTarget, 'kcal' | 'protein_g'>;
 
-export function verdictOf(totals: ComboTotals, target: TargetPair, mealLabel: string): Verdict {
+export function verdictOf(totals: NutritionTotals, target: TargetPair, mealLabel: string): Verdict {
   const diff = totals.kcal - target.kcal;
   const ratio = target.kcal > 0 ? diff / target.kcal : 0;
   const proteinShortfall = totals.protein_g < target.protein_g * PROTEIN_OK_RATIO;

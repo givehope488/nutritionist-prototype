@@ -1,7 +1,7 @@
 <script setup lang="ts">
 // 统一错误提示：按 API.md §1 的「前端处置」列把错误码翻成可操作文案
 import { computed } from 'vue';
-import type { ApiError } from '@shared/types';
+import type { ApiError } from '@canteen/shared';
 
 const props = defineProps<{ error: ApiError }>();
 

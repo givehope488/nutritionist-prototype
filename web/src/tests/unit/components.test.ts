@@ -7,7 +7,7 @@ import MacroBar from '@/components/business/MacroBar.vue';
 import NoSolutionNotice from '@/components/business/NoSolutionNotice.vue';
 import VerdictCard from '@/components/business/VerdictCard.vue';
 import { sampleDishA, sampleDishB, sampleMealLog } from '@/dev/fixtures';
-import { SERVINGS_MAX } from '@shared/constants';
+import { MAX_SERVINGS } from '@canteen/shared';
 
 describe('AppStepper 份数步进器', () => {
   it('按 0.5 步进增加并回传', async () => {
@@ -19,7 +19,7 @@ describe('AppStepper 份数步进器', () => {
   it('0 份时禁止再减，上限 5 份时禁止再加', () => {
     const zero = mount(AppStepper, { props: { modelValue: 0 } });
     expect(zero.findAll('button')[0]?.attributes('disabled')).toBeDefined();
-    const max = mount(AppStepper, { props: { modelValue: SERVINGS_MAX } });
+    const max = mount(AppStepper, { props: { modelValue: MAX_SERVINGS } });
     expect(max.findAll('button')[1]?.attributes('disabled')).toBeDefined();
   });
 
