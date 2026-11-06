@@ -65,6 +65,13 @@ jobs:
       - run: npm run check:data
       - run: npm run check:progress
       - run: npm run test
+      # 端点契约 smoke：逐条打真实 HTTP 断言。此前只在本地 `npm run check` 里跑，
+      # CI 是分命令执行的（不走 check），所以这些断言一次都没被门禁覆盖过。
+      # 用 hashFiles 门控：脚本与 npm 命令由 PR #18 引入，主干上还没有，
+      # 写死会让所有 PR 在这一步直接红；PR #18 合并后自动生效，不需要再改。
+      - name: 端点契约 smoke
+        if: hashFiles('server/scripts/smoke.ts') != ''
+        run: npm run smoke
       - name: web 依赖
         if: hashFiles('web/package.json') != ''
         working-directory: web
