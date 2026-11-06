@@ -4,6 +4,7 @@
 > 评审对象：`docs/API.md` v1.1（2026-11-05，W1 评审冻结版）
 > 评审日期：2026-11-06
 > **v1.2 适配（2026-11-06 追加）**：`origin/main` 新增提交 `1275782`（TEAM.md v1.2 把 6 周压成 **3 周**、新增 CODEOWNERS 与 PR 模板、API.md 管理端补注）。已据此修订本文的排期引用与「目录归属」一节，见文末 C1~C5。**契约字段本身未变**（API.md 本次只在 §3 管理端加了 2 行说明），所以 B1~G3 各条结论不受影响；但工期压成 3 周后，每条的处置时限都提前了。
+> **v1.3 复核（2026-11-06 晚追加）**：`origin/main` 已前移至 `496c1ef`（本单 PR #1 合入 + #2 脚手架/shared/CI + #3 COLLAB 防线 7 + #4 种子 v2）。**C1/C3/C5 已结案**；B2/Y5/Y6 的证据被上游更新；另发现 F1~F4 四处「代码先行、契约未跟」。逐条处置见文末「复核增补」；正文保留评审时点原文不改写。
 > 评审视角：**只评「前端能不能不靠猜就把页面写出来」**，不评算法口径（归 BE-A）、不评数据准确性（归 PD）。
 > 流程约束：按 COLLAB.md 防线 5 / API.md 附录 C.5，本单所有「改字段」的建议**都只是提请评审议题**，FE-A 与其 Agent 均不自行改动契约，也不在前端做兜底实现。
 
@@ -155,7 +156,7 @@ CODEOWNERS 给 FE-A 的实际地盘是（不是我原先假设的 `views/onboard
 - **C4**：`.nvmrc` 在 CODEOWNERS 里被明确列为 BE-B 所有，但 `origin/main` 的文件树中**该文件不存在**；`shared/`、`web/`、`package.json`、CI workflow 同样不存在。TEAM.md v1.2 §4.1 写「W1 是全局瓶颈，三样任何一样晚一天，五个人全部原地等待」——从 FE-A 视角，这三样现在一样都没有。
 - **C5**：`docs/TEAM.md` v1.2 的 §3 标题仍是「**六周排期**」，内容已改为 3 周（W1 / W2 / W3 + 裁剪清单）。按 §5.5「文档失真视为缺陷，里程碑评审时抽查」，请 PD 顺手把标题改掉；我提这条只是因为我的评审意见要引用章节号，标题错了会误导后面的人。
 
-**FE-A 签字条件（v1.2 后更新）**：B1 / B2 / B3 给出结论 + PD 就 Y5 出展示矩阵 + C1 占位符替换（这条不做，防线 2 在平台上是空的）。
+**FE-A 签字条件（v1.3 复核后更新）**：B1 / B2 / B3 给出结论 + PD 就 Y5 出展示矩阵。C1 已由 BE-B 完成（CODEOWNERS 实名），从条件中划掉；F1 / F2 随 API.md v1.2 一并处理，见「复核增补」。
 
 ## 评审意见汇总
 
@@ -181,4 +182,53 @@ CODEOWNERS 给 FE-A 的实际地盘是（不是我原先假设的 `views/onboard
 | C4 | 依赖（新） | `.nvmrc`、`shared/`、`web/`、`package.json`、CI workflow 在 `origin/main` 上均不存在 | BE-B |
 | C5 | 文档（新） | TEAM.md v1.2 §3 标题仍写「六周排期」，内容已是 3 周 | PD |
 
-**FE-A 签字条件：B1 / B2 / B3 给出结论，Y5 由 PD 出展示矩阵，C1 占位符替换完成。** 其余可按「新增字段直接加」的兼容策略放进 **API.md v1.2**（注意：与 TEAM.md v1.2 是两个不同的版本号，别混），不阻塞我进入 W2。
+**FE-A 签字条件（v1.3 复核后更新）：B1 / B2 / B3 给出结论，Y5 由 PD 出展示矩阵。C1 已结案。** 其余可按「新增字段直接加」的兼容策略放进 **API.md v1.2**（注意：与 TEAM.md v1.2 是两个不同的版本号，别混），不阻塞我进入 W2。
+
+---
+
+## 复核增补（2026-11-06 晚，基准 `origin/main` = `496c1ef`）
+
+> 本节能回答「评审单交出去之后发生了什么」。依据全部是 `origin/main` 上可复现的文件与实测，非转述。
+> 本单（PR #1）已被 PD 于 13:45 合入 `main`；之后 #2（BE-B 脚手架 + `@canteen/shared` + CI）、#3（COLLAB 防线 7）、#4（PD 种子 v2）先后落地。
+
+### 1. 逐条结案状态
+
+| 编号 | 状态 | 现在的依据（均在 `origin/main` 上） |
+|---|---|---|
+| C1 | **结案** | CODEOWNERS 已实名：BE-A `pigQAQ` / BE-B `yangelect` / FE-A `Aredjdhd` / FE-B `wyf-111` / PD `givehope488`。平台强制 Review 的机制恢复生效 |
+| C3 | **结案** | `/docs/TEAM.md @givehope488`、`/reviews/ @givehope488` 已单列，与 §5.5 一致 |
+| C5 | **结案** | TEAM.md §3 标题已改「三周排期」（本次 diff 仅此一行） |
+| C4 | **部分结案** | 已存在：`.nvmrc`（=22）、根 `package.json`（workspaces: shared/server；scripts `lint/typecheck/test/check:data/dev/start`）、`shared/`（实际路径 `shared/src/`，包名 `@canteen/shared`）、`.github/workflows/ci.yml`（main HEAD 三 job 全绿）。**仍缺**：`web/` 前端脚手架、`VITE_API_BASE`、Mock API、`npm run smoke / e2e / seed` |
+| C2 | 仍开 | `/web/src/api/` 仍是 `@Aredjdhd @wyf-111` 双所有者；`client.ts` 主笔约定未成文（types.ts 注释要求解包只在 `client.ts` 一处，但该文件尚不存在） |
+| B1 | 仍开 | `RecommendationRequest`（shared/src/types.ts）仍只有 `session_id / meal / overrides`，「换一批」无参数 |
+| B2 | 证据更新，仍开 | 数据例证已修：种子 v2 里 s11/s12/s13 tags=[`pork`,`gluten`,`meat`]（PD 补 `meat`）。但类型层 `AvoidOption.excludes_tag: DishTag` 仍是**单值**；实测纯素需排 6 个 tag（meat/pork/beef/seafood/egg/milk），排除后午餐 `protein` 19→2、`soup` 4→0。PD 的 DATA-AUDIT §3-D2 已把 `excludes_tags`（复数）排进 API v1.2。**新增矛盾**：实现下发的 8 个 key 用 `nomeat` 表达素食（server/src/data/avoid-options.ts），而 API.md §2.3 示例仍是 `"avoid": ["vegan"]`（第 103 行）→ 照文档写前端会被判 400，见 F1 |
+| B3 | 仍开 | `Combo.dishes: ComboDish[]` 平铺数组、无槽位字段。种子 v2 复核不变：早餐池 14 道 `veg=0 soup=0`、午餐 41 道 `fruit=0` |
+| Y1 | 仍开 | `bmi_tag: string`（types.ts）仍无值域 |
+| Y2 | 部分 | `warnings: string[]` 仍是自由文本；但 `MINOR_AGE = 18` 已进 `shared/src/constants.ts`，前端不再写死 18 这个数 |
+| Y3 | 仍开，且被独立复现 | DATA-AUDIT §4 独立给出同一结论（素食+忌麸质早餐主食只剩白粥）。**新增前置问题**：8 个忌口 key 里没有 `gluten` 项（avoid-options.ts），「忌麸质」用户在 UI 上无法表达 → Y3 的场景现在连入口都没有，需 PD/BE-A 补一个 gluten key 或过敏通道 |
+| Y4 | 仍开 | `adopted_combo_id?: string \| null`（types.ts）；24h 过期后 `POST /meal-logs` 的处置仍无定义 |
+| Y5 | 部分 | 数据侧已拆：`portion_label` 只留展示用语（实测午餐 41 道标签为「1 份/1 碗/1 个/1 只/1 根/半份」），克重进 `portion_grams`，55 条全 B 时服务端投影不下发（dishes.ts `toDishDto` + app.test.ts 断言）。PD 在 DATA-AUDIT §7 给出 v1.2 方案：`portion_grams?` 仅 `reliability === 'A'` 时下发。**但** API.md §2.1/§2.3 示例仍是 `"portion_label": "200g"`（第 54/121 行），而 `server/test/app.test.ts:107` 断言 portion_label 不得匹配 `/\d+(g|ml|克)/` → 契约示例与 CI 断言互斥，见 F2。展示矩阵本身 PD 仍未产出 |
+| Y6 | 部分 | 种子 v2 新增 `ingredients: [{name,grams,source}]`（当前 55 条全空），`source` 保留且 55 条仍同值；响应白名单由 `toDishDto` 显式投影，测试断言 `portion_grams / ingredients / source` 不出现于响应。但 API.md 正文仍无任何记载 → 照流程问题报 |
+| Y7 | 部分 | `Meal / Category / Sex / Activity / Goal / Reliability / DishTag` 枚举全部进了 shared/src/types.ts；API.md 正文仍无枚举表 → 文档补齐仍待 BE-A |
+| G1 | 部分 | `PROFILE_BOUNDS / SERVING_STEP / MAX_SERVINGS / ERROR_STATUS / MINOR_AGE` 已入 shared/src/constants.ts；`ACTIVITY_OPTIONS / GOAL_OPTIONS` 仍缺 |
+| G2 | 仍开 | `NutritionTotals` 仍无 `price_yuan` |
+| G3 | 部分 | `ApiResult<T>` 已在 types.ts 定义；`web/src/api/client.ts` 仍不存在 → 解包实现与单测样例仍待落 |
+| G4 | 仍开 | insights 端点未实现；「采纳」判定口径无记载 |
+
+顺带更正我原 B2 一处数字：午餐蛋白池 tag 分布应为 `meat=15 / pork=7 / spicy=5 / egg=3 / seafood=2 / beef=1 / gluten=1 / peanut=1 / vegprotein=4`——原文漏列了 `spicy=5`，其余数字在种子 v2 上复核一致。
+
+### 2. 新发现 F1~F4（代码先行、契约/流程未跟）
+
+| 编号 | 一句话 | 证据 | 后果 | 该谁定 |
+|---|---|---|---|---|
+| F1 | API.md 示例用不存在的 key `vegan`，实现的 key 是 `nomeat` | API.md 第 103 行 vs `server/src/data/avoid-options.ts` 8 个 key | 照文档写建档页/试算请求 → `VALIDATION_ERROR`。这是「文档与实现互斥」，不是文档滞后 | BE-A（附录 C 流程） |
+| F2 | API.md 示例 `portion_label: "200g"` 与 CI 断言互斥 | API.md 第 54/121 行 vs `server/test/app.test.ts:107`（`portion_label` 不得匹配 `/\d+(g\|ml\|克)/`） | 冻结契约里的示例按今天的实现标准是非法响应；Y5 的合规冲突以「测试断言」形式被钉死了 | BE-A + PD |
+| F3 | COLLAB 承诺的 `smoke / e2e / seed` 脚本不存在 | COLLAB 防线 3/4、DoD 第 1 条 vs 根 `package.json` scripts（只有 lint/typecheck/test/check:data/dev/start） | 「CI 绿」会被误当「smoke 通过」上报；防线 4 的 9 组端点包络断言只剩 vitest 里 menu 一组的 5 个用例 | BE-B |
+| F4 | 防线 7 的三条约束直接影响 FE-A 交付节奏 | `docs/COLLAB.md` 防线 7 | ①不能批准自己的 PR（我的每个 PR 都必须等别人批）；②旧批准自动失效（PR 再推新 commit 要重新等人批）；③仓库转 private 后 Free 套餐门禁全部失效（转 private 必须与升级 Pro 同一天）。另：`/reviews/` 归 PD 后，本单及所有 review 文档的后续修改需要 PD 批准——包括本次增补 | 全员知悉 |
+
+F1/F2 的根治 = API.md 升 v1.2 并按附录 C 走变更流程，主笔是 BE-A，**FE-A 与 Agent 无权自己改契约**——本文档只负责把差异钉在明处。
+
+### 3. 环境实测（供 W2 前对齐）
+
+- 本机 Node v26.13.0 依次跑通 `npm ci` → `npm run lint / typecheck / test / check:data`，全部 exit 0；CI 在 node 22（`.nvmrc`）上同四步也全绿 → 22/26 版本差异未造成可见分歧（两侧证据都有，不是推断）。
+- 本地起 `npm run start`（8787 端口），实测 `GET /api/v1/menu?meal=lunch` → 200，41 道、8 个忌口选项、字段白名单无泄漏（无 `portion_grams/ingredients/source`）；`?meal=brunch` → 400 + `{error:{code:VALIDATION_ERROR,fields:[{path:"meal"}]}}` 标准包络。真实响应样本已贴进 CONTRACT-NOTES。

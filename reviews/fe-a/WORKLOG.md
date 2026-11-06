@@ -500,3 +500,99 @@ push 本节之后的同一次回读里，`mergeable_state` 从 `blocked` 变成�
 真正站得住的只有一条，而且它不随重算变化：`requested_reviewers = 0`，而 CODEOWNERS 内容确实是 `@be-a/@fe-a/…` 字面占位符（`git show origin/main:.github/CODEOWNERS` 可复现）。C1 的判断据此成立，无需依赖 `mergeable_state`。查 branch protection 的那条 curl 仍然要做，但它的目的从「证实 blocked」降为「查清合并前置到底是哪一条」。
 
 顺手把这条也立成规矩：**只观测到一次的瞬时字段值，要写就写明时间戳和「未复查」**，别让它长成结论。本轮最终核验值：PR #1 open、8 commits、+894/−0、4 files、head `d5fa8ed`、回读 body 与我提交的 JSON 逐字一致；本地 `git status --porcelain` 为空。
+
+## 14. 2026-11-06 晚·第二次复核：main 前移到 `496c1ef`，四份文档按新事实重写，走新分支 + 新 PR
+
+§13 之后 main 在几小时内被四个 PR 前移了。我评审单里「当时是对的」的句子现在有好几句是错的。处理方式与 §13 一致：不删旧文，本节逐条更正 + 交付新版本。
+
+### 14.1 远端前移事实（REST 读回 + 本地 git 验证，CST = UTC+8）
+
+```
+git log --oneline 1275782..origin/main
+496c1ef 数据: 种子 v2 拆分份量字段 + 修正肉类标签 + 数据体检与复核底稿 (#4)
+552068b docs: 新增防线 7「合并门禁」，标明管理员豁免与平台限制 (#3)
+7f5f6a9 reviews: FE-A 接口协定 v1.1 前端侧评审（3 条阻塞项待结论）(#1)
+863dba0 chore: 仓库脚手架 + shared 契约包 + CI 三件套（W1 地基）(#2)
+```
+
+API 读回的合并时间线（`GET /pulls?state=all` + `GET /pulls/1` + `GET /pulls/1/reviews`）：
+
+| 时间 (CST) | 事件 |
+|---|---|
+| 13:27 | PD（givehope488）在 pull/1 上留 COMMENTED review（无行内评论，review_comments=0） |
+| 13:44:45 | PR #2（脚手架 + `@canteen/shared` + CI）合并 → `863dba0` |
+| 13:44:55 | PD 对 pull/1 点 **APPROVED** |
+| 13:45:10 | PR #1 合并（`merged_by=givehope488` 管理员合并）→ squash commit `7f5f6a9` |
+| 14:06:41 | PR #3（防线 7 合并门禁）合并 → `552068b` |
+| 14:45:01 | PR #4（种子 v2）合并 → `496c1ef` |
+
+pull/1 合并时最终形态（读回）：`state=closed merged=1`、`commits=9`、`+902/-0`、`files=4`、`comments=0`、`review_comments=0`；reviews 共 2 条，都在 head `9fb392b` 上。CODEOWNERS 实名化由 PR #2 完成（`git log origin/main -- .github/CODEOWNERS`：`863dba0` 与 `1275782` 两个 commit），现文件里用户名 = `pigQAQ / yangelect / Aredjdhd / wyf-111 / givehope488`，且新增 `/reviews/ @givehope488`（我改评审文档需 PD 批准）与 `/docs/TEAM.md @givehope488`。
+
+### 14.2 更正我自己的两处旧记录
+
+1. §13.4 及更早写的「review_count=0、一个 Reviewer 都没被请求」**作废**。那是我建 PR 后一小时内的瞬时值。合并时点的事实是：`requested_reviewers=0` 依然成立（CODEOWNERS 当时确实是占位符、平台防线没生效），但 PD 人工走了评审（COMMENTED → APPROVED），PR 是靠**人**合进去的，不是靠平台防线。旧句子按 §13.4 立的规矩处理：只观测到一次的瞬时值不能当结论，本节读回值为准。
+2. 「合并前没有任何 CI 检查」成立，但要补时序才有意义：CI 是 13:44:45（PR #2）才落地的，我的 PR 13:45:10 就被 owner 合并，head `9fb392b` 的 `check_runs=0`。**即我的 PR 是在防线 7 出现之前、以「无前置 CI」的形态被管理员合入的**——按现在的门禁（CI 先绿 + 1 人批准 + 不能自批）这套动作不再合法。合并动作是 owner 做的，我只记录事实。squash commit `7f5f6a9` 在合并后 13:45:12 补跑了一次 ci → success（run 42170263227），所以「我的内容在 CI 上全绿」成立，但它是**事后**绿的。
+
+### 14.3 结案与仍开（与 API-REVIEW.md「复核增补」同口径，这里只留编号）
+
+- 结案：C1（CODEOWNERS 实名）、C3（`docs/TEAM.md` 归 PD）、C5（TEAM.md §3 标题实测已是「三周排期」）。
+- 半结：C4（`shared/` + CI + `.nvmrc` 就绪；`web/` 目录、`VITE_API_BASE`、smoke/e2e/seed 仍缺）。
+- 仍开：B1/B2/B3、Y1/Y2/Y3/Y4/Y5/Y6/Y7、G1/G2/G3/G4、C2——逐条处置状态见 API-REVIEW.md，不在这里复制。
+- 新上报 F1~F4（代码先行、契约未跟，均是硬事实非推测）：
+  - **F1**：API.md v1.1 §2.3 示例的忌口 key `vegan` 在实现里不存在，实测素食 key 是 `nomeat`。前端照契约写会拿 400。
+  - **F2**：API.md v1.1 示例 `"portion_label": "200g"`，而 `server/test/app.test.ts:107` 断言份量标签**不得**匹配克重正则，种子 v2 实测全是「1 份/1 个/半份」类。契约与代码互斥，需 BE-A 定稿。
+  - **F3**：COLLAB 防线 3/4 + DoD 第 1 条要求的 smoke/e2e/seed 脚本在根 scripts 里不存在（实测只有 `lint/typecheck/test/check:data/dev/start`）。
+  - **F4**：防线 7 的三个直接后果——`/reviews/` 归 PD、main 禁强推（本复核必须走新分支+新 PR）、Free 计划转 private 会丢全部分支保护。
+
+### 14.4 本地实跑记录（本机 Node 26，CI 侧 Node 22）
+
+```
+node -v            → v26.13.0
+npm run lint       → lint_exit=0
+npm run typecheck  → tc_exit=0
+npm run test       → test_exit=0
+npm run check:data → checkdata_exit=0
+```
+
+（`/tmp/trio.out` 原样输出。根 `package.json` `engines.node >=22`、`.nvmrc`=22，CI 用 `node-version-file`。本机只装了 26，22 侧证据来自 CI：`GET commits/496c1ef/check-runs` → `lint/typecheck/test` 三个 job 全 `success`。两端无版本分歧，但「22 本机实测」这句我**没有**做过，不写。）
+
+真实服务端起服与收口（端口 8787，为把 400 包络落文件，本节又起了一次；与 §8 第一次结果一致）：
+
+```
+npm run start -w @canteen/server   （tsx src/index.ts；log：[server] http://localhost:8787 (text_engine=template)）
+GET /api/v1/menu?meal=lunch  → 200  dishes=41  avoid_options=8   （/tmp/menu_lunch.json，10971 字节）
+GET /api/v1/menu?meal=brunch → 400
+  {"error":{"code":"VALIDATION_ERROR","message":"meal 取值须为 breakfast / lunch / dinner","fields":[{"path":"meal","issue":"取值非法"}]}}
+GET /healthz → 200
+收口：netstat 找 LISTENING PID（76660）→ taskkill //F //PID → 端口释放。
+```
+
+（taskkill 后 npm 包装进程退出码非 0，是「被杀死」的预期表现，不是服务错误；`server.log` 里那段 `npm error Lifecycle script` 同理，属收口痕迹。）
+
+### 14.5 本次交付方式
+
+- 分支 `feat/fe-a-review-update-w1`：从 `origin/main`（`496c1ef`）切出；切出后先验证 `git diff --stat origin/main -- reviews/fe-a` 为空（main 上我的内容是 PR #1 的 squash 结果，逐字节一致），再开始改。
+- 改动四份文档：API-REVIEW.md（v1.3 复核增补）、CONTRACT-NOTES.md（§5 依赖表重写 + §5.1 实测样本）、AGENT-PROMPT.md（`@canteen/shared` 订正 + 铁律 4 防线 7 + 忌口 key 禁止项）、WORKLOG.md（本节）。
+- 因 main 禁强推 + `/reviews/` 归 PD，交付必须走新 PR；PR 创建与回读校验记录在本节之后的续节。
+
+### 14.6 新 PR 创建与回读校验（PR #5）
+
+```
+POST /repos/givehope488/nutritionist-prototype/pulls   → create_http=201
+  number=5  state=open  draft=no  base=main  head=feat/fe-a-review-update-w1 (51d4cd9)
+  commits=1  +181/-29  files=4
+GET /pulls/5（回读）：
+  body 与我提交的 JSON 逐字节一致（orig_bytes=got_bytes=5251，脚本 vrfy5c.pl）  YES
+  title identical  YES
+  requested_reviewers = givehope488
+```
+
+`requested_reviewers = givehope488` 是本节最有价值的一条：**CODEOWNERS 实名化（C1）在平台层面第一次真正生效**——PR #1 时是空数组（占位符解析不到人），现在 `/reviews/` 自动请求到了 PD。防线 2 从「靠人记」恢复为「平台强制」，C1 结案的证据链闭合。
+
+CI：head `51d4cd9` 的 check-runs=3，`lint / test / typecheck` 全部 `success`（Node 22）——这次是**合并前**绿的，与 §14.2 记录的上一单「事后补绿」形成对照。
+
+两处回读校验中的小插曲，按老规矩记下：第一次比对报 `body_identical=NO`，是我又把「字符串」和「字节串」直接比（`decode_json` 对 body 输出的是字节串），老毛病第三次犯，这次 3 分钟定位。终判据 `vrfy5c.pl` 用字节级比较，结果 YES。以后回读校验一律按「双方都落到字节再比」写脚本。
+
+### 14.7 交接包对齐（沿用 §11.6 / §13.3 的同一判据）
+
+离线复现包按三条命令刷新（format-patch / bundle / Compress-Archive），判据不变：临时克隆 checkout `496c1ef` 后 `git am` 全序列，`git diff --stat HEAD origin/feat/fe-a-review-update-w1 -- reviews/fe-a` 输出为空。包内文件数 = `reviews/fe-a/` 4 份 + 备用 patch 序列，与 PR #5 的 files=4 一致。

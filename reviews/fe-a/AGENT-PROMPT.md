@@ -1,13 +1,14 @@
 # FE-A 的 Agent 任务提示词模板与禁止项卡片
 
-> 依据：COLLAB.md §5（统一模板 + 固定禁止项）、§6（人工检查点）、API.md 附录 C.5（Agent 无权发起接口变更）。
+> 依据：COLLAB.md §5（统一模板 + 固定禁止项）、§6（人工检查点）、防线 7（合并门禁）、API.md 附录 C.5（Agent 无权发起接口变更）。
 > 用途：W1 验收项「约定各自 Agent 的禁止项模板」。以下三段是 FE-A 给 Agent 下任务时**必须原样粘贴**的内容。
 
 ## 一、三条铁律（贴在每个任务开头，缺一条不开工）
 
-1. **共用 `shared/` 类型**：前端 view 里不出现任何手写的接口类型或字段名常量，一律 `import type` 自 `shared/`。
+1. **共用 `@canteen/shared` 类型**：前端 view 里不出现任何手写的接口类型或字段名常量，一律 `import type` 自 `@canteen/shared`（包名是 `@canteen/shared`，不是 `shared/`；`shared/` 已随 PR #2 就绪，不得再用「未就绪」当借口手写类型）。
 2. **CI 红不合并**：`lint` / `typecheck` / `test` 三件套必须全绿；不绕过、不注释规则、不加 `any` 骗过类型检查。
 3. **只动自己目录**：按 `.github/CODEOWNERS`，FE-A 的地盘是 `web/src/views/profile/`、`web/src/views/goal/`、`web/src/views/recommend/` 三个目录；`web/src/api/` 与 FE-B **共担**（未约定主笔前不动）。`shared/`、根配置、`package.json`、`.nvmrc`、`.github/`、CI 配置、`web/src/components/`、别人的 view、`server/` —— 一律只读。越界文件 GitHub 会自动把所有者加成必需 Reviewer，所以越界不是「被骂」而是「合不进去」。
+4. **PR 走防线 7 门禁（COLLAB 新增）**：必须 1 人批准才可合并；**自己不能批自己的 PR**；push 新提交后旧批准自动失效；禁止 force-push；`main` 禁强推。`/reviews/` 在 CODEOWNERS 里归 PD（`givehope488`）——我改评审文档需要 PD 批准。仓库若转 private（Free 计划会丢全部保护），当天升级 Pro 或按防线 7 人工补位，不能裸奔。
 
 ## 二、FE-A 专属禁止项（在 COLLAB.md §5 固定禁止项之上追加）
 
@@ -20,7 +21,11 @@
 - 禁止自创错误处理形态：失败只认 §1 的单一 error 对象，成功只认直返业务对象，
   解包逻辑应集中在 web/src/api/client.ts；该目录是 FE-A + FE-B 共担、主笔未定（评审单 C2），**定主笔之前不要创建或修改该文件**。
 - 禁止在页面里硬编码：身高/体重/年龄校验范围、餐段枚举、忌口选项。
-  前三者应从 shared/constants.ts 导入；忌口选项必须运行时取 GET /menu 的 avoid_options。
+  前两者应从 @canteen/shared 导入（PROFILE_BOUNDS、Meal/Sex/Activity/Goal 枚举类型；展示名映射放页面，值不本地化）；
+  忌口选项必须运行时取 GET /menu 的 avoid_options。
+- 禁止在页面里写「vegan」等任何硬编码忌口 key，禁止自带 key→tag 映射表。
+  契约 v1.1 示例里的 vegan 已过时（F1）：实测素食 key 是 nomeat。key 只能从 avoid_options 下发清单取；
+  清单若缺某项（如「忌麸质」没有对应 key），那是契约议题（Y3 前置），报我，不写兜底。
 - 禁止新增依赖（含 devDependency）。需要库 → 停下来问 BE-B，由 BE-B 统一评估。
   依据：COLLAB.md 防线 3。
 - 禁止改动 menu-seed.json 或任何 server/data 下文件。生产数据只走管理端 API。
@@ -38,7 +43,7 @@
 角色：你在为「食堂营养师」项目实现：<一句任务描述，例如「建档页表单与提交交互」>。
 
 契约：严格遵守以下类型 / 接口定义，字段名一字不改：
-<粘贴 shared/types.ts 相关段落；shared/ 未就绪时粘贴 docs/API.md 对应端点整段>
+<粘贴 @canteen/shared（shared/src/types.ts / constants.ts）相关段落；若类型与 API.md v1.1 示例不一致（F1/F2），以 shared 类型 + CONTRACT-NOTES §5.1 实测样本为准，差异上报给我>
 补充上下文：<粘贴 fe-a/CONTRACT-NOTES.md 对应小节>
 
 范围：只允许修改 <目录，例：web/src/views/profile/（CODEOWNERS 已给我的是 profile / goal / recommend 三个）>，不改其他任何文件。
@@ -65,7 +70,7 @@
 - 同一报错修 3 次仍不过；
 - Agent 开始改任务目录以外的文件（**失控信号**，立刻停手并回滚，见 WORKLOG.md 的回滚条目）；
 - Agent 说「改一下接口/字段结构就能解决」→ 这不是代码问题，转成接口变更议题交 BE-A；
-- Agent 需要 `shared/` 里的类型但 `shared/` 还没建 → 这是上游依赖未到，回来找我按依赖表推进，不要就地手写类型「先跑起来」。
+- Agent 需要 `@canteen/shared` 里的类型但其中缺失 → 这是上游依赖缺口（如 ACTIVITY_OPTIONS / GOAL_OPTIONS 仍缺），回来找我按依赖表推进，不要就地手写类型「先跑起来」。
 - Agent 建议装个新库来解决 → 问 BE-B。
 
 ## 六、PR 必须附的「AI Agent 使用声明」（`.github/PULL_REQUEST_TEMPLATE.md` 新增硬性段落）
@@ -87,3 +92,4 @@ FE-A 的执行方式：每次开工就把本文件第三节模板整段贴给 Ag
 |---|---|
 | 2026-11-06 | 首版：三条铁律 + 9 条 FE-A 专属禁止项 + 字段核对表 + 停手判据 |
 | 2026-11-06 | 同步 `origin/main` `1275782`：目录改为 CODEOWNERS 实际路径（profile/goal/recommend）；`web/src/api/` 由待认领改为共担；新增第六节 PR 的 Agent 使用声明要求 |
+| 2026-11-06 | 同步 `origin/main` `496c1ef`：导入路径全部改 `@canteen/shared`（包名订正，禁止再写 `shared/`）；铁律加第 4 条防线 7 门禁（不能自批 / 旧批准失效 / 转 private 门禁失效 / `/reviews/` 归 PD）；禁止项 +1「禁止硬编码 vegan 等忌口 key」（F1，素食 key 实测为 `nomeat`）；模板的契约粘贴段指向 shared 类型 + CONTRACT-NOTES §5.1 | main 前移 4 个 PR |
