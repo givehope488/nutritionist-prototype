@@ -89,6 +89,8 @@ FE-B 名下目录（CODEOWNERS 口径）：`web/src/views/log|feedback|history/`
 | B12 | 契约以 main 的 `shared/src` 为唯一事实源，我自写的转写作废 | 官方版本由 BE-B 落库并带 `shared/package.json` 导出配置，两边并存就会出现两份「事实源」，正是防线 1 要防的 | 保留我的 `shared/types.ts` 并在上面打补丁（双份契约，必漂移） |
 | B13 | 中文展示文案（餐次 / 分类）落在 `web/src/utils/labels.ts`，不进 `shared/` | 同一份契约服务端不需要「早餐」这种文案；UI 词表不是契约，混进 `shared/` 会让契约包变成 UI 配置 | 继续放 `shared/constants.ts`（官方已无此文件，会再造一份重复常量） |
 | B14 | 不擅自把 `web` 加进根 `package.json` 的 workspaces | COLLAB 明令 FE-B 不改根配置；该项决定影响 CI 结构与 lockfile（`npm ci` 会重装全仓依赖），应由脚手架所有者 BE-B 一次性定 | 直接改根配置让 CI 变绿（越权，且可能与 BE-B 的后续改动冲突） |
+| B15 | 份量只展示 `portion_label`，A/B 级同一套 UI，删除「估算值」徽标 | API.md v1.2.1 定死 `portion_grams` 一律不下发；D4 要求同级同 UI。留着徽标等于暗示「B 级更不准」，而两者拿到的数据其实一样 | 继续按 `reliability` 分支渲染（无数据支撑） |
+| B16 | Mock 的 `/menu` 显式挑选契约字段，而不是 `{...dish}` 透传 | 种子已带 `portion_grams`/`ingredients`/`source` 等治理字段，透传会让 Mock 响应混入契约外字段，等于替后端「擅自下发」 | 直接 spread（v1.2.1 明确禁止下发） |
 
 ---
 
@@ -100,7 +102,7 @@ FE-B 名下目录（CODEOWNERS 口径）：`web/src/views/log|feedback|history/`
 | # | 议题 | 现状与出处 | 影响 | 临时兜底 |
 |---|---|---|---|---|
 | Q1 | §2.3 响应示例的 `target.fat_g = 55` 与附录 A 算不拢 | `api/__mock__/nutrition.ts` 头注释 | 前端拿到的脂肪目标可能是示例值而非口径值 | Mock 按附录 A（日热量 27%）算，示例仅作字段形态参考 |
-| Q2 | 忌口选项是单 `excludes_tag`，无法表达「纯素」 | `api/__mock__/avoidOptions.ts`：`vegan` 需排除 pork/beef/seafood/egg/milk 多标签 | 纯素用户可能仍被推荤 | Mock 里对 `vegan` 特判多标签；请评审把 `excludes_tag` 改为 `excludes_tags[]` |
+| Q2 | 忌口选项是单 `excludes_tag`，无法表达「纯素」 | 附录 D（v1.2）已定：9 个 key，素食只对应 `meat` 标签 | 「素食」排的是含动物性食材，蛋、奶仍会出现——已作为已知局限写入附录 D，纯素是否支持留到 v1.3 | ✅ 已解决：Mock 表逐行对齐附录 D（`vegan`→`nomeat`），并由 `avoidOptionsContract.test.ts` 解析文档比对 |
 | Q3 | 缺 `GET /api/v1/meal-logs/:id` | `composables/useMealLogLookup.ts` 头注释 | 反馈页刷新/换设备后要拉整页列表才能定位一条 | sessionStorage 缓存 + 列表过滤兜底 |
 | Q4 | §2.4 `MealLog.target` 只有 `kcal` 与 `protein_g` | `views/FeedbackView.vue:31` 注释 | 反馈页脂肪/碳水/钠三条对比条只能显示「暂无目标」 | `MacroBar` 无目标时不画目标线、文案「暂无目标」（不显示「目标 0」） |
 | Q5 | 「忌口过滤后无解」的判据未定义 | `tests/unit/closureEndpoints.test.ts:67` | 55 道菜 + 现有组合结构下，实测任何忌口组合都还有解，`notice` 分支在真实数据上不可达 | 断言改为「返回合法 combos」；`NoSolutionNotice` 组件与其单测保留，等 BE-A 给出无解判据 |
@@ -108,8 +110,8 @@ FE-B 名下目录（CODEOWNERS 口径）：`web/src/views/log|feedback|history/`
 | Q7 | 传输层失败（断网/超时/取消）没有契约错误码 | `api/client.ts:48` 注释 | 前端只能借用 `INTERNAL`，与"服务端异常"混在同一文案桶 | 借 `INTERNAL` + 可操作文案；请评审是否补 `CLIENT_NETWORK_ERROR` |
 | Q8 | 根配置缺 `.nvmrc`，Node 版本未锁 | COLLAB.md 防线 3 要求；CODEOWNERS 已预留 `/.nvmrc @be-b` | 成员 Node 版本不一致时 CI 结果不可复现（本机 v22.23.4，文档示例 v24） | 无权限建根文件，等 BE-B 落 `.nvmrc` |
 | Q9 | CODEOWNERS 未覆盖 `web/src/composables/`、`web/src/utils/`、`web/src/dev/` | `.github/CODEOWNERS`（`1275782` 引入）只列了 views 子目录、`components/`、`api/` | 这三个目录的 PR 会被兜底规则派给 @be-b，FE-B 成了非所有者，Review 链条绕人 | 代码已按现状提交；请 BE-B 补三行归属（建议归 @fe-b） |
-| Q10 | CI 的 `typecheck web` / `test web` 两步在 web 未列入 workspaces 时必然失败 | `.github/workflows/ci.yml` 有 `npm run typecheck -w web`（`if: hashFiles('web/package.json')`），而根 `package.json` 的 `workspaces` 只有 `["shared","server"]`；本地实测输出 `npm error No workspaces found: --workspace=web` | **阻塞**：本分支一旦建 PR，这两步就是红的，按防线 7 不能合并 | 方案 A（推荐）：根 `package.json` 加 `"web"`，并在根锁文件里纳管 web 依赖（web 的 `package-lock.json` 随之退役）；方案 B：CI 改为 `cd web && npm ci && npm run typecheck`。两条都要改根配置，归 BE-B，我不动（决策 B14） |
-| Q11 | 种子 v2 已把份量拆出 `portion_grams`，但契约 `Dish` 没有这个字段 | `server/data/menu-seed.json`（#4）每道菜新增 `portion_grams`；`shared/src/types.ts` 的 `Dish` 只有 `portion_label` | 数据侧已精确到克，前端/推荐文案却只能显示「1 份」，B/C 级「估算值」表述缺少可引用的量化依据 | 前端不猜克重（架构 D1）；建议 BE-A 在 API.md §2.1 补 `portion_grams: number` 后再由 BE-B 落契约 |
+| Q10 | CI 的 `typecheck web` / `test web` 在 web 未列入 workspaces 时必然失败 | `.github/workflows/ci.yml` 曾用 `-w web`，根 `workspaces` 只有 `shared`/`server` | 合并阻塞 | ✅ 已解决：main #12 改为 `working-directory: web` + 独立 `npm ci`（方案 B），并补跑 web 自身 lint |
+| Q11 | 种子 v2 的 `portion_grams` 是否下发 | API.md §2.1 原文自相矛盾（「仅 A 级下发」vs「不出现在任何响应中」） | 前端能否展示克重 | ✅ 已解决：v1.2.1 定为**一律不下发**；D4 要求 A/B 同 UI，`DishCard` 已删「估算值」徽标 |
 > **与 FE-A 议题合并**（`origin/feat/fe-a-api-review-w1:reviews/fe-a/API-REVIEW.md`，评审时不要开两遍）：
 > FE-A 的 **B3**（combo 槽位结构未下发）= 我的 Q1 + Q4；**Y4**（`combo.id` 过期处置 + 采纳→回填交接路径）= 我的 Q3 + 决策 B3；
 > **G3**（`ApiResult` 边界形态给死）= 我的 Q7。四题同源，建议一次评审定完。
@@ -187,11 +189,11 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 ## 9. 下一步（我这边欠的）
 
 1. 与 FE-A 合并建档/推荐页：把路由 `/`、`/profile`、`/recommend` 的临时重定向改回，并按议题 Q6 重写 e2e 前两步。
-2. 议题 Q1–Q11 提交评审；通过后删掉对应兜底代码（`__mock__` 目录整体删除是最大一块）。
+2. 议题余下 Q1/Q3–Q9 提交评审（Q2/Q10/Q11 已结案）；通过后删掉对应兜底代码（`__mock__` 目录整体删除是最大一块）。
 3. W3 剩余边界（TEAM v1.2）：限流 429、菜品下架后回填旧记录、跨天回填（凌晨填昨晚）三例补测。
 4. 周三中途集成点（TEAM v1.2 新增）：从 main 拉最新代码真机冒烟，需要 BE-A 的菜单/推荐 API 到位后把 `VITE_API_BASE` 切到真实后端跑同一套 e2e。
 5. 视觉回归：目前靠肉眼过故事页，等 CI 有基线后补截图对比。
-6. 集成收尾：等 BE-B 就议题 Q10（web 是否入 workspaces）给结论后，把分支的 CI 跑绿；若走方案 A，web 的 `package-lock.json` 退役、由根锁文件纳管。
+6. 集成收尾：Q10 已由 main #12 结案（CI 改 web 独立安装）；本分支回填后跑 CI 确认三项转绿即可。
 
 ---
 
@@ -214,13 +216,16 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 | 2026-11-06 | `65ac931` docs: §11 补「延后推送」决定与三条已试认证路径 | 记录 device 流在无头会话拿不到验证码、浏览器无 GitHub 会话，及两条被放弃的路子 | 踩坑 P16，§11 |
 | 2026-11-06 | rebase 到 `origin/main` = `496c1ef`（#2 脚手架 + #3 合并门禁 + #4 种子 v2） | 丢弃自写 `shared/` 转写；把 web 迁移到官方 `@canteen/shared`；顺带修正 rebase 中一笔被 `-C HEAD` 覆盖成「数据: 种子 v2」的提交说明 | 决策 B12/B13/B14，议题 Q10/Q11 |
 | 2026-11-06 | `9a28a99` web: 迁移到官方 `@canteen/shared` 契约包 | 类型改名（`Meal`/`Category`/`Activity`/`NutritionTotals`/`MealLogResponse`）、常量改名（`PROFILE_BOUNDS`/`MAX_SERVINGS`/`SERVING_STEP`/`MINOR_AGE`）、展示文案移入 `utils/labels.ts`、alias 改为 `@canteen/shared` | 见 §12 对照表 |
+| 2026-11-06 | rebase 到 `origin/main` = `b29deff`（#12 CI web 独立安装、#13 API v1.2.1、#10 PROGRESS） | CI 阻塞 Q10 结案；按 PD 新规往 `docs/PROGRESS.md` §5 追加一行（§0–§4 不动） | §13，PROGRESS §5 |
+| 2026-11-06 | `39529eb` web: 按 PR #6 评审对齐契约 | 忌口表对齐附录 D、份量去克重、删「估算值」徽标、响应剥离治理字段、新增附录 D 比对测试 | 决策 B15/B16，议题 Q2/Q11 |
+| 2026-11-06 | 本笔 docs: 二轮评审对齐与结案 | §13 记录 4 条评审意见的处置；§5 标记 Q2/Q10/Q11 已解决；PROGRESS §5 追加一行 | §13，PROGRESS §5 |
 
 > **提交号会变**：上表的哈希是 rebase 之后的值。rebase 会重写哈希，所以引用提交号时**先确认分支没再 rebase**；
 > 想知道某段代码的来历，用 `git log --follow -- <路径>` 比记哈希可靠。
 
-分支：`feat/fe-b-web`（已 rebase 到 `origin/main` = `496c1ef`，工作区干净，14 个提交含本笔文档）。
+分支：`feat/fe-b-web`（已 rebase 到 `origin/main` = `b29deff`，18 个提交含本笔文档）。
 远端状态：`feat/fe-b-web` **已推送**（upstream 已建立）；**PR #6** 已开（https://github.com/givehope488/nutritionist-prototype/pull/6）。
-CI 首跑：`lint` ✅ / `typecheck` ❌ / `test` ❌ —— 失败原因即议题 Q10（`No workspaces found: --workspace=web`），已在 PR 评论里给出日志与两种修法，等 BE-B 结论；`mergeable_state: blocked`。
+CI：首跑因议题 Q10 红（`No workspaces found`）；main #12 修好 CI 后本分支已 rebase 并回填二轮评审意见（§13），等待新一轮 CI 复核。
 
 ---
 
@@ -289,3 +294,23 @@ push 前例行 `git fetch` 时发现 main 已从 `1275782` 前进 4 个提交，
 **遗留（阻塞合并，不阻塞推送）**：CI 的 `npm run typecheck -w web` / `test -w web` 在 web 未进 workspaces 时必报 `No workspaces found`（本地已实测复现）。两条修法都要动根配置，归 BE-B（议题 Q10、决策 B14），我这边不改。
 
 集成后复跑：`npm run lint` 无告警、`npm run typecheck` 无错、`npm run test` 47/47、`npm run build` 121 modules / js 160.96 kB（gzip 55.99）。
+
+> 上述遗留已在 2026-11-06 晚解决：main #12 选了方案 B（CI 用 `working-directory: web` + 独立 `npm ci`），并补跑 web 自身 lint。详见 §13。
+
+---
+
+## 13. 二轮评审对齐（2026-11-06 晚）
+
+PR #6 评审给出 3 处契约不一致 + 1 条建议，逐条处理如下。
+
+| # | 评审意见 | 改动 | 验收 |
+|---|---|---|---|
+| 1 | Mock 忌口 key 用了 `vegan`，服务端只认 `nomeat` | `avoidOptions.ts` 全表按附录 D 重排为 9 项；`closureEndpoints.test.ts` 的 seed 同步 | 新增 `avoidOptionsContract.test.ts`：解析 `docs/API.md` 附录 D 与 Mock 逐行比对（key/label/excludes_tag/顺序） |
+| 2 | 9 项文案与顺序和附录 D 不一致（「不吃蛋」vs「不吃鸡蛋」等） | 同上，label 直接用附录 D 原文 | 同一测试覆盖 |
+| 3 | `portion_label` 写了克重（`200g`/`120g`/`250ml`/`150g`），「估算值」徽标与 D4 冲突 | `fixtures.ts` 改展示用语（`1 份`/`1 杯`/`1 碗`）；`DishCard` 删除 `showPrecision` 分支与「估算值」徽标，统一渲染 `portion_label`（决策 B15）；故事页说明同步 | `components.test.ts` 改为「A/B 渲染同构：无克重、无估算值」 |
+| 4 | 建议前端也做附录 D 比对，防 Mock 漂移 | 新增 `avoidOptionsContract.test.ts` | CI 会跑 |
+| — | 顺带自查（评审未提）：`/menu` 把种子治理字段透传给了响应 | `db.ts` 的 `allDishes()` 显式挑选契约字段，`portion_grams`/`ingredients`/`source` 一律不出现在响应（决策 B16） | 同一测试文件内断言 `GET /menu` 响应不含这三个 key |
+
+复跑：lint 无告警、typecheck 0 错、**50/50 用例**（新增 3 条）、build 通过。
+
+评审另有一条流程建议：这份记录 600 行、信息密度偏低，建议压到 ≤100 行、过程的放进 PR 描述。**我暂时保留**——它是本项目里唯一按编号（B/Q/P）串起来的溯源材料，删了就没法从代码注释反查到决策；等团队定下过程日志的归档位置再迁。

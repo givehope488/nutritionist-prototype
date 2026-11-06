@@ -196,6 +196,10 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 
 > 所有人可追加，只加不改别人的行。格式见 §0.3。新的在上。
 
+- 2026-11-06 wyf-111 | 变更 | PR #6 三处契约对齐完成：Mock 忌口表按附录 D 逐行重排（`vegan`→`nomeat`，补全 9 项文案与顺序）、份量文案去克重并删除「估算值」徽标（D4）、`/menu` 响应剥离 `portion_grams`/`ingredients`/`source`；新增 `avoidOptionsContract.test.ts` 解析附录 D 比对，防前端再次漂移 | FE-A / BE-B 可开始对接；50 用例全绿
+
+- 2026-11-06 PD | 变更 | **CI 修好，web 按独立项目安装**（PR #12）。`web/` 自带 lock，不在根 workspaces 里，原配置却用 `-w web` 调用，必然「找不到工作区」。现改为 `working-directory: web` 先 `npm ci` 再跑，并补上此前从未执行的 web 自身 lint | 全体；PR #6 的三项检查已转绿
+- 2026-11-06 PD | 变更 | 评审 PR #6 时发现 `API.md` §2.1 自相矛盾：既说 `portion_grams`「仅 A 级下发」又说它「不出现在任何响应中」。已更正为**一律不下发**（升 v1.2.1），与实现、`shared` 类型、D4 对齐 | FE-B：`portion_label` 不得写克重，`DishCard` 的「估算值」徽标按 D4 去掉
 - 2026-11-06 PD | 变更 | `docs/API.md` 升 v1.2：示例 `vegan`→`nomeat`、份量示例改展示用语、新增附录 D 忌口全表（9 项，含 `nogluten`）、补 `meal`/`status` 枚举；同时数据里给紫菜蛋花汤补了 `meat` | 全体；FE-B 要把 Mock 的 `vegan` 改成 `nomeat`
 - 2026-11-06 PD | 变更 | 新增契约一致性测试 `server/test/contract.test.ts`：直接解析 API.md 附录 D 与实现比对，加/改忌口项必须先改文档 | BE-A / FE-A / FE-B
 - 2026-11-06 PD | 变更 | 新增本文件与 `npm run check:progress`；§0~§4 只有 PD 能改，CI 会比对指纹 | 全体
