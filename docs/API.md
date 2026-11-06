@@ -175,6 +175,8 @@
 
 ## 3. 管理端接口（Header: `X-Admin-Token: <token>`）
 
+> 3 周计划中管理端**无 UI**，本节端点由 CLI 脚本 `scripts/dish-admin.mjs`（W2 由 BE-B 提供）直接调用，供 PD 维护数据；管理端 UI 列入 V2。接口契约不因此简化。
+
 | 方法 | 路径 | 用途 | 要点 |
 |---|---|---|---|
 | GET | `/api/v1/admin/dishes` | 全量菜品（含 inactive） | 支持按 category / status 筛选 |
