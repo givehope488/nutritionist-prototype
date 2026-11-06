@@ -1,13 +1,14 @@
 {
-  "version": 1,
-  "exported_at": "2026-11-03",
-  "note": "从可运行原型导出的种子数据。营养值为量级估算（可信度 B），正式版需按配料反推法复核扩充。",
+  "version": 2,
+  "exported_at": "2026-11-06",
+  "note": "种子数据 v2：份量字段拆分（portion_label 展示用语不含克重 / portion_grams 数值，仅 A 级对外下发）；修正 s11-s13 猪肉馅缺 meat 标签。营养值仍为量级估算（可信度 B），配料依据见 ingredients 与 data/review 底稿。",
   "dishes": [
     {
       "id": "s01",
       "name": "白米饭",
       "category": "staple",
-      "portion_label": "200g",
+      "portion_label": "1 份",
+      "portion_grams": 200,
       "meals": [
         "lunch",
         "dinner"
@@ -22,13 +23,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s02",
       "name": "白米饭(半份)",
       "category": "staple",
-      "portion_label": "100g",
+      "portion_label": "半份",
+      "portion_grams": 100,
       "meals": [
         "lunch",
         "dinner"
@@ -43,13 +46,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s03",
       "name": "杂粮饭",
       "category": "staple",
-      "portion_label": "200g",
+      "portion_label": "1 份",
+      "portion_grams": 200,
       "meals": [
         "lunch",
         "dinner"
@@ -64,13 +69,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s04",
       "name": "馒头",
       "category": "staple",
-      "portion_label": "100g",
+      "portion_label": "1 个",
+      "portion_grams": 100,
       "meals": [
         "lunch",
         "dinner"
@@ -87,13 +94,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s05",
       "name": "葱油拌面",
       "category": "staple",
-      "portion_label": "350g",
+      "portion_label": "1 碗",
+      "portion_grams": 350,
       "meals": [
         "lunch",
         "dinner"
@@ -110,13 +119,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s06",
       "name": "片儿川",
       "category": "staple",
-      "portion_label": "450g",
+      "portion_label": "1 碗",
+      "portion_grams": 450,
       "meals": [
         "lunch",
         "dinner"
@@ -128,20 +139,22 @@
       "sodium_mg": 1200,
       "price_yuan": 12,
       "tags": [
-        "gluten",
         "pork",
+        "gluten",
         "meat"
       ],
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s07",
       "name": "鸡蛋面",
       "category": "staple",
-      "portion_label": "400g",
+      "portion_label": "1 碗",
+      "portion_grams": 400,
       "meals": [
         "lunch",
         "dinner"
@@ -153,19 +166,21 @@
       "sodium_mg": 1000,
       "price_yuan": 10,
       "tags": [
-        "gluten",
-        "egg"
+        "egg",
+        "gluten"
       ],
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s08",
       "name": "玉米",
       "category": "staple",
-      "portion_label": "1根",
+      "portion_label": "1 根",
+      "portion_grams": null,
       "meals": [
         "lunch",
         "dinner"
@@ -180,13 +195,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s09",
       "name": "蒸红薯",
       "category": "staple",
-      "portion_label": "150g",
+      "portion_label": "1 个",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -201,13 +218,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s10",
       "name": "白粥",
       "category": "staple",
-      "portion_label": "300g",
+      "portion_label": "1 碗",
+      "portion_grams": 300,
       "meals": [
         "breakfast"
       ],
@@ -221,13 +240,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s11",
       "name": "小笼包",
       "category": "staple",
-      "portion_label": "8只",
+      "portion_label": "8 只",
+      "portion_grams": null,
       "meals": [
         "breakfast"
       ],
@@ -238,19 +259,22 @@
       "sodium_mg": 600,
       "price_yuan": 7,
       "tags": [
+        "pork",
         "gluten",
-        "pork"
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s12",
       "name": "蒸饺",
       "category": "staple",
-      "portion_label": "6只",
+      "portion_label": "6 只",
+      "portion_grams": null,
       "meals": [
         "breakfast"
       ],
@@ -261,19 +285,22 @@
       "sodium_mg": 550,
       "price_yuan": 6,
       "tags": [
+        "pork",
         "gluten",
-        "pork"
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s13",
       "name": "肉包",
       "category": "staple",
-      "portion_label": "1个",
+      "portion_label": "1 个",
+      "portion_grams": null,
       "meals": [
         "breakfast"
       ],
@@ -284,19 +311,22 @@
       "sodium_mg": 450,
       "price_yuan": 2,
       "tags": [
+        "pork",
         "gluten",
-        "pork"
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s14",
       "name": "菜包",
       "category": "staple",
-      "portion_label": "1个",
+      "portion_label": "1 个",
+      "portion_grams": null,
       "meals": [
         "breakfast"
       ],
@@ -312,13 +342,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s15",
       "name": "油条",
       "category": "staple",
-      "portion_label": "1根",
+      "portion_label": "1 根",
+      "portion_grams": null,
       "meals": [
         "breakfast"
       ],
@@ -334,13 +366,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "s16",
       "name": "煎饼果子",
       "category": "staple",
-      "portion_label": "1个",
+      "portion_label": "1 个",
+      "portion_grams": null,
       "meals": [
         "breakfast"
       ],
@@ -351,19 +385,21 @@
       "sodium_mg": 800,
       "price_yuan": 7,
       "tags": [
-        "gluten",
-        "egg"
+        "egg",
+        "gluten"
       ],
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m01",
       "name": "红烧肉",
       "category": "protein",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -381,13 +417,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m02",
       "name": "梅干菜扣肉",
       "category": "protein",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -405,13 +443,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m03",
       "name": "干菜烧肉",
       "category": "protein",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -429,13 +469,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m04",
       "name": "糖醋里脊",
       "category": "protein",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -448,19 +490,21 @@
       "price_yuan": 11,
       "tags": [
         "pork",
-        "meat",
-        "gluten"
+        "gluten",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m05",
       "name": "小炒肉",
       "category": "protein",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -473,19 +517,21 @@
       "price_yuan": 11,
       "tags": [
         "pork",
-        "meat",
-        "spicy"
+        "spicy",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m06",
       "name": "红烧鸡腿",
       "category": "protein",
-      "portion_label": "1只",
+      "portion_label": "1 只",
+      "portion_grams": null,
       "meals": [
         "lunch",
         "dinner"
@@ -502,13 +548,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m07",
       "name": "宫保鸡丁",
       "category": "protein",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -520,20 +568,22 @@
       "sodium_mg": 800,
       "price_yuan": 9,
       "tags": [
-        "meat",
         "peanut",
-        "spicy"
+        "spicy",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m08",
       "name": "白切鸡",
       "category": "protein",
-      "portion_label": "120g",
+      "portion_label": "1 份",
+      "portion_grams": 120,
       "meals": [
         "lunch",
         "dinner"
@@ -550,13 +600,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m09",
       "name": "香菇滑鸡",
       "category": "protein",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -573,13 +625,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m10",
       "name": "卤牛肉",
       "category": "protein",
-      "portion_label": "100g",
+      "portion_label": "1 份",
+      "portion_grams": 100,
       "meals": [
         "lunch",
         "dinner"
@@ -597,13 +651,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m11",
       "name": "清蒸鲈鱼",
       "category": "protein",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -621,13 +677,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m12",
       "name": "虾仁炒蛋",
       "category": "protein",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -646,13 +704,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m13",
       "name": "番茄炒蛋",
       "category": "protein",
-      "portion_label": "180g",
+      "portion_label": "1 份",
+      "portion_grams": 180,
       "meals": [
         "lunch",
         "dinner"
@@ -670,13 +730,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m14",
       "name": "蒸蛋",
       "category": "protein",
-      "portion_label": "120g",
+      "portion_label": "1 碗",
+      "portion_grams": 120,
       "meals": [
         "lunch",
         "dinner"
@@ -694,13 +756,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m15",
       "name": "麻婆豆腐",
       "category": "protein",
-      "portion_label": "180g",
+      "portion_label": "1 份",
+      "portion_grams": 180,
       "meals": [
         "lunch",
         "dinner"
@@ -718,13 +782,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m16",
       "name": "家常豆腐",
       "category": "protein",
-      "portion_label": "180g",
+      "portion_label": "1 份",
+      "portion_grams": 180,
       "meals": [
         "lunch",
         "dinner"
@@ -741,13 +807,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m17",
       "name": "水煮肉片",
       "category": "protein",
-      "portion_label": "200g",
+      "portion_label": "1 份",
+      "portion_grams": 200,
       "meals": [
         "lunch",
         "dinner"
@@ -760,19 +828,21 @@
       "price_yuan": 13,
       "tags": [
         "pork",
-        "meat",
-        "spicy"
+        "spicy",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m18",
       "name": "鱼香肉丝",
       "category": "protein",
-      "portion_label": "180g",
+      "portion_label": "1 份",
+      "portion_grams": 180,
       "meals": [
         "lunch",
         "dinner"
@@ -785,19 +855,21 @@
       "price_yuan": 10,
       "tags": [
         "pork",
-        "meat",
-        "spicy"
+        "spicy",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "m19",
       "name": "手撕鸡丝",
       "category": "protein",
-      "portion_label": "100g",
+      "portion_label": "1 份",
+      "portion_grams": 100,
       "meals": [
         "lunch",
         "dinner"
@@ -814,13 +886,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "v01",
       "name": "清炒时蔬",
       "category": "veg",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -835,13 +909,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "v02",
       "name": "蒜蓉菠菜",
       "category": "veg",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -856,13 +932,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "v03",
       "name": "炒青菜",
       "category": "veg",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -877,13 +955,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "v04",
       "name": "醋溜土豆丝",
       "category": "veg",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -898,13 +978,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "v05",
       "name": "手撕包菜",
       "category": "veg",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -919,13 +1001,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "v06",
       "name": "红烧茄子",
       "category": "veg",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -940,13 +1024,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "v07",
       "name": "凉拌黄瓜",
       "category": "veg",
-      "portion_label": "120g",
+      "portion_label": "1 份",
+      "portion_grams": 120,
       "meals": [
         "lunch",
         "dinner"
@@ -961,13 +1047,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "v08",
       "name": "干锅花菜",
       "category": "veg",
-      "portion_label": "150g",
+      "portion_label": "1 份",
+      "portion_grams": 150,
       "meals": [
         "lunch",
         "dinner"
@@ -984,13 +1072,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "v09",
       "name": "蒜泥生菜",
       "category": "veg",
-      "portion_label": "120g",
+      "portion_label": "1 份",
+      "portion_grams": 120,
       "meals": [
         "lunch",
         "dinner"
@@ -1005,13 +1095,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "t01",
       "name": "番茄蛋汤",
       "category": "soup",
-      "portion_label": "250g",
+      "portion_label": "1 碗",
+      "portion_grams": 250,
       "meals": [
         "lunch",
         "dinner"
@@ -1028,13 +1120,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "t02",
       "name": "紫菜蛋花汤",
       "category": "soup",
-      "portion_label": "250g",
+      "portion_label": "1 碗",
+      "portion_grams": 250,
       "meals": [
         "lunch",
         "dinner"
@@ -1046,19 +1140,21 @@
       "sodium_mg": 600,
       "price_yuan": 2,
       "tags": [
-        "egg",
-        "seafood"
+        "seafood",
+        "egg"
       ],
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "t03",
       "name": "冬瓜排骨汤",
       "category": "soup",
-      "portion_label": "250g",
+      "portion_label": "1 碗",
+      "portion_grams": 250,
       "meals": [
         "lunch",
         "dinner"
@@ -1076,13 +1172,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "t04",
       "name": "玉米排骨汤",
       "category": "soup",
-      "portion_label": "250g",
+      "portion_label": "1 碗",
+      "portion_grams": 250,
       "meals": [
         "lunch",
         "dinner"
@@ -1100,13 +1198,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "b01",
       "name": "水煮蛋",
       "category": "protein",
-      "portion_label": "1个",
+      "portion_label": "1 个",
+      "portion_grams": null,
       "meals": [
         "breakfast"
       ],
@@ -1123,13 +1223,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "b02",
       "name": "无糖豆浆",
       "category": "protein",
-      "portion_label": "300ml",
+      "portion_label": "1 杯",
+      "portion_grams": null,
       "meals": [
         "breakfast"
       ],
@@ -1145,13 +1247,15 @@
       "drink": true,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "b03",
       "name": "甜豆浆",
       "category": "protein",
-      "portion_label": "300ml",
+      "portion_label": "1 杯",
+      "portion_grams": null,
       "meals": [
         "breakfast"
       ],
@@ -1167,13 +1271,15 @@
       "drink": true,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "b04",
       "name": "牛奶",
       "category": "protein",
-      "portion_label": "250ml",
+      "portion_label": "1 杯",
+      "portion_grams": null,
       "meals": [
         "breakfast"
       ],
@@ -1190,13 +1296,15 @@
       "drink": true,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "b05",
       "name": "酸奶",
       "category": "protein",
-      "portion_label": "150g",
+      "portion_label": "1 杯",
+      "portion_grams": 150,
       "meals": [
         "breakfast"
       ],
@@ -1213,13 +1321,15 @@
       "drink": true,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "f01",
       "name": "苹果",
       "category": "fruit",
-      "portion_label": "1个",
+      "portion_label": "1 个",
+      "portion_grams": null,
       "meals": [
         "breakfast"
       ],
@@ -1233,13 +1343,15 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     },
     {
       "id": "f02",
       "name": "香蕉",
       "category": "fruit",
-      "portion_label": "1根",
+      "portion_label": "1 根",
+      "portion_grams": null,
       "meals": [
         "breakfast"
       ],
@@ -1253,6 +1365,7 @@
       "drink": false,
       "reliability": "B",
       "status": "active",
+      "ingredients": [],
       "source": "原型估算种子数据，需按反推法复核"
     }
   ]
