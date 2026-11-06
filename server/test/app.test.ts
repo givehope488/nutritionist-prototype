@@ -4,11 +4,14 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { ApiError, MenuResponse } from '@canteen/shared';
 import { createApp } from '../src/app';
 import { getAllDishes } from '../src/data/dishes';
+import { seedDishes } from '../src/data/seed';
 
 let server: Server | undefined;
 let baseUrl = '';
 
 beforeAll(async () => {
+  // 数据源已从 JSON 改为 SQLite：测试进程用内存库，先灌种子
+  seedDishes();
   server = createApp().listen(0);
   await new Promise<void>((resolve) => server?.once('listening', () => resolve()));
   const address = server.address();
