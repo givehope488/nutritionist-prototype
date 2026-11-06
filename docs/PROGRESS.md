@@ -196,6 +196,8 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 
 > 所有人可追加，只加不改别人的行。格式见 §0.3。新的在上。
 
+- 2026-11-06 wyf-111 | 变更 | 合并 main（#13 API v1.2.1、#14 进程同步）后补 W3 三类边界：429 限流、下架菜品回填旧记录、跨天回填与草稿隔离（`w3Edges.test.ts`，提交 `200bcc8`）；web 全量 54 用例、lint / typecheck / build 全绿 | FE-A 可复用同一断言口径；PR #6 的 CI 三项已转绿
+
 - 2026-11-06 wyf-111 | 变更 | PR #6 三处契约对齐完成：Mock 忌口表按附录 D 逐行重排（`vegan`→`nomeat`，补全 9 项文案与顺序）、份量文案去克重并删除「估算值」徽标（D4）、`/menu` 响应剥离 `portion_grams`/`ingredients`/`source`；新增 `avoidOptionsContract.test.ts` 解析附录 D 比对，防前端再次漂移 | FE-A / BE-B 可开始对接；50 用例全绿
 
 - 2026-11-06 PD | 变更 | **CI 修好，web 按独立项目安装**（PR #12）。`web/` 自带 lock，不在根 workspaces 里，原配置却用 `-w web` 调用，必然「找不到工作区」。现改为 `working-directory: web` 先 `npm ci` 再跑，并补上此前从未执行的 web 自身 lint | 全体；PR #6 的三项检查已转绿

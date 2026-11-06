@@ -190,10 +190,10 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 
 1. 与 FE-A 合并建档/推荐页：把路由 `/`、`/profile`、`/recommend` 的临时重定向改回，并按议题 Q6 重写 e2e 前两步。
 2. 议题余下 Q1/Q3–Q9 提交评审（Q2/Q10/Q11 已结案）；通过后删掉对应兜底代码（`__mock__` 目录整体删除是最大一块）。
-3. W3 剩余边界（TEAM v1.2）：限流 429、菜品下架后回填旧记录、跨天回填（凌晨填昨晚）三例补测。
+3. ~~W3 剩余边界（TEAM v1.2）~~ ✅ 2026-11-06 已补测：限流 429、菜品下架后回填旧记录、跨天回填（凌晨填昨晚），见 §14。
 4. 周三中途集成点（TEAM v1.2 新增）：从 main 拉最新代码真机冒烟，需要 BE-A 的菜单/推荐 API 到位后把 `VITE_API_BASE` 切到真实后端跑同一套 e2e。
 5. 视觉回归：目前靠肉眼过故事页，等 CI 有基线后补截图对比。
-6. 集成收尾：Q10 已由 main #12 结案（CI 改 web 独立安装）；本分支回填后跑 CI 确认三项转绿即可。
+6. ~~集成收尾~~ ✅ Q10 由 main #12 结案；本分支 `d6f2e4d` 的 CI 三项已全绿。
 
 ---
 
@@ -219,13 +219,15 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 | 2026-11-06 | rebase 到 `origin/main` = `b29deff`（#12 CI web 独立安装、#13 API v1.2.1、#10 PROGRESS） | CI 阻塞 Q10 结案；按 PD 新规往 `docs/PROGRESS.md` §5 追加一行（§0–§4 不动） | §13，PROGRESS §5 |
 | 2026-11-06 | `39529eb` web: 按 PR #6 评审对齐契约 | 忌口表对齐附录 D、份量去克重、删「估算值」徽标、响应剥离治理字段、新增附录 D 比对测试 | 决策 B15/B16，议题 Q2/Q11 |
 | 2026-11-06 | 本笔 docs: 二轮评审对齐与结案 | §13 记录 4 条评审意见的处置；§5 标记 Q2/Q10/Q11 已解决；PROGRESS §5 追加一行 | §13，PROGRESS §5 |
+| 2026-11-06 | `d6f2e4d` Merge `origin/main`（#13 API v1.2.1、#14 PROGRESS 同步） | 合并后本分支拿到 `portion_grams` 一律不下发的正式口径；PROGRESS 冲突处保留 PD 行 + 我在最上追加的一行 | §13，PROGRESS §5 |
+| 2026-11-06 | `200bcc8` test: 补 W3 三类边界（429 / 下架菜品 / 跨天） | 新增 `w3Edges.test.ts`：429 包络经 client 解成 `RATE_LIMITED`；下架菜品从菜单消失但旧记录可提交且保留原名；昨晚/今天记录分条、统计按日期窗口计入、草稿按日期隔离 | §14 |
 
 > **提交号会变**：上表的哈希是 rebase 之后的值。rebase 会重写哈希，所以引用提交号时**先确认分支没再 rebase**；
 > 想知道某段代码的来历，用 `git log --follow -- <路径>` 比记哈希可靠。
 
-分支：`feat/fe-b-web`（已 rebase 到 `origin/main` = `b29deff`，18 个提交含本笔文档）。
-远端状态：`feat/fe-b-web` **已推送**（upstream 已建立）；**PR #6** 已开（https://github.com/givehope488/nutritionist-prototype/pull/6）。
-CI：首跑因议题 Q10 红（`No workspaces found`）；main #12 修好 CI 后本分支已 rebase 并回填二轮评审意见（§13），等待新一轮 CI 复核。
+分支：`feat/fe-b-web`（已并入 `origin/main` = `b29deff`，21 个提交领先 main）。
+远端状态：`feat/fe-b-web` **已推送**；**PR #6** 已开（https://github.com/givehope488/nutritionist-prototype/pull/6）。
+CI：`d6f2e4d` 上 lint / typecheck / test 三项已全绿。
 
 ---
 
@@ -314,3 +316,18 @@ PR #6 评审给出 3 处契约不一致 + 1 条建议，逐条处理如下。
 复跑：lint 无告警、typecheck 0 错、**50/50 用例**（新增 3 条）、build 通过。
 
 评审另有一条流程建议：这份记录 600 行、信息密度偏低，建议压到 ≤100 行、过程的放进 PR 描述。**我暂时保留**——它是本项目里唯一按编号（B/Q/P）串起来的溯源材料，删了就没法从代码注释反查到决策；等团队定下过程日志的归档位置再迁。
+
+---
+
+## 14. W3 边界补测（2026-11-06 夜）
+
+新增 `web/src/tests/unit/w3Edges.test.ts`，三例都走真实请求层 + Mock 后端，不另写桩。
+
+| 边界 | 做法 | 断言 |
+|---|---|---|
+| 限流 429 | 用 `vi.stubEnv('VITE_API_BASE', 'https://api.test.local')` + 桩 `fetch` 返回 §1 的 429 包络，动态导入 `api/client` 走真实传输分支 | `request()` 解成 `RATE_LIMITED`，`message` 原样保留，页面可直接渲染「稍后再试」 |
+| 菜品下架后回填旧记录 | 用例内临时把种子里的在架菜品置为 `hidden`，`finally` 还原 | 默认 `/menu` 不再返回它；`include_inactive=true` 可见；`POST /meal-logs` 仍接受它，历史里保留提交时的菜名 |
+| 跨天回填（凌晨填昨晚） | 同一会话分别提交昨天晚餐、今天早餐 | 两条独立成记录、按日期倒序；`/insights/summary?days=1` 只计今天，`days=2` 计两条 |
+| 跨天草稿隔离 | `useLogDraft` 同一实例把日期从今天切到昨天 | 今天已选份数不带到昨天，幂等 id 也不同 |
+
+复跑：lint 无告警、typecheck 0 错、**54/54 用例**（新增 4 条）、build 通过；`d6f2e4d` 的 CI 三项全绿。
