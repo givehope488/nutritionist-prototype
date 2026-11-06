@@ -146,6 +146,8 @@ npm run lint      → 无输出（0 error / 0 warning）
 npm run typecheck → 无输出（0 error）
 npm run test      → Test Files 6 passed (6) / Tests 47 passed (47) / Duration 2.26s
                     layerBoundary 5 · apiContract 9 · asyncStates 5 · components 12 · closureEndpoints 13 · e2e 3
+npm run build     → ✓ 118 modules transformed / built in 373ms
+                    dist/assets/index.css 23.73 kB (gzip 4.58) · index.js 158.94 kB (gzip 55.74)
 ```
 
 浏览器实测（`npm run dev` + 真机 Chrome，移动端 430px 视口）：
@@ -171,7 +173,15 @@ npm run test      → Test Files 6 passed (6) / Tests 47 passed (47) / Duration 
 
 ## 10. 变更记录
 
-| 日期 | 提交/阶段 | 做了什么 | 关联 |
+| 日期 | 提交 | 做了什么 | 关联 |
 |---|---|---|---|
-| 2026-11-06 | 本地 W1+W2-W3 批次 | 契约类型、脚手架、Mock 后端替身、组件库 22 个、闭环三页、47 用例、本文档 | 决策 B1–B8，议题 Q1–Q8，踩坑 P1–P11 |
-| 2026-11-06 | 浏览器验收批次 | 补 `AppTabs` import；回填页餐次中文标签；`MacroBar` 无目标态；`AppNavBar` 死返回按钮；+1 单测 | 踩坑 P12–P15，决策 B9 |
+| 2026-11-06 | `8e7af92` shared: 按 API.md v1.1 转写契约类型与常量 | `shared/types.ts`（254 行）+ `constants.ts` + `package.json` | 防线 1 |
+| 2026-11-06 | `3a4908e` web: 搭 Vite+TS+ESLint+Vitest 脚手架与设计令牌、路由与外壳 | `vite/tsconfig/eslint` 配置、`tokens.css`、`router`、`App.vue` | 踩坑 P3、P11 |
+| 2026-11-06 | `3de6e8a` web: 请求层单点解包 + 内置 Mock 后端替身 | `api/client.ts`、`api/endpoints.ts`、`api/__mock__/*`、`composables/*`、`utils/display.ts` | 决策 B2/B3/B4/B7，议题 Q1/Q2/Q7 |
+| 2026-11-06 | `3669b8a` web: 组件库 22 个（基础 16 + 业务 6） | `components/base/*`、`components/business/*`、`components/types.ts` | 决策 B5/B6/B8，踩坑 P1/P2 |
+| 2026-11-06 | `e6138e8` web: 回填 / 反馈 / 历史三页与组件故事页 | `views/*`、`dev/*` | 决策 B1 |
+| 2026-11-06 | `43745dc` web: 契约/分层边界单测 + 闭环 e2e（47 用例） | `tests/unit/*`、`tests/e2e/*`、`tests/setup.ts` | 踩坑 P5/P6/P7/P8/P10，议题 Q5/Q6 |
+| 2026-11-06 | 浏览器验收修正（折进上面两笔提交，非独立提交） | 补 `AppTabs` import；回填页餐次中文标签；`MacroBar` 无目标态；`AppNavBar` 死返回按钮；+1 单测 | 踩坑 P12–P15，决策 B9 |
+| 2026-11-06 | 本文件提交 `docs: FE-B 开发记录` | 记录上述全过程 | — |
+
+分支：`feat/fe-b-web`（基于 `main`）。推送状态：**尚未推送远端**，等 FE-B 确认后 `git push -u origin feat/fe-b-web`。
