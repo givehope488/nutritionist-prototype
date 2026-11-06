@@ -5,23 +5,26 @@
 > 规则：**每完成一张任务卡或修一个非显而易见的缺陷，就在本文档追加一条**（追加，不删改历史，改口径就在「变更记录」里注明覆盖了哪条）。
 > 与 `docs/COLLAB.md` 冲突时以 COLLAB.md / API.md 为准，并在本文档登记冲突。
 
-当前状态：**W1 组件库 + W2-W3 闭环三页 可运行、可演示、CI 三件套全绿**；W5 异常与边界已覆盖前端部分。
+当前状态：**W1 组件库 + W2 闭环三页 可运行、可演示、CI 三件套全绿**；W3 异常与边界已覆盖前端部分。
 最后更新：2026-11-06。
 
 ---
 
 ## 1. 任务对照表（TEAM.md → 实际产出）
 
+> 任务口径已按 **TEAM.md v1.2（排期压缩为 3 周）** 对齐；v1.1 的 6 周里程碑见 §11 变更记录。
+> FE-B 在 v1.2 里的三个里程碑：W1 组件库 → W2 三 回填页 → W2 四 闭环可演示；管理端 UI 已移出 3 周计划（进 V2）。
+
 | 周 | TEAM.md 原任务 | 状态 | 产出位置 | 验收方式 |
 |---|---|---|---|---|
 | W1 | 前端脚手架（BE-B + FE-A/B） | ✅ 可跑版本，待 BE-B 接管 | `web/`（vite/ts/eslint/vitest 配置）、`index.html`、`src/main.ts` | `npm run dev` 起得来、`npm run build` 通过 |
-| W1 | 设计系统：色板 / 卡片 / 步骤条 / 表单组件 | ✅ | `src/styles/tokens.css`、`src/components/base/*`（16 个） | 故事页 `#/dev/components` 肉眼过 + `components.test.ts` |
+| W1 | 设计系统：色板 / 卡片 / 步骤条 / 表单组件 | ✅ | `src/styles/tokens.css`、`src/components/base/*`（16 个） | 故事页 `/dev/components` 肉眼过 + `components.test.ts` |
 | W1 | 组件故事页可预览 | ✅ | `src/dev/StoryView.vue`、`src/dev/fixtures.ts`、`src/dev/storyData.ts` | 浏览器访问 `/dev/components` |
 | W1 | 自测脚本 `npm run e2e`（BE-B + FE-B） | ✅ 前端侧 | `src/tests/e2e/closureFlow.test.ts` | `npm run e2e` 3 用例通过 |
-| W2-W3 | 回填页：分类 Tab + 份数步进器 + 预填 | ✅ | `src/views/LogView.vue`、`AppTabs`、`AppStepper`、`DishCard`、`useLogDraft` | e2e 用例 1/2 + 浏览器实操 |
-| W2-W3 | 反馈页：对比条 + 判定文案 | ✅ | `src/views/FeedbackView.vue`、`MacroBar`、`NutritionSummary`、`VerdictCard` | e2e 用例 1 + 浏览器实操 |
-| W2-W3 | 历史页 | ✅ | `src/views/HistoryView.vue` | e2e 用例 1 + 浏览器实操 |
-| W5 | 异常与边界 | 🟡 前端侧完成，依赖 FE-A 页面的边界待联调 | `AppErrorBanner`、`NoSolutionNotice`、`useAsync`、`asyncStates.test.ts` | 单测 + 断网/重复提交用例 |
+| W2 | 回填页：分类 Tab + 份数步进器 + 预填（里程碑 W2 三） | ✅ | `src/views/log/LogView.vue`、`AppTabs`、`AppStepper`、`DishCard`、`useLogDraft` | e2e 用例 1/2 + 浏览器实操 |
+| W2 | 反馈页（对比条 + 判定文案）+ 历史页（里程碑 W2 四：闭环可演示） | ✅ | `src/views/feedback/FeedbackView.vue`、`src/views/history/HistoryView.vue`、`MacroBar`、`NutritionSummary`、`VerdictCard` | e2e 用例 1 + 浏览器实操 |
+| W3 | 异常与边界（空态 / 弱网 / 重复提交 / 忌口无解） | 🟡 前端侧完成，依赖 FE-A 页面的边界待联调 | `AppErrorBanner`、`NoSolutionNotice`、`useAsync`、`asyncStates.test.ts` | 单测 + 断网/重复提交用例 |
+| ~~W4~~ | ~~管理端：菜品 CRUD / 上下架 / 修订历史~~ | ⛔ 已随 v1.2 裁剪移出 3 周计划，PD 改用 `scripts/dish-admin.mjs`（BE-B，W2 五） | 无产出，前端不涉及 | — |
 
 未在我名下、但我按契约留了接口的部分：建档 / 目标与忌口 / 推荐三页（FE-A）。路由已为其预留
 `/profile`、`/recommend`，当前临时重定向见 `src/router/index.ts` 注释。
@@ -48,14 +51,20 @@ npm run e2e            # 只跑闭环流程
 
 ## 3. 目录与所有权自查
 
-按 COLLAB.md 防线 2，FE-B 只拥有 `web/src/views/`（回填/反馈/历史）与 `web/src/components/`。
+`.github/CODEOWNERS`（随 main `1275782` 进来）把「只改自己目录」升级成了平台强制：改动越界目录时 GitHub 自动加对应所有者为必需 Reviewer。
+它按**页面目录**授权（`/web/src/views/log/`、`/feedback/`、`/history/` 归 @fe-b），所以我原来的扁平
+`views/LogView.vue` 会落到兜底规则 `* @be-b` —— 等于所有权形同虚设。已按 CODEOWNERS 重排目录（见决策 B10）。
+
+FE-B 名下目录（CODEOWNERS 口径）：`web/src/views/log|feedback|history/`、`web/src/components/`；
+`web/src/api/` 是 @fe-a @fe-b 共同所有，动它必须叫上 FE-A。
+
 本次实际**越界**的文件与原因（等 BE-B 接管，接管后我这边只改自己目录）：
 
 | 文件 | 为什么 FE-B 先建了 | 待办 |
 |---|---|---|
-| `shared/types.ts` `shared/constants.ts` `shared/package.json` | 团队脚手架尚不存在，没有契约类型前后端都无法编译；已逐字按 API.md v1.1 转写，未自创字段 | BE-B 复核并接管；文件头已注明维护人 BE-B |
+| `shared/types.ts` `shared/constants.ts` `shared/package.json` | 团队脚手架尚不存在，没有契约类型前后端都无法编译；已逐字按 API.md v1.1 转写，未自创字段 | CODEOWNERS 归 @be-b，需 BE-B 复核接管；文件头已注明维护人 BE-B |
 | `web/package.json` `web/vite.config.ts` `web/tsconfig.json` `web/eslint.config.js` `web/.env.example` `web/index.html` | 同上，属于「让页面能跑起来」的最小脚手架 | BE-B 若重建，以本目录为参考实现 |
-| `web/src/api/`、`web/src/composables/`、`web/src/utils/` | 契约里 FE-B 范围内的请求层与状态层 | 可与 FE-A 共用，改动请 @ FE-B |
+| `web/src/api/`、`web/src/composables/`、`web/src/utils/` | 契约里 FE-B 范围内的请求层与状态层 | `api/` 与 FE-A 共有，改动互相 @；`composables/`、`utils/`、`dev/` 未写进 CODEOWNERS，会落兜底 `* @be-b`，请 BE-B 补一行归属 |
 
 `web/src/api/__mock__/` 是**服务端替身**，后端实装后整个目录删除，因此视图/组件禁止 import 它
 （由 `src/tests/unit/layerBoundary.test.ts` 自动把关，不是口头约定）。
@@ -68,13 +77,15 @@ npm run e2e            # 只跑闭环流程
 |---|---|---|---|
 | B1 | 回填页不显示任何热量数字，只在提交后由服务端给对比 | 架构 D1「服务端是口径唯一来源」；回填时实时算热量会诱导前端造公式 | 原型那样边选边显示合计——迁移到前端计算，禁止 |
 | B2 | 份数草稿存 sessionStorage，按 `日期+餐次` 分键，幂等 `id` 在提交成功前不变 | 契约 §0.7 以客户端 UUID 为幂等键；若每次进入页面都换新 id，弱网重试就会写出两条记录 | 每次 mount 生成新 UUID |
-| B3 | 推荐组合明细缓存在前端 localStorage（24h） | 契约没有 `GET /recommendations/:combo_id`，回填页预填只能自取；TTL 按 §2.3「有效期 24 小时」 | 等后端补端点（阻塞 W2-W3 演示） |
+| B3 | 推荐组合明细缓存在前端 localStorage（24h） | 契约没有 `GET /recommendations/:combo_id`，回填页预填只能自取；TTL 按 §2.3「有效期 24 小时」 | 等后端补端点（阻塞 W2 闭环演示） |
 | B4 | 反馈页数据先读 sessionStorage 缓存、回落 `GET /meal-logs` 列表过滤 | 契约没有按 id 精取单条的端点 | 议题 Q3，评审后再删这段兜底 |
 | B5 | 展示层的比例/格式化只允许出现在 `utils/display.ts` + `MacroBar` | 「前端不算营养」需要一条可执行的边界；条宽是渲染比例，不是营养结论 | 各组件自己写 `actual/target*100` |
 | B6 | B/C 级菜品隐藏精确克重，改显「估算值」徽标 | README 合规边界 4 + 架构 D5 | 统一显示克重（虚假精确） |
 | B7 | 错误处理只在 `client.ts` 一处解包，页面只见 `ApiResult` | 契约 §0.8 统一包络；防线 1 的落地 | 每个页面各自 `try/catch` + 判 `res.data` |
 | B8 | 组件故事页用 fixture 数据、不接接口 | 组件必须能脱离后端渲染，才谈得上单测与视觉回归 | 直接在真实页面上截图验收 |
 | B9 | 根页面（回填 / 历史）不渲染返回按钮 | `AppNavBar` 原先无条件画「‹返回」，而根页面没有上一页、也没绑 `@back`，点了没反应——死按钮比缺按钮更糟。改为 `backLabel` 非空才渲染，反馈页显式 `@back="router.push('/log')"` | 保留按钮并让它 `history.back()`（用户可能退出整个 H5） |
+| B10 | 三个页面各占一个目录：`views/log/`、`views/feedback/`、`views/history/` | CODEOWNERS 按目录授权，扁平文件会落进兜底 `* @be-b`，「只改自己目录」就没人把关了；顺带和 FE-A 的 `views/profile/` 等命名一致 | 保持 `views/XxxView.vue` 扁平（被 CODEOWNERS 判给 BE-B） |
+| B11 | 3 周排期下不砍护栏、只砍功能 | TEAM v1.2 §3.4 明确「不可砍项」含 CI 三件套；我的 47 用例 + 分层边界测试就是护栏的一部分 | 为赶工先删测试（禁止） |
 
 ---
 
@@ -92,7 +103,8 @@ npm run e2e            # 只跑闭环流程
 | Q5 | 「忌口过滤后无解」的判据未定义 | `tests/unit/closureEndpoints.test.ts:67` | 55 道菜 + 现有组合结构下，实测任何忌口组合都还有解，`notice` 分支在真实数据上不可达 | 断言改为「返回合法 combos」；`NoSolutionNotice` 组件与其单测保留，等 BE-A 给出无解判据 |
 | Q6 | e2e 里建档/推荐两步是接口模拟 | `tests/e2e/closureFlow.test.ts` 头注释 | FE-A 页面合并前，e2e 不覆盖真实建档交互 | FE-A 合并后把两步替换成真实页面跳转（需 FE-A 提供可测的 DOM 锚点） |
 | Q7 | 传输层失败（断网/超时/取消）没有契约错误码 | `api/client.ts:48` 注释 | 前端只能借用 `INTERNAL`，与"服务端异常"混在同一文案桶 | 借 `INTERNAL` + 可操作文案；请评审是否补 `CLIENT_NETWORK_ERROR` |
-| Q8 | 根配置缺 `.nvmrc`，Node 版本未锁 | COLLAB.md 防线 3 要求 | 成员 Node 版本不一致时 CI 结果不可复现（本机 v22.23.4，文档示例 v24） | 无权限建根文件，等 BE-B 落 `.nvmrc` |
+| Q8 | 根配置缺 `.nvmrc`，Node 版本未锁 | COLLAB.md 防线 3 要求；CODEOWNERS 已预留 `/.nvmrc @be-b` | 成员 Node 版本不一致时 CI 结果不可复现（本机 v22.23.4，文档示例 v24） | 无权限建根文件，等 BE-B 落 `.nvmrc` |
+| Q9 | CODEOWNERS 未覆盖 `web/src/composables/`、`web/src/utils/`、`web/src/dev/` | `.github/CODEOWNERS`（`1275782` 引入）只列了 views 子目录、`components/`、`api/` | 这三个目录的 PR 会被兜底规则派给 @be-b，FE-B 成了非所有者，Review 链条绕人 | 代码已按现状提交；请 BE-B 补三行归属（建议归 @fe-b） |
 
 ---
 
@@ -165,9 +177,10 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 ## 9. 下一步（我这边欠的）
 
 1. 与 FE-A 合并建档/推荐页：把路由 `/`、`/profile`、`/recommend` 的临时重定向改回，并按议题 Q6 重写 e2e 前两步。
-2. 议题 Q1–Q8 提交评审；通过后删掉对应兜底代码（`__mock__` 目录整体删除是最大一块）。
-3. W5 剩余边界：限流 429、菜品下架后回填旧记录、跨天回填（凌晨填昨晚）三例补测。
-4. 视觉回归：目前靠肉眼过故事页，等 CI 有基线后补截图对比。
+2. 议题 Q1–Q9 提交评审；通过后删掉对应兜底代码（`__mock__` 目录整体删除是最大一块）。
+3. W3 剩余边界（TEAM v1.2）：限流 429、菜品下架后回填旧记录、跨天回填（凌晨填昨晚）三例补测。
+4. 周三中途集成点（TEAM v1.2 新增）：从 main 拉最新代码真机冒烟，需要 BE-A 的菜单/推荐 API 到位后把 `VITE_API_BASE` 切到真实后端跑同一套 e2e。
+5. 视觉回归：目前靠肉眼过故事页，等 CI 有基线后补截图对比。
 
 ---
 
@@ -175,13 +188,19 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 
 | 日期 | 提交 | 做了什么 | 关联 |
 |---|---|---|---|
-| 2026-11-06 | `8e7af92` shared: 按 API.md v1.1 转写契约类型与常量 | `shared/types.ts`（254 行）+ `constants.ts` + `package.json` | 防线 1 |
-| 2026-11-06 | `3a4908e` web: 搭 Vite+TS+ESLint+Vitest 脚手架与设计令牌、路由与外壳 | `vite/tsconfig/eslint` 配置、`tokens.css`、`router`、`App.vue` | 踩坑 P3、P11 |
-| 2026-11-06 | `3de6e8a` web: 请求层单点解包 + 内置 Mock 后端替身 | `api/client.ts`、`api/endpoints.ts`、`api/__mock__/*`、`composables/*`、`utils/display.ts` | 决策 B2/B3/B4/B7，议题 Q1/Q2/Q7 |
-| 2026-11-06 | `3669b8a` web: 组件库 22 个（基础 16 + 业务 6） | `components/base/*`、`components/business/*`、`components/types.ts` | 决策 B5/B6/B8，踩坑 P1/P2 |
-| 2026-11-06 | `e6138e8` web: 回填 / 反馈 / 历史三页与组件故事页 | `views/*`、`dev/*` | 决策 B1 |
-| 2026-11-06 | `43745dc` web: 契约/分层边界单测 + 闭环 e2e（47 用例） | `tests/unit/*`、`tests/e2e/*`、`tests/setup.ts` | 踩坑 P5/P6/P7/P8/P10，议题 Q5/Q6 |
+| 2026-11-06 | `cb731df` shared: 按 API.md v1.1 转写契约类型与常量 | `shared/types.ts`（254 行）+ `constants.ts` + `package.json` | 防线 1 |
+| 2026-11-06 | `164f756` web: 搭 Vite+TS+ESLint+Vitest 脚手架与设计令牌、路由与外壳 | `vite/tsconfig/eslint` 配置、`tokens.css`、`router`、`App.vue` | 踩坑 P3、P11 |
+| 2026-11-06 | `3a585e9` web: 请求层单点解包 + 内置 Mock 后端替身 | `api/client.ts`、`api/endpoints.ts`、`api/__mock__/*`、`composables/*`、`utils/display.ts` | 决策 B2/B3/B4/B7，议题 Q1/Q2/Q7 |
+| 2026-11-06 | `cdc4742` web: 组件库 22 个（基础 16 + 业务 6） | `components/base/*`、`components/business/*`、`components/types.ts` | 决策 B5/B6/B8，踩坑 P1/P2 |
+| 2026-11-06 | `5a7083f` web: 回填 / 反馈 / 历史三页与组件故事页 | `views/*`、`dev/*` | 决策 B1 |
+| 2026-11-06 | `1caffb6` web: 契约/分层边界单测 + 闭环 e2e（47 用例） | `tests/unit/*`、`tests/e2e/*`、`tests/setup.ts` | 踩坑 P5/P6/P7/P8/P10，议题 Q5/Q6 |
 | 2026-11-06 | 浏览器验收修正（折进上面两笔提交，非独立提交） | 补 `AppTabs` import；回填页餐次中文标签；`MacroBar` 无目标态；`AppNavBar` 死返回按钮；+1 单测 | 踩坑 P12–P15，决策 B9 |
-| 2026-11-06 | 本文件提交 `docs: FE-B 开发记录` | 记录上述全过程 | — |
+| 2026-11-06 | `6781916` + `32c5c66` docs: 本开发记录 | 记录决策 / 议题 / 踩坑 / 验收证据 | — |
+| 2026-11-06 | 拉取 `origin/main` → `1275782`（TEAM v1.2 三周排期 + CODEOWNERS + PR 模板 + API.md 管理端说明） | 本地 main 原落后 1 个提交；`git merge --ff-only` 更新 main 后把本分支 rebase 到新 main | 决策 B10/B11 |
+| 2026-11-06 | `bed3472` web: 三页移入 `log/` `feedback/` `history/` 目录 | 让 CODEOWNERS 的按目录授权真正生效；同步改 `router` 与 e2e 的 import 路径；CI 三件套复跑全绿 | 决策 B10，议题 Q9 |
 
-分支：`feat/fe-b-web`（基于 `main`）。推送状态：**尚未推送远端**，等 FE-B 确认后 `git push -u origin feat/fe-b-web`。
+> **提交号会变**：上表的哈希是 rebase 之后的值。rebase 会重写哈希，所以引用提交号时**先确认分支没再 rebase**；
+> 想知道某段代码的来历，用 `git log --follow -- <路径>` 比记哈希可靠。
+
+分支：`feat/fe-b-web`（已 rebase 到 `origin/main` = `1275782`，工作区干净）。
+远端状态：`main` 与本地一致；`feat/fe-b-web` **尚未推送**。
