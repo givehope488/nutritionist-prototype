@@ -237,13 +237,18 @@ async function main(): Promise<void> {
 
   console.log('契约 smoke：逐端点断言 API.md §2\n');
   let failed = 0;
+  const startedAt = performance.now();
+
   for (const item of checks) {
+    const t0 = performance.now();
     try {
       await item.run();
-      console.log(`  ✓ ${item.name}`);
+      const cost = Math.round(performance.now() - t0);
+      console.log(`  ✓ ${item.name}  (${cost} ms)`);
     } catch (error) {
       failed++;
-      console.log(`  ✗ ${item.name}`);
+      const cost = Math.round(performance.now() - t0);
+      console.log(`  ✗ ${item.name}  (${cost} ms)`);
       console.log(`      ${(error as Error).message}`);
     }
   }
@@ -252,7 +257,8 @@ async function main(): Promise<void> {
     server.close((error) => (error ? reject(error) : resolve()));
   });
 
-  console.log(`\n结果：${checks.length - failed}/${checks.length} 通过`);
+  const totalCost = Math.round(performance.now() - startedAt);
+  console.log(`\n结果：${checks.length - failed}/${checks.length} 通过，总耗时 ${totalCost} ms`);
   if (failed > 0) {
     console.log('\n提示：改返回结构前先改 docs/API.md 并发起评审（附录 C）。');
     process.exitCode = 1;
