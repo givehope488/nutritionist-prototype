@@ -19,15 +19,15 @@ const CATEGORIES = ['staple', 'protein', 'veg', 'soup', 'fruit'];
 const MEALS = ['breakfast', 'lunch', 'dinner'];
 const TAGS = ['pork', 'beef', 'seafood', 'egg', 'milk', 'gluten', 'peanut', 'spicy', 'meat', 'vegprotein'];
 const RELIABILITY = ['A', 'B', 'C'];
-const STATUS = ['active', 'inactive'];
+/** 与 API.md §2.1 一致：active 在架 / hidden 下架（旧版本误写 inactive，已纠正） */
+const STATUS = ['active', 'hidden'];
 
-/** 含这些标签的菜品必须同时带 meat，否则素食过滤会放行荤菜（s11/s12/s13 曾踩过） */
-const MUST_IMPLY_MEAT = ['pork', 'beef'];
 /**
- * seafood 不能强制 meat：紫菜蛋花汤的 seafood 指紫菜/虾皮，并不含鱼肉。
- * 但若真含鱼虾而漏标 meat，素食会被推错，所以只告警、由 PD 逐条判定。
+ * 含这些标签的菜品必须同时带 meat，否则「素食」（excludes_tag: meat）会放行该菜。
+ * 按 API.md 附录 D 的约定，meat 是「含动物性食材」的兜底标签——
+ * 鱼虾也算，所以 seafood 一并列入。紫菜蛋花汤含虾皮，曾因此漏标。
  */
-const SEAFOOD_NEEDS_REVIEW = 'seafood';
+const MUST_IMPLY_MEAT = ['pork', 'beef', 'seafood'];
 
 /** 份量展示用语中不允许出现数字克重（README 合规条目 4：B 级以下不展示精确克重） */
 const WEIGHT_UNIT = /\d+(\.\d+)?\s*(g|G|kg|KG|克|千克|ml|mL|ML|毫升)/;
@@ -85,9 +85,6 @@ for (const d of seed.dishes) {
       if (d.tags.includes(t) && !d.tags.includes('meat')) {
         err(id, `标了 ${t} 却没标 meat，素食过滤会放行该菜`);
       }
-    }
-    if (d.tags.includes(SEAFOOD_NEEDS_REVIEW) && !d.tags.includes('meat')) {
-      warn(id, '标了 seafood 但未标 meat：若含鱼虾，素食会被推错；若只是紫菜/虾皮可忽略');
     }
   }
 

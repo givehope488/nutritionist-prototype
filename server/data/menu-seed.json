@@ -1141,7 +1141,8 @@
       "price_yuan": 2,
       "tags": [
         "seafood",
-        "egg"
+        "egg",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
