@@ -596,3 +596,170 @@ CI：head `51d4cd9` 的 check-runs=3，`lint / test / typecheck` 全部 `success
 ### 14.7 交接包对齐（沿用 §11.6 / §13.3 的同一判据）
 
 离线复现包按三条命令刷新（format-patch / bundle / Compress-Archive），判据不变：临时克隆 checkout `496c1ef` 后 `git am` 全序列，`git diff --stat HEAD origin/feat/fe-a-review-update-w1 -- reviews/fe-a` 输出为空。包内文件数 = `reviews/fe-a/` 4 份 + 备用 patch 序列，与 PR #5 的 files=4 一致。
+
+## 15. 2026-11-06 深夜·第三次复核：main 前移到 `b29deff`（API v1.2.1 + PROGRESS.md 决议），签字条件达成
+
+§14 交付（PR #5）合并后，main 又在几小时内被 8 个 PR 前移。这轮不是「逐条更正」，是**评审单从「不能签字」变成「可以签字」**。
+
+### 15.1 远端前移事实（REST 读回 + 本地 git 验证）
+
+```
+git log --oneline 496c1ef..origin/main
+b29deff docs: 进程文档同步今天的两件事 (#14)
+ebac571 docs: API v1.2.1 更正 portion_grams 自相矛盾，写死 D4 执行口径 (#13)
+7ccd9e5 ci: web 走独立安装，修好 FE-B 分支上一直红的 typecheck/test (#12)
+ea3e50a docs: 进程文档删掉一件已由 PD 自己完成的事 (#11)
+98fd2f3 文档: 新增公用项目进程文档，并把「谁能改哪节」做成 CI 强制 (#10)
+b4a7119 契约: API.md 升 v1.2，文档 / 类型 / 实现三处对齐 (#9)
+a8cc920 chore: 补 CODEOWNERS 的 web 目录覆盖，前端代码不再掉进 BE-B 兜底 (#7)
+f287c39 reviews: FE-A 二轮复核（按当前 main 重写，上报四处契约与实现不一致）(#5)
+```
+
+PR #5 合并事实（读回）：`merged_at=2026-11-06T09:44:48Z`（17:44 CST）、`merged_by=givehope488`、`merge_commit=f287c39`；reviews 1 条：PD **APPROVED**（09:44:36Z，合并前 12 秒）。与 §14.2 记录的上一单（13:45 被 owner 直接合、无 CI 前置）对比：这一单是**先批准后合并**，防线 7 的「1 人批准」实际生效，这是继 CODEOWNERS 自动请求评审之后的第二个平台级证据。
+
+PR #6（FE-B 的 web PR）：state=open，17 commits、66 files、+9467/−0，标题「web: FE-B 组件库 + 回填/反馈/历史闭环」。PROGRESS.md 里写「三项检查已转绿，合并前还差 3 处契约对齐」，与读回一致。
+
+### 15.2 契约与决议的实质变化（这轮的核心）
+
+- **API.md 升 v1.2（PR #9）→ v1.2.1（PR #13）**，定性「一致性修正版，无字段结构变更」：示例 `vegan`→`nomeat`（F1 根治）；份量示例 `200g`→`1 份` + `portion_label` 明文禁克重（F2 根治）；补 `meal`/`status` 枚举（Y7）；新增**附录 D 忌口全表 9 项（含 `nogluten`）**与两条硬约束（`meat` 兜底标签；先改表再改实现，`contract.test.ts` CI 强制）。v1.2.1 钉死 `portion_grams` **一律不下发**（Y5/D4）。
+- **`docs/PROGRESS.md` 落地（PR #10）**：§0~§4 只有 PD 能改（`check:progress` 指纹校验，CI 强制）；§5/§6 人人可追加（格式校验）。§4.1 四条决议直接终结我的 B1/B2/B3/Y4：A 换一批不加参数、前端重调一次；B 组合卡按 `category` 渲染、不加 `structure` 字段；C `combo.id` 过期视为自选餐 `adopted:false`；D 素食≠纯素，本项目不做纯素。
+- **排期细化**：W0 收尾（11-06~11-08）/ W1（11-09~11-13）/ W2（11-16~11-20）/ W3（11-23~11-27）。我 W1 的交付三件：`client.ts`（解包唯一入口 + 4 个单测：200 直返 / 400 转 error / 非 JSON / 网络异常）、建档页 + 目标页、推荐页（换一批=重新请求、无解展示 notice）。**C2 随之结案：client.ts 主笔 = FE-A。**
+- CODEOWNERS 补 web 覆盖（PR #7）：`/web/` 兜底 + `composables/utils/tests` 归双前端共担。CI 改为 web 独立安装（PR #12）。
+
+### 15.3 逐条结案（本节只留编号与结论，细节在 API-REVIEW「二次复核增补」）
+
+- **结案**：B1（§4.1-A）、B2（附录 D + 不做纯素）、B3（§4.1-B）、C2/G3（client.ts 主笔 FE-A + 4 单测）、Y5（D4 + v1.2.1）、Y6（v1.2 明文三类字段不出响应）、Y7（v1.2 补枚举）、F1（vegan→nomeat）、F2（份量示例订正）。
+- **部分**：Y3（`nogluten` 已补、空态「放宽引导」归我页面设计；`relax_suggestions` 字段仍待 v1.3）、Y4（过期处置已定；预填交接仍未明文）、C4（web/Mock/VITE 已在 FE-B 分支；smoke/seed 进 BE-B W1；e2e 无人认领）、F3（smoke/seed 已列 W1；e2e 仍无）。
+- **仍开**：Y1（`bmi_tag` 值域）、Y2（warnings 结构化）、G2（`totals.price_yuan`）、G4（采纳口径，随 W2）。
+- **签字**：FE-A 对 API **v1.2.1** 签字。11-06 早上提出的签字条件（B1/B2/B3 + Y5 + C1）全部由可复现的文档与决议背书达成。
+
+### 15.4 本地实测（Node 26 本机；22 侧以 CI 为准）
+
+```
+npm ci                 → exit 0
+npm run lint           → exit 0
+npm run typecheck      → exit 0
+npm run test           → exit 0
+npm run check:data     → exit 0
+npm run check:progress → exit 0（新增：PROGRESS.md 指纹校验，「✓ docs/PROGRESS.md 体检通过」）
+```
+
+真实服务端（v1.2.1 代码，端口 8787）：`GET /api/v1/menu?meal=lunch` → 200，41 道、**9 条 avoid_options**（`nogluten`「不吃麸质（小麦制品）」在列，与附录 D 逐项一致）；`?meal=brunch` → 400 包络与 §14.4 相同；起服/收口流程同前（listener PID 52676，taskkill 后端口释放）。样本已更新进 CONTRACT-NOTES §5.1。
+
+### 15.5 交付方式
+
+- 分支 `feat/fe-a-review-v3`：从 `origin/main`（`b29deff`）切出，`reviews/fe-a/` 与 main 逐字节一致后开始改。
+- 改动四份文档：API-REVIEW.md（v1.4 二次复核增补 + 签字条件更新）、CONTRACT-NOTES.md（契约基准改 v1.2.1，§3/§4/§5 重写，§5.1 重抓）、AGENT-PROMPT.md（铁律 3 目录、B1/B3 决议、附录 D、client.ts 4 单测）、WORKLOG.md（本节）。
+- 新 PR 创建与回读校验、交接包刷新记录在后续续节。
+
+### 15.6 新 PR 创建与回读校验（PR #16）
+
+```
+POST /repos/givehope488/nutritionist-prototype/pulls   → create_http=201
+  number=16  state=open  draft=no  base=main  head=feat/fe-a-review-v3 (5ce0074)
+  commits=1  +181/-63  files=4
+GET /pulls/16（回读）：
+  body 与我提交的 JSON 逐字节一致（vrfy16.pl，双方先落字节再比）  YES
+  title identical  YES
+  requested_reviewers = givehope488   （连续第二次：CODEOWNERS /reviews/ 自动请求 PD 生效）
+```
+
+回读校验脚本这次直接按 §14.6 立下的规矩写（双方都落到字节再比），没有再踩字符/字节混比的坑。
+
+### 15.7 交接包对齐（沿用同一判据）
+
+离线复现包按三条命令刷新（format-patch / bundle / Compress-Archive），判据不变：临时克隆 checkout `b29deff` 后 `git am` 全序列，`git diff --stat HEAD origin/feat/fe-a-review-v3 -- reviews/fe-a` 输出为空。包内文件数 = `reviews/fe-a/` 4 份 + patch 序列，与 PR #16 的 files=4 一致。
+
+### 15.8 乱码事故：PR #16 标题与正文双编码（已修复）
+
+- **现象**：PR #16 在 GitHub 页面与通知邮件中标题/正文均显示乱码（如「ä¸‰è½®」）。复核同仓另外两个 PR：**#1 正常**；**#5 的正文此前已由 PD 手工重写并留了说明**——我这一轮开工前没看它，等于同一个坑踩了第二次。
+- **根因**（本地 payload 十六进制复核）：`/tmp/mkpr3.pl` 用 `encode_json($payload)` 生成 JSON，该函数等价于 `JSON::PP->new->utf8->encode`，**输出已经是 UTF-8 字节**；脚本第 13 行又套了一层 `encode('UTF-8', …)`，把每个字节当字符再编码一次。证据：「三」的单编码是 `E4 B8 89`，payload 里实际是 `C3 A4 C2 B8 C2 89`。
+- **为什么 §15.6 的回读没拦住**：字节级「提交 == 回读」只证明两处一致，双编码本身是自洽的；一致性检查不能替代正确性检查。→ 自检补两条：①固定中文子串必须命中；②双编码特征串（如 `C3 A4 C2 B8 C2 89`）计数必须为 0。
+- **修复**：重写 payload（`use utf8` 处理标题字面量 + `decode('UTF-8', $raw, FB_CROAK)` 读正文 + `JSON::PP->new->utf8->encode` 只编一次），`PATCH /pulls/16` → **200**。回读：标题「reviews: FE-A 三轮复核——对 API v1.2.1 签字（B1/B2/B3/Y5 全部结案）」，正文 3200 字、`mojibake_pairs=0`，首段为新增的一行编码说明（处置方式与 PR #5 一致）。
+- **不可撤回项**：已发出的 GitHub 通知邮件无法撤回；修正后重新触发一次 review request（先 DELETE 再 POST `requested_reviewers`），让收件人收到干净标题的通知。以后含中文的提交一律 `git commit -F <UTF-8 文件>`，不再经 shell 命令行拼中文。
+
+## 16. 2026-11-06 晚：推进 W1 交付 #1（client.ts 解包单测）
+
+### 16.1 远端复查（`origin/main` = `be2c1b0`）
+
+- main 再前移 1 个 PR：#15「分工表按今天实际进展改写」——只动 `docs/PROGRESS.md` 与 `.github/progress-pd.sha256`。要点：BE-B 的「定前端怎么装」已由 PR #12 落地（独立安装），他 W0 改为提前起 SQLite/seed；FE-B 从「等 BE-B」改为「改 PR #6 那 3 处」，六条全部无依赖。**FE-A 的 W1 三件交付不变**，无新增阻塞。
+- 开放 PR 复核：`GET /pulls?state=open` → #16（本评审单，head `feat/fe-a-review-v3`）、#6（FE-B web，head `feat/fe-b-web`，updated 11:28Z）。#6 仍未合入，`web/` 只存在于它的分支上。
+
+### 16.2 W1 交付 #1：client.ts 4 类解包单测 + 1 个真缺陷
+
+- 现状：`web/src/api/client.ts` 已由 FE-B 在 #6 中实现（解包 + `transportError`），但无单测；且 fetch 分支 `payload = res.ok ? await res.json().catch(() => null) : …` 让 **2xx 非 JSON** 返回 `{ ok: true, data: null }`，业务层会把 `null` 当业务对象。
+- 分支 `feat/fe-a-client-tests`：从 `origin/feat/fe-b-web`（`08be145`）切出，只改 2 个文件：
+  - 新增 `web/src/tests/unit/client.test.ts`：5 个用例（200 直返 / 400 转 error 带 fields / 非 JSON 2xx / fetch 拒绝 / 非 JSON 5xx）。用 `vi.stubEnv` + `vi.resetModules()` 切真实传输模式，用 `vi.stubGlobal('fetch')` 造非 JSON 与断网。
+  - `client.ts`：解析失败置 `parseFailed`，按 §1 收敛为 `INTERNAL`（2xx → 「响应格式不符合接口协定」；5xx → 「服务暂时不可用」），不再把 `null` 当成功。
+- 未改：错误码集合（无新增）、`ApiResult` 形态、`endpoints.ts`、mock、`views/`。
+
+### 16.3 本地实测（Node v26.13.0，`web/` 独立安装）
+
+```
+cd web
+npm ci             → exit 0（250 packages）
+npx vitest run src/tests/unit/client.test.ts → 5 passed
+npm run lint       → exit 0
+npm run typecheck  → exit 0
+npm run test       → 7 files / 52 tests passed
+```
+
+### 16.4 PR #17（叠加在 #6 上）
+
+```
+POST /pulls → 201  number=17  head=feat/fe-a-client-tests  base=feat/fe-b-web
+回读：title 正确；body 2018 字、mojibake_pairs=0；requested_reviewers=wyf-111（/web/ CODEOWNERS 自动请求）
+CI（head 849e134）：lint / typecheck / test 三个 job 全 success
+```
+
+- base 选 `feat/fe-b-web` 而非 `main`：#6 未合入前，对 main 开 PR 会把 FE-B 的 9467 行算进来。**#6 合入后我会把 base 转 `main` 并 rebase**，本 PR 始终只含 2 个文件。
+- 未改 `/reviews/` 内的任何评审结论；本 PR 不请求 PD。
+
+### 16.5 下一步（W1 剩余）
+
+- 建档页 + 目标页：`web/src/views/profile/`、`web/src/views/goal/`（依赖 #6 合入，或继续做叠加分支）
+- 推荐页：`web/src/views/recommend/`（3 套卡片、换一批=重新请求、无解 notice）
+- 两页均须消费 `@canteen/shared` 类型与 `client.ts`，禁止页面内公式/硬编码枚举。
+
+## 17. 2026-11-06 深夜：按 `origin/main` @ `70f9f52` 做四处事实同步（PR #16 续）
+
+评审人反馈：PR #17 已随 #6 合并进主干；B3 由 API v1.2.2 §2.3 收口；`API-REVIEW.md` 有四处过时，改完即批。本节记录同步依据与实测。
+
+### 17.1 远端事实（开工前复核）
+
+```
+origin/main            → 70f9f52（#19 CI 端点 smoke 步骤 + API v1.2.2）
+#6 (feat/fe-b-web)     → 已合并 163a661（web/ 进主干，含本人 #17 的 client 单测）
+#17                    → 已合并（先入 feat/fe-b-web 43bf153，再随 #6 入 main）
+PR #18                 → open，head b047c7f（server smoke/seed，已核可跑）
+PR #16                 → open，head 95f8e85（本单）
+```
+
+分支工作区：`/tmp/fe-a-review-wt2`，`git merge origin/main` → **`9415a06`**（无冲突）。
+
+### 17.2 四处同步（评审人指定，均为事实同步，不新增评审判断）
+
+1. **B2 猪肉包子证据（第 42~43 行）**：标注「已由 PR #4（种子 v2）修复」，记录保留。实测 `s11/s12/s13` tags 均为 `["pork","gluten","meat"]`；`pork` 13 道、缺 `meat` 0 道。
+2. **B3（第 168 / 206 / 255 行）**：状态 → **已结案 2026-11-06，API v1.2.2 §2.3**。槽位表：`lunch/dinner` = 主食 × 主菜 × 素菜（汤可选）；`breakfast` = 主食 × 主菜（水果可选）。仍不加 `structure` 字段，按 `category` 渲染。
+3. **C4（第 202 / 268 行）**：`web/` 已合并 `163a661`（`git ls-tree -r origin/main:web` 计 69 个文件，含 Mock 与 `web/.env.example`）；`server/scripts/smoke.ts` 随 PR #18 待合；CI 在 `70f9f52` 已加入跳过式 smoke 步骤；**e2e 仍无人认领**。
+4. **`portion_label`（第 92 行）**：55 道分布 `1 份`×28 / `1 碗`×9 / `1 个`×7 / `1 杯`×4 / `1 根`×3 / `8 只` / `6 只` / `1 只` / `半份`；含 `g`/`ml` **0 条**；`web/src/tests/unit/components.test.ts:50,57` 反向断言 `not.toMatch(/\d+\s*(g|ml)\b/)`。
+
+另：签字版本随 B3 入 §2.3 由 v1.2.1 上移至 **v1.2.2**（条件未增加），文首加 v1.5 标注、文末加第 6 节明细；第 278 行「PR #6 合并前可用其分支」同步为「已合并进 163a661」。
+
+### 17.3 实测（worktree `9415a06`，本机 Node v26.13.0）
+
+```
+root: npm ci → exit 0
+root: lint / typecheck / test / check:data / check:progress → 全部 exit 0
+web : npm ci → exit 0
+web : lint / typecheck → exit 0；test → 9 files / 59 tests passed
+```
+
+数据复核（只读 `origin/main` @ `70f9f52`）：
+
+```
+pork_total=13  pork_without_meat=0
+s11/s12/s13 tags=["pork","gluten","meat"]
+breakfast_total=14  bf_staple=7 bf_protein=5 bf_veg=0 bf_fruit=2 bf_soup=0
+git ls-tree -r origin/main:web | wc -l → 69
+```
