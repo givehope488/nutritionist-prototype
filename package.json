@@ -16,6 +16,8 @@
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "check:data": "node server/scripts/check-data.mjs",
+    "check:progress": "node scripts/check-progress.mjs",
+    "check": "npm run lint && npm run typecheck && npm run test && npm run check:data && npm run check:progress",
     "dev": "npm run dev -w @canteen/server",
     "start": "npm run start -w @canteen/server"
   },

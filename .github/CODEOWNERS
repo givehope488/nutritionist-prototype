@@ -22,6 +22,7 @@
 /docs/ARCHITECTURE.md               @yangelect
 /docs/COLLAB.md                     @yangelect
 /docs/TEAM.md                       @givehope488
+/docs/PROGRESS.md                   @givehope488
 /README.md                          @givehope488
 /reviews/                           @givehope488
 
@@ -56,3 +57,9 @@
 /server/data/                       @givehope488
 # 数据体检脚本：拦录入错误，归 PD 与 BE-B 共同维护（脚本在 CI 里跑，改动出问题会挡全队）
 /server/scripts/                    @givehope488 @yangelect
+
+# ---- 仓库级脚本 ----
+/scripts/                           @yangelect
+# 进程文档的指纹校验：只有 PD 会重新签名，别人改坏了也由 PD 修
+/scripts/check-progress.mjs         @givehope488
+/.github/progress-pd.sha256         @givehope488
