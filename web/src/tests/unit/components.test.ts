@@ -42,17 +42,19 @@ describe('AppTabs', () => {
   });
 });
 
-describe('DishCard 可信度分级展示', () => {
-  it('A 级数据显示精确克重', () => {
+describe('DishCard 份量展示（D4：A / B 同一套 UI）', () => {
+  it('A 级只展示份量用语：无克重、无「估算值」标记', () => {
     const wrapper = mount(DishCard, { props: { dish: sampleDishA, modelValue: 1 } });
-    expect(wrapper.text()).toContain('200g');
+    expect(wrapper.text()).toContain('1 份');
     expect(wrapper.text()).not.toContain('估算值');
+    expect(wrapper.text()).not.toMatch(/\d+\s*(g|ml)\b/);
   });
 
-  it('B 级数据不显示精确克重，只给「估算值」徽标（README 合规边界 4）', () => {
+  it('B 级与 A 级渲染完全同构（portion_grams 一律不下发）', () => {
     const wrapper = mount(DishCard, { props: { dish: sampleDishB, modelValue: 0 } });
-    expect(wrapper.text()).toContain('估算值');
-    expect(wrapper.text()).not.toContain('120g');
+    expect(wrapper.text()).toContain('1 份');
+    expect(wrapper.text()).not.toContain('估算值');
+    expect(wrapper.text()).not.toMatch(/\d+\s*(g|ml)\b/);
   });
 });
 

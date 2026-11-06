@@ -58,7 +58,7 @@ describe('推荐（§2.3）', () => {
   });
 
   it('忌口再严也不是错误：200 + 合法 combos（55 道菜下仍能凑出早餐）', async () => {
-    await seed({ avoid: ['vegan', 'noegg', 'nomilk', 'noseafood', 'nogluten', 'nopork', 'nobeef', 'nopeanut', 'nospicy'] });
+    await seed({ avoid: ['nomeat', 'noegg', 'nomilk', 'noseafood', 'nogluten', 'nopork', 'nobeef', 'nopeanut', 'nospicy'] });
     const result = await createRecommendation({ session_id: baseProfile.session_id, meal: 'breakfast' });
     expect(result.ok).toBe(true);
     if (!result.ok) return;

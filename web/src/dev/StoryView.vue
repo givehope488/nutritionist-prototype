@@ -161,7 +161,7 @@ const avoidOptions = ['不吃辣', '不吃猪肉', '不吃海鲜', '素食', '�
           <DishCard :dish="sampleDishDrink" :model-value="1" />
         </div>
         <p class="story__meta">
-          A 级数据显示精确克重，B/C 级只显示「估算值」徽标（README 合规边界 4）。
+          A / B 级同一套 UI：只显示份量用语，克重一律不下发（D4，API.md v1.2.1）。
         </p>
       </AppCard>
 

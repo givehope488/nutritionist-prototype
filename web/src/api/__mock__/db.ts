@@ -40,8 +40,29 @@ function write(key: string, value: unknown): void {
   localStorage.setItem(key, JSON.stringify(value));
 }
 
+/** 种子里的 portion_grams / ingredients / source 是数据治理字段，API 一律不下发（API.md §2.1 v1.2.1） */
+function toContractDish(raw: (typeof rawSeed.dishes)[number]): Dish {
+  return {
+    id: raw.id,
+    name: raw.name,
+    category: raw.category,
+    portion_label: raw.portion_label,
+    meals: raw.meals,
+    kcal: raw.kcal,
+    protein_g: raw.protein_g,
+    fat_g: raw.fat_g,
+    carbs_g: raw.carbs_g,
+    sodium_mg: raw.sodium_mg,
+    price_yuan: raw.price_yuan,
+    tags: raw.tags,
+    drink: raw.drink,
+    reliability: raw.reliability,
+    status: raw.status,
+  } as Dish;
+}
+
 export function allDishes(): Dish[] {
-  return rawSeed.dishes.map((dish) => ({ ...dish })) as Dish[];
+  return rawSeed.dishes.map(toContractDish);
 }
 
 export function dishById(id: string): Dish | undefined {

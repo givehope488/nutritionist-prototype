@@ -1,34 +1,31 @@
 <script setup lang="ts">
 // 菜品行卡（回填页）：名称 + 份量 + 价格 + 份数步进器。
-// 合规：reliability 非 A 级不展示精确克重（README 合规边界 4 / 架构 D5）。
-import { computed } from 'vue';
+// D4：只展示份量用语、不展示克重，A / B 级用同一套 UI、不加「估算」标记。
+// 依据 API.md v1.2.1：portion_grams 一律不下发，前端本来就拿不到克重。
 import type { Dish } from '@canteen/shared';
 import { formatYuan } from '@/utils/display';
 import AppStepper from '../base/AppStepper.vue';
 import AppBadge from '../base/AppBadge.vue';
 
-const props = defineProps<{
+defineProps<{
   dish: Dish;
   modelValue: number;
 }>();
 
 const emit = defineEmits<{ 'update:modelValue': [value: number] }>();
 
-const showPrecision = computed(() => props.dish.reliability === 'A');
-const selected = computed(() => props.modelValue > 0);
+const selected = (value: number): boolean => value > 0;
 </script>
 
 <template>
-  <article class="dish" :class="{ 'dish--selected': selected }">
+  <article class="dish" :class="{ 'dish--selected': selected(modelValue) }">
     <div class="dish__main">
       <div class="dish__title">
         <span class="dish__name">{{ dish.name }}</span>
         <AppBadge v-if="dish.drink" tone="info">饮品</AppBadge>
-        <AppBadge v-if="!showPrecision" tone="neutral">估算值</AppBadge>
       </div>
       <p class="dish__meta">
-        <span v-if="showPrecision">{{ dish.portion_label }}</span>
-        <span v-else>份量按食堂常见规格</span>
+        <span>{{ dish.portion_label }}</span>
         <span class="dish__dot" aria-hidden="true">·</span>
         <span class="tabular">{{ formatYuan(dish.price_yuan) }}</span>
       </p>
@@ -36,7 +33,6 @@ const selected = computed(() => props.modelValue > 0);
     <AppStepper :model-value="modelValue" :size="'sm'" @update:model-value="emit('update:modelValue', $event)" />
   </article>
 </template>
-
 <style scoped>
 .dish {
   display: flex;
