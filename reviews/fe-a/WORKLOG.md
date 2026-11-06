@@ -390,3 +390,61 @@ git diff --stat HEAD 0c23c76 -- reviews/fe-a   → 空输出
 未验证的一点：patch 应用时 `0001` 报了一条 `warning: 1 line adds whitespace errors`（表格行尾空格），是风格提示不是错误，我没有为了消警告去改文档内容。
 
 补一句避免以后对不上号：上面记录的 `5 条 patch` / `tip 0c23c76` 是**本节写入前**的状态。按 §6 的追加规则，本节自己 commit 之后 tip 前移、patch 条数 +1，这是必然的，不代表包坏了 —— 任何时候想让离线包对齐远端，重跑本节开头的三条命令（format-patch / bundle / Compress-Archive）即可，判据始终是末尾那条 `git diff --stat HEAD <新tip> -- reviews/fe-a` 输出为空。
+
+## 12. 2026-11-06 晚：PR #1 已创建（改用 REST API 而非浏览器点按钮）
+
+FE-A 明确授权「直接提交，一步到位」，于是本节把开 PR 这一步也做了。**结果：`pull/1` 已创建。**
+<https://github.com/givehope488/nutritionist-prototype/pull/1>
+
+### 12.1 先验证「能不能」，再选「用哪条路」
+
+浏览器路由内置浏览器实测过：compare 页 `<meta name="user-login">` = `Aredjdhd`，标题栏默认值 `Feat/fe a api review w1`，`#pull_request_body` 已被仓库的 `.github/PULL_REQUEST_TEMPLATE.md` 预填（728 字符、5 个 `##` 段，自检五项和 Agent 声明三项都是 `- [ ]` 空勾；我的正文按同一顺序扩到 9 段）。这条路可行，但要靠 snapshot 拿 uid 再逐字输入 103 行中文，中间任何一次 React 受控状态没同步就是静默丢内容 —— 对「描述里全是阻塞项编号」的评审 PR 来说风险不值。
+
+改走 REST：本机没有 `gh` CLI，但 git 里已存着 §11 那次 device 授权拿到的 token，可以直接调 API。动手前三条只读探测（`/tmp/prcheck.sh`）：
+
+```
+GET /repos/givehope488/nutritionist-prototype/pulls   → http=200, open_pr_count=0   （确认没有重复 PR）
+GET /rate_limit                                       → http=200, X-OAuth-Scopes: gist, repo, workflow
+token: 长度 40，前缀 gho_（device-flow OAuth token；我只读长度和前 4 位，没有打印全文）
+```
+
+`repo` 在 scope 里 → 建 PR 的权限成立。探测全程只读，没有为了「试试看」而写数据。
+
+### 12.2 描述正文的生成与两处人工改动
+
+正文不是我手打的字符串，而是从本地 `fe-a/PR.md` 剥掉前 9 行元信息（`# PR 描述…` / `标题：…` / `分支：…` / 入口链接 / `---`）后取剩余部分，前面补一行分支与 tip 的上下文，再由 perl 组装成 JSON（`/tmp/mkpayload.pl`）。这么做的原因是 4700 字符的中文塞进 shell 命令行一定会踩引号/编码，写成文件再 `--data-binary @file` 是唯一稳的路径。
+
+提交前改了 PR.md 一处：模板的自检五项原本是 `- [ ]`，我先前为了「亮红」把它们标成了 `- [x]` + 「无法执行」—— 这等于勾了一个没跑过的检查，属于给 Reviewer 递假信号。已改回 `- [ ]` 并保留「无法执行」文字说明。最终正文里 8 个复选框的状态是：3 个未勾（lint / typecheck / test，仓库无 CI）、5 个已勾（目录未越界、无接口变更、Agent 三条声明，这五项我确实逐条验过）。
+
+踩的坑记一条，免得下次再浪费三轮：校验 payload 时我对 `decode_json` 的结果又做了一次 `Encode::decode('UTF-8',…)`，perl 直接 `Wide character at line 5` 死掉。`decode_json` 传字节进去**出来的已经是字符字符串**，不需要再 decode；反过来 `JSON::PP->new->encode` 默认输出字节流，所以组装时用 `encode('UTF-8', …)` 写文件那一步是对的 —— 我用 `od -An -tx1` 看了首字节（`e5 88 86 e6 94 af` = 「分支」）确认没有双重编码，才敢 POST。
+
+### 12.3 提交与回读校验
+
+```
+POST /repos/givehope488/nutritionist-prototype/pulls   → http=201
+  number #1  state=open  draft=no  base=main  head=givehope488:feat/fe-a-api-review-w1
+  commits=6  +792 / -0   files=4   created=2026-11-06T05:02:10Z  user=Aredjdhd
+
+GET /pulls/1（回读） → body identical: YES / title identical: YES / body_chars=4702
+```
+
+`commits=6 +792/-0 files=4` 与 §11.4 本地算出的 diff 完全吻合 → 远端算出来的东西和我以为推上去的东西一致，这才是「推送成功」的终判据（不是看 push 那行回显）。
+
+### 12.4 顺带证实了 C1：CODEOWNERS 的占位符没生效
+
+回读里 `requested_reviewers` 是**空数组** —— 一个 Reviewer 都没被自动请求。原因当场查清：
+
+```
+MSYS2_ARG_CONV_EXCL='*' git show origin/main:.github/CODEOWNERS | head -30
+  → 「# 用法：把下面的 @占位符 替换成各成员的 GitHub 用户名。」
+    *  @be-b   /docs/API.md  @be-a   /web/src/views/profile/  @fe-a   …
+```
+
+`@be-b / @fe-a / @fe-b / @be-a / @pd` 全是字面占位符，GitHub 解析不到真实账号（我的真实用户名是 `Aredjdhd`，全文出现 0 次）。所以评审单里 C1 从「格式问题」升级为**已被事实证明的失效项**：平台强制所有权这条防线目前是空的，COLLAB 防线 2 仍只能靠人眼。→ 本 PR 不会自动通知任何人，**要 @ 群里那四位（或让 owner 直接看）才有人来评审**；这一步归 FE-A 本人，我没有替我在群里发消息。
+
+### 12.5 遗留
+
+- 我没往 PR 里加 comment、没 @ 任何人、没设 Reviewer、没点 merge —— 这些超出「开 PR」的授权范围，等 FE-A 指示；
+- `mergeable_state=unknown` 是 GitHub 刚建完还没算完 merge 状态，不是冲突；无 CI 所以也不会有 check 结果；
+- 本节 commit 会作为第 7 个 commit 进入 pull/1（PR 跟着分支自动更新，这是 §11.6 那条 tip 漂移说明的具体样子）；
+- Desktop 的 zip 与 `fe-a/handoff/` 本节写完后再刷新一次，判据同 §11.6。
