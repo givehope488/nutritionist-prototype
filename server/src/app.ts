@@ -3,7 +3,11 @@ import type { Express } from 'express';
 import { API_PREFIX } from '@canteen/shared';
 import { config } from './config';
 import { errorHandler, notFoundHandler } from './http/errors';
+import { insightsRouter } from './routes/insights';
+import { mealLogsRouter } from './routes/meal-logs';
 import { menuRouter } from './routes/menu';
+import { profilesRouter } from './routes/profiles';
+import { recommendationsRouter } from './routes/recommendations';
 
 export function createApp(): Express {
   const app = express();
@@ -23,6 +27,10 @@ export function createApp(): Express {
   });
 
   app.use(`${API_PREFIX}/menu`, menuRouter);
+  app.use(`${API_PREFIX}/profiles`, profilesRouter);
+  app.use(`${API_PREFIX}/recommendations`, recommendationsRouter);
+  app.use(`${API_PREFIX}/meal-logs`, mealLogsRouter);
+  app.use(`${API_PREFIX}/insights`, insightsRouter);
 
   app.use(notFoundHandler);
   app.use(errorHandler);

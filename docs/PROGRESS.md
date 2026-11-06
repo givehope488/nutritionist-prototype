@@ -223,6 +223,9 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 
 - 2026-11-06 PD | 决策 | **PR #6 由 FE-B 自己改，不代改**。评审列了 3 处契约对齐（忌口 key、份量写法、D4 的 UI 统一），改完即可合并 | FE-B：改完 @ 人要批准
 - 2026-11-06 PD | 变更 | **分工表按今天的实际进展改写**：BE-B 的「定前端怎么装」已由 PR #12 落地（按建议值独立安装），他 W0 改为提前起 SQLite 落库；FE-B 从「等 BE-B」改为「改 PR #6 那 3 处」，6 条全部无依赖 | BE-B / FE-B
+- 2026-11-06 BE-B | 变更 | 用户端其余 6 个端点补齐（profiles / recommendations / meal-logs / insights + 契约 smoke），全部为 Mock 实现：营养目标值是占位、组合只做加总，等 BE-A 的 engines 接入后替换；「换一批」按 §4.1-A 做成每次请求重抽；新增 `npm run smoke`（12 条断言）并挂进 `npm run check` | FE-A / FE-B 可立即开联调；BE-A 接引擎时只需替换 `server/src/data/recommendations.ts` 的两个调用点
+- 2026-11-06 BE-B | 风险 | **早餐结构仍未定**：55 道种子中早餐 14 道，素菜 0 道、汤 0 道，若沿用午晚的「主食×主菜×素菜」组合数直接为 0。Mock 暂用水果兜底，真实结构需 API v1.3 明确，否则 BE-A 引擎在早餐段必然无解 | BE-A 定结构、PD 补早餐菜，建议 W2 结束前有结论
+
 - 2026-11-06 PD | 变更 | **CI 修好，web 按独立项目安装**（PR #12）。`web/` 自带 lock，不在根 workspaces 里，原配置却用 `-w web` 调用，必然「找不到工作区」。现改为 `working-directory: web` 先 `npm ci` 再跑，并补上此前从未执行的 web 自身 lint | 全体；PR #6 的三项检查已转绿
 - 2026-11-06 PD | 变更 | 评审 PR #6 时发现 `API.md` §2.1 自相矛盾：既说 `portion_grams`「仅 A 级下发」又说它「不出现在任何响应中」。已更正为**一律不下发**（升 v1.2.1），与实现、`shared` 类型、D4 对齐 | FE-B：`portion_label` 不得写克重，`DishCard` 的「估算值」徽标按 D4 去掉
 - 2026-11-06 PD | 变更 | `docs/API.md` 升 v1.2：示例 `vegan`→`nomeat`、份量示例改展示用语、新增附录 D 忌口全表（9 项，含 `nogluten`）、补 `meal`/`status` 枚举；同时数据里给紫菜蛋花汤补了 `meat` | 全体；FE-B 要把 Mock 的 `vegan` 改成 `nomeat`
