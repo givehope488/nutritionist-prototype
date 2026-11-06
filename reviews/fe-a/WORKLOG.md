@@ -211,3 +211,16 @@ git commit --amend --author="你的名字 <你的邮箱>" --no-edit
 TEAM.md §5.2 与 COLLAB.md 防线 2/4 整套机制建立在「每人能开 PR、CI 必跑」上，但 W1 的**成员仓库权限发放**在任务表里没有责任人（W1 只有 BE-B 的「仓库脚手架」一项）。FE-A 现在的状态是：产出物已就绪，但没有账号 → 无法提 PR → DoD 第 3/4 条（PR 范围、Reviewer 三查）无法履行。建议在站会/评审会上把「5 人 GitHub 权限 + 提交身份 + 认证方式」补为 W1 的显式任务并指派给 BE-B，否则 W2 的「对接真实 API」会卡在同一个地方。
 
 另：`shared/`、Mock API、CI、`.nvmrc` 均未落地，加上本条权限问题 —— FE-A 侧 W2 开工前的依赖是 4 项而不是 3 项。
+
+## 9. 2026-11-06 交接包核验（离线交付路径已验证可用）
+
+产物（`fe-a/handoff/`）：`fe-a-api-review.bundle`、`0001-reviews-FE-A-v1.1.patch`、`0002-reviews-W1.patch`、`FE-A-W1-deliverables.zip`、5 份 md 原件。
+
+| 核验 | 命令 | 结果 |
+|---|---|---|
+| bundle 完整性 | `git bundle verify fe-a-api-review.bundle` | `is okay`，前置提交 `037a9cd`（对方持有即可 fetch） |
+| patch 可复现 | 在 `main` 的全新 clone 里 `git am 0001 0002` | 退出码 0，`git ls-tree -r HEAD` 列出 `reviews/fe-a/` 4 个文件 |
+| 内容一致性 | `git diff --stat FETCH_HEAD HEAD -- reviews` | 空 → 交接包重建出的分支与本地分支树内容完全相同 |
+| 越界检查 | 两个提交的 `--stat` | 只含 `reviews/fe-a/*`，未触碰 `docs/`、`shared/`、`web/`、`server/` |
+
+已知瑕疵：`CONTRACT-NOTES.md` 第 357 行表格有 1 处行尾空格（`git am` 报 trailing whitespace 警告）。纯 Markdown 排版，不影响内容；待 CI 的 markdownlint 上线后随下一次文档提交一并清掉。
