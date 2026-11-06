@@ -574,3 +574,25 @@ GET /healthz → 200
 - 分支 `feat/fe-a-review-update-w1`：从 `origin/main`（`496c1ef`）切出；切出后先验证 `git diff --stat origin/main -- reviews/fe-a` 为空（main 上我的内容是 PR #1 的 squash 结果，逐字节一致），再开始改。
 - 改动四份文档：API-REVIEW.md（v1.3 复核增补）、CONTRACT-NOTES.md（§5 依赖表重写 + §5.1 实测样本）、AGENT-PROMPT.md（`@canteen/shared` 订正 + 铁律 4 防线 7 + 忌口 key 禁止项）、WORKLOG.md（本节）。
 - 因 main 禁强推 + `/reviews/` 归 PD，交付必须走新 PR；PR 创建与回读校验记录在本节之后的续节。
+
+### 14.6 新 PR 创建与回读校验（PR #5）
+
+```
+POST /repos/givehope488/nutritionist-prototype/pulls   → create_http=201
+  number=5  state=open  draft=no  base=main  head=feat/fe-a-review-update-w1 (51d4cd9)
+  commits=1  +181/-29  files=4
+GET /pulls/5（回读）：
+  body 与我提交的 JSON 逐字节一致（orig_bytes=got_bytes=5251，脚本 vrfy5c.pl）  YES
+  title identical  YES
+  requested_reviewers = givehope488
+```
+
+`requested_reviewers = givehope488` 是本节最有价值的一条：**CODEOWNERS 实名化（C1）在平台层面第一次真正生效**——PR #1 时是空数组（占位符解析不到人），现在 `/reviews/` 自动请求到了 PD。防线 2 从「靠人记」恢复为「平台强制」，C1 结案的证据链闭合。
+
+CI：head `51d4cd9` 的 check-runs=3，`lint / test / typecheck` 全部 `success`（Node 22）——这次是**合并前**绿的，与 §14.2 记录的上一单「事后补绿」形成对照。
+
+两处回读校验中的小插曲，按老规矩记下：第一次比对报 `body_identical=NO`，是我又把「字符串」和「字节串」直接比（`decode_json` 对 body 输出的是字节串），老毛病第三次犯，这次 3 分钟定位。终判据 `vrfy5c.pl` 用字节级比较，结果 YES。以后回读校验一律按「双方都落到字节再比」写脚本。
+
+### 14.7 交接包对齐（沿用 §11.6 / §13.3 的同一判据）
+
+离线复现包按三条命令刷新（format-patch / bundle / Compress-Archive），判据不变：临时克隆 checkout `496c1ef` 后 `git am` 全序列，`git diff --stat HEAD origin/feat/fe-a-review-update-w1 -- reviews/fe-a` 输出为空。包内文件数 = `reviews/fe-a/` 4 份 + 备用 patch 序列，与 PR #5 的 files=4 一致。
