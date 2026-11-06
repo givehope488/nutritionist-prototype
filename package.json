@@ -15,6 +15,7 @@
     "lint": "eslint .",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
+    "check:data": "node server/scripts/check-data.mjs",
     "dev": "npm run dev -w @canteen/server",
     "start": "npm run start -w @canteen/server"
   },

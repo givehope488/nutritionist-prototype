@@ -47,6 +47,7 @@ jobs:
           node-version-file: .nvmrc
           cache: npm
       - run: npm ci
+      - run: npm run check:data
       - run: npm run test
       - name: test web
         if: hashFiles('web/package.json') != ''
