@@ -26,14 +26,22 @@
 /reviews/                           @givehope488
 
 # ---- 前端 ----
+# 兜底：web/ 下未单列的文件（脚手架、构建配置、样式、测试）由两位前端共同负责。
+# 单列规则写在后面，CODEOWNERS 以「最后一条匹配」为准。
+/web/                               @Aredjdhd @wyf-111
+
 /web/src/views/profile/             @Aredjdhd
 /web/src/views/goal/                @Aredjdhd
 /web/src/views/recommend/           @Aredjdhd
 /web/src/api/                       @Aredjdhd @wyf-111
+/web/src/composables/               @Aredjdhd @wyf-111
+/web/src/utils/                     @Aredjdhd @wyf-111
+/web/src/tests/                     @Aredjdhd @wyf-111
 /web/src/views/log/                 @wyf-111
 /web/src/views/feedback/            @wyf-111
 /web/src/views/history/             @wyf-111
 /web/src/components/                @wyf-111
+/web/src/dev/                       @wyf-111
 
 # ---- 后端 ----
 /server/src/engines/                @pigQAQ
@@ -46,3 +54,5 @@
 
 # ---- 数据 ----
 /server/data/                       @givehope488
+# 数据体检脚本：拦录入错误，归 PD 与 BE-B 共同维护（脚本在 CI 里跑，改动出问题会挡全队）
+/server/scripts/                    @givehope488 @yangelect
