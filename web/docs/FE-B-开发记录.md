@@ -43,7 +43,7 @@ npm run test           # vitest run（单测 + e2e，47 用例）
 npm run e2e            # 只跑闭环流程
 ```
 
-- 实测环境：Node v22.23.4 / npm 10.9.9（Windows）。**仓库还没有 `.nvmrc`**，属 BE-B 的根配置范围，见议题 Q8。
+- 实测环境：Node v22.23.4 / npm 10.9.9（Windows）。根 `.nvmrc` 现为 `22`（见议题 Q8）。
 - Mock / 真实后端切换只靠环境变量：`VITE_API_BASE=mock://local` 走内置替身，改成真实 URL 即零改码切换（COLLAB.md 防线 4）。
 - 数据源：`server/data/menu-seed.json`（55 道菜）经 `@menu-seed` 别名只读引入，前端不写回。
 
@@ -108,8 +108,8 @@ FE-B 名下目录（CODEOWNERS 口径）：`web/src/views/log|feedback|history/`
 | Q5 | 「忌口过滤后无解」的判据未定义 | `tests/unit/closureEndpoints.test.ts:67` | 55 道菜 + 现有组合结构下，实测任何忌口组合都还有解，`notice` 分支在真实数据上不可达 | 断言改为「返回合法 combos」；`NoSolutionNotice` 组件与其单测保留，等 BE-A 给出无解判据 |
 | Q6 | e2e 里建档/推荐两步是接口模拟 | `tests/e2e/closureFlow.test.ts` 头注释 | FE-A 页面合并前，e2e 不覆盖真实建档交互 | FE-A 合并后把两步替换成真实页面跳转（需 FE-A 提供可测的 DOM 锚点） |
 | Q7 | 传输层失败（断网/超时/取消）没有契约错误码 | `api/client.ts:48` 注释 | 前端只能借用 `INTERNAL`，与"服务端异常"混在同一文案桶 | 借 `INTERNAL` + 可操作文案；请评审是否补 `CLIENT_NETWORK_ERROR` |
-| Q8 | 根配置缺 `.nvmrc`，Node 版本未锁 | COLLAB.md 防线 3 要求；CODEOWNERS 已预留 `/.nvmrc @be-b` | 成员 Node 版本不一致时 CI 结果不可复现（本机 v22.23.4，文档示例 v24） | 无权限建根文件，等 BE-B 落 `.nvmrc` |
-| Q9 | CODEOWNERS 未覆盖 `web/src/composables/`、`web/src/utils/`、`web/src/dev/` | `.github/CODEOWNERS`（`1275782` 引入）只列了 views 子目录、`components/`、`api/` | 这三个目录的 PR 会被兜底规则派给 @be-b，FE-B 成了非所有者，Review 链条绕人 | 代码已按现状提交；请 BE-B 补三行归属（建议归 @fe-b） |
+| Q8 | 根配置缺 `.nvmrc`，Node 版本未锁 | COLLAB.md 防线 3 要求；CODEOWNERS 已预留 `/.nvmrc` | 成员 Node 版本不一致时 CI 结果不可复现（本机 v22.23.4，文档示例 v24） | ✅ 已解决：根 `.nvmrc` = `22`，CI 用 `node-version-file` 读取 |
+| Q9 | CODEOWNERS 未覆盖 `web/src/composables/`、`web/src/utils/`、`web/src/dev/` | `.github/CODEOWNERS`（`1275782` 引入）只列了 views 子目录、`components/`、`api/` | 这三个目录的 PR 会被兜底规则派给 @be-b，FE-B 成了非所有者，Review 链条绕人 | ✅ 已解决：现覆盖 `/web/` 兜底 + `composables/` `utils/` `tests/` `dev/`（@Aredjdhd @wyf-111） |
 | Q10 | CI 的 `typecheck web` / `test web` 在 web 未列入 workspaces 时必然失败 | `.github/workflows/ci.yml` 曾用 `-w web`，根 `workspaces` 只有 `shared`/`server` | 合并阻塞 | ✅ 已解决：main #12 改为 `working-directory: web` + 独立 `npm ci`（方案 B），并补跑 web 自身 lint |
 | Q11 | 种子 v2 的 `portion_grams` 是否下发 | API.md §2.1 原文自相矛盾（「仅 A 级下发」vs「不出现在任何响应中」） | 前端能否展示克重 | ✅ 已解决：v1.2.1 定为**一律不下发**；D4 要求 A/B 同 UI，`DishCard` 已删「估算值」徽标 |
 > **与 FE-A 议题合并**（`origin/feat/fe-a-api-review-w1:reviews/fe-a/API-REVIEW.md`，评审时不要开两遍）：
@@ -189,7 +189,7 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 ## 9. 下一步（我这边欠的）
 
 1. 与 FE-A 合并建档/推荐页：把路由 `/`、`/profile`、`/recommend` 的临时重定向改回，并按议题 Q6 重写 e2e 前两步。
-2. 议题余下 Q1/Q3–Q9 提交评审（Q2/Q10/Q11 已结案）；通过后删掉对应兜底代码（`__mock__` 目录整体删除是最大一块）。
+2. 议题余下 Q1/Q3–Q7 提交评审（Q2/Q8–Q11 已结案）；通过后删掉对应兜底代码（`__mock__` 目录整体删除是最大一块）。
 3. ~~W3 剩余边界（TEAM v1.2）~~ ✅ 2026-11-06 已补测：限流 429、菜品下架后回填旧记录、跨天回填（凌晨填昨晚），见 §14。
 4. 周三中途集成点（TEAM v1.2 新增）：从 main 拉最新代码真机冒烟，需要 BE-A 的菜单/推荐 API 到位后把 `VITE_API_BASE` 切到真实后端跑同一套 e2e。
 5. 视觉回归：目前靠肉眼过故事页，等 CI 有基线后补截图对比。
