@@ -720,3 +720,46 @@ CI（head 849e134）：lint / typecheck / test 三个 job 全 success
 - 建档页 + 目标页：`web/src/views/profile/`、`web/src/views/goal/`（依赖 #6 合入，或继续做叠加分支）
 - 推荐页：`web/src/views/recommend/`（3 套卡片、换一批=重新请求、无解 notice）
 - 两页均须消费 `@canteen/shared` 类型与 `client.ts`，禁止页面内公式/硬编码枚举。
+
+## 17. 2026-11-06 深夜：按 `origin/main` @ `70f9f52` 做四处事实同步（PR #16 续）
+
+评审人反馈：PR #17 已随 #6 合并进主干；B3 由 API v1.2.2 §2.3 收口；`API-REVIEW.md` 有四处过时，改完即批。本节记录同步依据与实测。
+
+### 17.1 远端事实（开工前复核）
+
+```
+origin/main            → 70f9f52（#19 CI 端点 smoke 步骤 + API v1.2.2）
+#6 (feat/fe-b-web)     → 已合并 163a661（web/ 进主干，含本人 #17 的 client 单测）
+#17                    → 已合并（先入 feat/fe-b-web 43bf153，再随 #6 入 main）
+PR #18                 → open，head b047c7f（server smoke/seed，已核可跑）
+PR #16                 → open，head 95f8e85（本单）
+```
+
+分支工作区：`/tmp/fe-a-review-wt2`，`git merge origin/main` → **`9415a06`**（无冲突）。
+
+### 17.2 四处同步（评审人指定，均为事实同步，不新增评审判断）
+
+1. **B2 猪肉包子证据（第 42~43 行）**：标注「已由 PR #4（种子 v2）修复」，记录保留。实测 `s11/s12/s13` tags 均为 `["pork","gluten","meat"]`；`pork` 13 道、缺 `meat` 0 道。
+2. **B3（第 168 / 206 / 255 行）**：状态 → **已结案 2026-11-06，API v1.2.2 §2.3**。槽位表：`lunch/dinner` = 主食 × 主菜 × 素菜（汤可选）；`breakfast` = 主食 × 主菜（水果可选）。仍不加 `structure` 字段，按 `category` 渲染。
+3. **C4（第 202 / 268 行）**：`web/` 已合并 `163a661`（`git ls-tree -r origin/main:web` 计 69 个文件，含 Mock 与 `web/.env.example`）；`server/scripts/smoke.ts` 随 PR #18 待合；CI 在 `70f9f52` 已加入跳过式 smoke 步骤；**e2e 仍无人认领**。
+4. **`portion_label`（第 92 行）**：55 道分布 `1 份`×28 / `1 碗`×9 / `1 个`×7 / `1 杯`×4 / `1 根`×3 / `8 只` / `6 只` / `1 只` / `半份`；含 `g`/`ml` **0 条**；`web/src/tests/unit/components.test.ts:50,57` 反向断言 `not.toMatch(/\d+\s*(g|ml)\b/)`。
+
+另：签字版本随 B3 入 §2.3 由 v1.2.1 上移至 **v1.2.2**（条件未增加），文首加 v1.5 标注、文末加第 6 节明细；第 278 行「PR #6 合并前可用其分支」同步为「已合并进 163a661」。
+
+### 17.3 实测（worktree `9415a06`，本机 Node v26.13.0）
+
+```
+root: npm ci → exit 0
+root: lint / typecheck / test / check:data / check:progress → 全部 exit 0
+web : npm ci → exit 0
+web : lint / typecheck → exit 0；test → 9 files / 59 tests passed
+```
+
+数据复核（只读 `origin/main` @ `70f9f52`）：
+
+```
+pork_total=13  pork_without_meat=0
+s11/s12/s13 tags=["pork","gluten","meat"]
+breakfast_total=14  bf_staple=7 bf_protein=5 bf_veg=0 bf_fruit=2 bf_soup=0
+git ls-tree -r origin/main:web | wc -l → 69
+```
