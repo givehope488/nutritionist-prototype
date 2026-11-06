@@ -1,0 +1,73 @@
+/* 设计令牌（FE-B 设计系统 v0.1）
+ * 目标：所有颜色/间距/字号只在此处定义，组件禁止写死数值。
+ * 对比度按 WCAG AA 校验：正文 --color-text-primary 对 --color-bg-page ≈ 12:1。 */
+:root {
+  /* 品牌色：偏绿的青调，呼应「营养师 / 食堂」，主色仅用于主操作与强调 */
+  --color-brand-50: #e8f5f2;
+  --color-brand-100: #c2e6de;
+  --color-brand-300: #5bb8a5;
+  --color-brand-500: #0f7b6c;
+  --color-brand-600: #0b6559;
+  --color-brand-700: #084c44;
+
+  /* 中性色 */
+  --color-text-primary: #1c211f;
+  --color-text-secondary: #565e5b;
+  --color-text-tertiary: #8a938f;
+  --color-text-inverse: #ffffff;
+  --color-border: #dfe5e3;
+  --color-border-strong: #c3ccc9;
+  --color-bg-page: #f5f7f6;
+  --color-bg-surface: #ffffff;
+  --color-bg-subtle: #eef1f0;
+
+  /* 语义色：verdict 判定（ok / warn，对齐 API.md §2.4 level 枚举） */
+  --color-ok: #1f8a4c;
+  --color-ok-bg: #e9f6ee;
+  --color-warn: #b4630a;
+  --color-warn-bg: #fdf2e3;
+  --color-danger: #c0392b;
+  --color-danger-bg: #fbecea;
+  --color-info: #1f5f9e;
+  --color-info-bg: #e9f2fa;
+
+  /* 宏量条：热量 / 蛋白 / 脂肪 / 碳水 / 钠（仅用于展示，不代表前端计算口径） */
+  --color-macro-kcal: var(--color-brand-500);
+  --color-macro-protein: #3d7fd1;
+  --color-macro-fat: #d9902e;
+  --color-macro-carbs: #7d5fd1;
+  --color-macro-sodium: #c0655f;
+
+  /* 间距：4px 基准 */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* 圆角 */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-pill: 999px;
+
+  /* 字号：移动端 H5 基准 16px 防 iOS 缩放 */
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 14px;
+  --font-size-lg: 16px;
+  --font-size-xl: 18px;
+  --font-size-2xl: 22px;
+  --font-line-height: 1.5;
+
+  /* 阴影：移动端弱阴影，避免视觉噪声 */
+  --shadow-card: 0 1px 2px rgba(28, 33, 31, 0.06);
+  --shadow-raised: 0 2px 8px rgba(28, 33, 31, 0.1);
+
+  /* 触控目标：移动端不小于 44px */
+  --size-touch: 44px;
+  --app-max-width: 430px;
+  --app-safe-bottom: env(safe-area-inset-bottom, 0px);
+}
