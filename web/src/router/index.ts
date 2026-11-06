@@ -1,9 +1,9 @@
 // 路由：FE-B 负责回填 / 反馈 / 历史 三页与组件故事页。
 // 建档 / 目标 / 推荐三页属 FE-A（COLLAB.md 防线 2），此处只登记其占位路径，避免路由名冲突。
 import { createRouter, createWebHistory } from 'vue-router';
-import HistoryView from '@/views/HistoryView.vue';
-import LogView from '@/views/LogView.vue';
-import FeedbackView from '@/views/FeedbackView.vue';
+import HistoryView from '@/views/history/HistoryView.vue';
+import LogView from '@/views/log/LogView.vue';
+import FeedbackView from '@/views/feedback/FeedbackView.vue';
 import StoryView from '@/dev/StoryView.vue';
 
 export const routes = [
