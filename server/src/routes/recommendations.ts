@@ -11,7 +11,7 @@ const MEALS: readonly Meal[] = ['breakfast', 'lunch', 'dinner'];
 const GOALS: readonly Goal[] = ['health', 'lose', 'gain'];
 const AVOID_KEYS: readonly string[] = AVOID_OPTIONS.map((option) => option.key);
 
-/** avoid key → 排除的菜品标签（与 data/recommendations 旧 Mock 同源，现由引擎统一消费） */
+/** avoid key → 排除的菜品标签（唯一来源是 data/avoid-options，与 API.md 附录 D 对齐） */
 const AVOID_TO_TAG = new Map<string, DishTag>(
   AVOID_OPTIONS.map((option) => [option.key, option.excludes_tag]),
 );
