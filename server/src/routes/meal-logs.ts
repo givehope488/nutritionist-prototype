@@ -145,8 +145,12 @@ mealLogsRouter.post('/', (req, res) => {
   /**
    * TODO(W2 反馈服务)：判定阈值（差 10% 以内算准）还属于 services/meallog 的活，
    * 但**目标值本身已经是引擎算出来的**，不再有写死的 730。
+   *
+   * gap 必须 round1：引擎给出的本餐目标是小数（如 937.6），
+   * 直接相减会算出 107.60000000000002 这种浮点尾巴，而它会被原样拼进
+   * `verdict.body` 由前端 `{{ verdict.body }}` 直出给用户看。
    */
-  const gap = Math.abs(totals.kcal - mealTarget.kcal);
+  const gap = round1(Math.abs(totals.kcal - mealTarget.kcal));
   const isOnTarget = mealTarget.kcal > 0 && gap / mealTarget.kcal <= 0.1;
 
   const log: MealLogResponse = {

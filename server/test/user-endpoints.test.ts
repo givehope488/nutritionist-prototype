@@ -211,6 +211,16 @@ describe('POST /api/v1/meal-logs', () => {
     expect(['ok', 'warn']).toContain(body.verdict.level);
   });
 
+  it('判语文案不带浮点尾巴（前端 {{ verdict.body }} 直出给用户看）', async () => {
+    await post('/api/v1/profiles', validProfile); // 引擎本餐目标 937.6，必然产生小数差
+    const res = await post('/api/v1/meal-logs', { ...payload, id: 'log-float' });
+    const body = res.json as MealLogResponse;
+
+    // 回归护栏：出现 107.60000000000002 这类四位以上小数，说明 gap 忘了 round1
+    expect(body.verdict.body).not.toMatch(/\d\.\d{4,}/);
+    expect(body.verdict.title.length).toBeGreaterThan(0);
+  });
+
   it('本餐目标由引擎按档案计算，不再是写死的 730（PROGRESS §2.1 BE-B #3）', async () => {
     await post('/api/v1/profiles', validProfile); // 男 172cm 65kg 20 岁 health
     const first = await post('/api/v1/meal-logs', { ...payload, id: 'log-target-a' });
