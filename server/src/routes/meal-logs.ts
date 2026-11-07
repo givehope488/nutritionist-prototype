@@ -7,10 +7,12 @@ import type {
   MealLogListResponse,
   MealLogResponse,
   NutritionTotals,
+  ProfileInput,
 } from '@canteen/shared';
 import { getAllDishes } from '../data/dishes';
-import { PLACEHOLDER_TARGET } from '../data/recommendations';
+import { profileRepository } from '../data/repositories';
 import { mealLogRepository } from '../data/repositories';
+import { calcTargets } from '../engines/nutrition';
 import {
   bodyObject,
   invalid,
@@ -121,12 +123,35 @@ mealLogsRouter.post('/', (req, res) => {
   };
 
   /**
-   * TODO(W2 反馈服务)：判定规则属于 services/meallog，这里用「与占位目标差 10% 以内算准」
-   * 临时顶替，等引擎给出真实本餐目标后再替换。
+   * 本餐目标改由真实引擎计算（PROGRESS §2.1 BE-B 第 3 条，硬约束「#23 合并前完成」）。
+   *
+   * 口径与 `routes/recommendations.ts` 保持一致：档案存在就用档案，
+   * 缺失时给一份保守默认体征，保证回填永远有目标可比，不会因为没建档就 500。
    */
-  const deviation = Math.abs(totals.kcal - PLACEHOLDER_TARGET.kcal) / PLACEHOLDER_TARGET.kcal;
-  const isOnTarget = deviation <= 0.1;
-  const gap = Math.abs(totals.kcal - PLACEHOLDER_TARGET.kcal);
+  const profile = profileRepository.find(sessionId);
+  const targetInput: ProfileInput = {
+    session_id: sessionId,
+    sex: profile?.sex ?? 'male',
+    height_cm: profile?.height_cm ?? 170,
+    weight_kg: profile?.weight_kg ?? 65,
+    age: profile?.age ?? 30,
+    activity: profile?.activity ?? 'mid',
+    goal: profile?.goal ?? 'health',
+    avoid: profile?.avoid ?? [],
+    default_meal: profile?.default_meal ?? meal,
+  };
+  const mealTarget = calcTargets(targetInput).mealTargets[meal];
+
+  /**
+   * TODO(W2 反馈服务)：判定阈值（差 10% 以内算准）还属于 services/meallog 的活，
+   * 但**目标值本身已经是引擎算出来的**，不再有写死的 730。
+   *
+   * gap 必须 round1：引擎给出的本餐目标是小数（如 937.6），
+   * 直接相减会算出 107.60000000000002 这种浮点尾巴，而它会被原样拼进
+   * `verdict.body` 由前端 `{{ verdict.body }}` 直出给用户看。
+   */
+  const gap = round1(Math.abs(totals.kcal - mealTarget.kcal));
+  const isOnTarget = mealTarget.kcal > 0 && gap / mealTarget.kcal <= 0.1;
 
   const log: MealLogResponse = {
     id,
@@ -135,17 +160,17 @@ mealLogsRouter.post('/', (req, res) => {
     meal,
     items: resolvedItems,
     totals,
-    target: { kcal: PLACEHOLDER_TARGET.kcal, protein_g: PLACEHOLDER_TARGET.protein_g },
+    target: { kcal: mealTarget.kcal, protein_g: mealTarget.protein_g },
     verdict: isOnTarget
       ? {
           level: 'ok',
           title: '吃得挺准',
-          body: `这一餐 ${totals.kcal} kcal，和本餐目标 ${PLACEHOLDER_TARGET.kcal} kcal 相差 ${gap} kcal。`,
+          body: `这一餐 ${totals.kcal} kcal，和本餐目标 ${mealTarget.kcal} kcal 相差 ${gap} kcal。`,
         }
       : {
           level: 'warn',
           title: '偏离目标较多',
-          body: `这一餐 ${totals.kcal} kcal，目标 ${PLACEHOLDER_TARGET.kcal} kcal，相差 ${gap} kcal，下一餐可以调整一下。`,
+          body: `这一餐 ${totals.kcal} kcal，目标 ${mealTarget.kcal} kcal，相差 ${gap} kcal，下一餐可以调整一下。`,
         },
     // TODO(W2)：combo.id 有效期 24 小时，过期后 adopted 如何判定契约未定义（PROGRESS §6 待决）
     adopted: adoptedComboId !== null,
