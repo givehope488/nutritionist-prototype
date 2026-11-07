@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { recommendCombos } from '../../src/engines/recommend';
+import { recommendCombos, sodiumPenalty } from '../../src/engines/recommend';
 import { calcTargets } from '../../src/engines/nutrition';
 import type { Dish, Goal, Meal, MealTarget } from '@canteen/shared';
 
@@ -119,9 +119,13 @@ describe('忌口过滤与无解处理', () => {
       avoidTags: ['meat'],
       target: lunchTarget(),
     });
+    const forbiddenIds = new Set(
+      DISHES.filter((d) => d.tags.includes('meat')).map((d) => d.id),
+    );
+    expect(forbiddenIds.size).toBeGreaterThan(0);
     for (const c of combos) {
       for (const d of c.dishes) {
-        expect(d.tags).not.toContain('meat');
+        expect(forbiddenIds.has(d.id)).toBe(false);
       }
     }
   });
@@ -153,3 +157,18 @@ function mk(
     status: 'active',
   };
 }
+
+describe('钠罚分（v1.2.3 分段系数）', () => {
+  it('Na=2150 → 52.5', () => {
+    expect(sodiumPenalty(2150)).toBeCloseTo(52.5, 5);
+  });
+  it('Na=1600 → 0', () => {
+    expect(sodiumPenalty(1600)).toBe(0);
+  });
+  it('Na=1900 → 15', () => {
+    expect(sodiumPenalty(1900)).toBeCloseTo(15, 5);
+  });
+  it('Na=601 → 0（达标不罚）', () => {
+    expect(sodiumPenalty(601)).toBe(0);
+  });
+});

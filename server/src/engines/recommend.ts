@@ -59,6 +59,24 @@ function shortId(ids: string[]): string {
   return h.toString(16).padStart(8, '0').slice(0, 8);
 }
 
+/** 钠罚分（v1.2.3 分段系数）：≤1600 不罚；1600~1900 线性 ×0.05；>1900 再叠 ×0.10 */
+export function sodiumPenalty(sodiumMg: number): number {
+  if (sodiumMg <= SODIUM_LINE_MG) return 0;
+  let p = (sodiumMg - SODIUM_LINE_MG) * 0.05;
+  if (sodiumMg > 1900) p += (sodiumMg - 1900) * 0.1;
+  return p;
+}
+
+/** Fisher–Yates 洗牌（供「换一批」随机抽取，使结果可变化） */
+function shuffle<T>(arr: T[]): T[] {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 /**
  * 附录 B 评分：返回「越大越好」的得分。
  * 各类偏离按文档系数转为惩罚，达标项给奖励。
@@ -92,10 +110,8 @@ function scoreCombo(
   if (fatRatio > 0.42) penalty += (fatRatio - 0.42) * 200;
   if (fatRatio < 0.15) penalty += (0.15 - fatRatio) * 100;
 
-  // 钠 >1600mg 线性罚
-  if (t.sodium_mg > SODIUM_LINE_MG) {
-    penalty += (t.sodium_mg - SODIUM_LINE_MG) * 0.01;
-  }
+  // 钠罚分（v1.2.3 分段系数，见 sodiumPenalty）
+  penalty += sodiumPenalty(t.sodium_mg);
 
   let bonus = 0;
   // 含蔬菜 / 水果 +7
@@ -117,9 +133,10 @@ function buildReason(t: NutritionTotals, target: MealTarget, hasPlant: boolean):
         ? `比目标高 ${diff}kcal`
         : `比目标低 ${-diff}kcal`;
   const proteinNote = t.protein_g >= target.protein_g ? '蛋白质达标' : '蛋白质略低';
-  return `这一餐约 ${t.kcal}kcal（${kcalNote}）；蛋白质 ${t.protein_g}g（${proteinNote}），${
+  const saltNote = t.sodium_mg > 1900 ? '；钠偏高，建议控制盐分摄入' : '';
+  return `这一餐约 ${t.kcal}kcal（${kcalNote}）；蛋白质 ${t.protein_g}g（${proteinNote}）,${
     hasPlant ? '含蔬果' : '未配蔬果'
-  }，钠 ${t.sodium_mg}mg。`;
+  }，钠 ${t.sodium_mg}mg${saltNote}。`;
 }
 
 function toCombo(dishes: Dish[], target: MealTarget): Combo {
@@ -203,19 +220,9 @@ export function recommendCombos(
     return { combos: [], notice: NO_SOLUTION_NOTICE };
   }
 
-  // 两阶段补「小荤」：能量过低（kcal≤260 或 fat≤12g）时，尝试再加一道荤/半荤提升满足感（附录 B）
-  const augmented: Candidate[] = [];
-  for (const c of candidates) {
-    const t = totalsOf(c.dishes);
-    if (t.kcal <= 260 || t.fat_g <= 12) {
-      const extra = proteins.find(
-        (p) => !c.dishes.some((d) => d.id === p.id),
-      );
-      if (extra) augmented.push({ dishes: [...c.dishes, extra] });
-    }
-  }
-
-  const all = [...candidates, ...augmented];
+  // 注（v1.2.3）：附录 B 原「补小荤」规则会新增第四件菜，与 §2.3 组合件数冲突。
+  // v1.2.3 裁定：补小荤不得新增菜品、不得改变组合件数——低热量组合靠热量偏离罚自然淘汰，故不再加菜。
+  const all = candidates;
 
   // 评分 + 去重（按菜品 id 集合）
   const seen = new Set<string>();
@@ -239,11 +246,13 @@ export function recommendCombos(
     })
     .sort((a, b) => b.score - a.score);
 
-  // 选 top3：主食互不相同、主菜不重复
+  // 取得分靠前的 8 套，在其中随机抽 3 套（「换一批」可变化，仍保证主食互不相同、主菜不重复）
+  const top = scored.slice(0, Math.min(8, scored.length));
+  const drawPool = shuffle(top);
   const combos: Combo[] = [];
   const usedStaples = new Set<string>();
   const usedProteins = new Set<string>();
-  for (const { candidate } of scored) {
+  for (const { candidate } of drawPool) {
     if (combos.length >= 3) break;
     const staple = candidate.dishes.find((d) => d.category === 'staple');
     const protein = candidate.dishes.find((d) => d.category === 'protein');

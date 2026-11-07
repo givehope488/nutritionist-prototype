@@ -21,7 +21,7 @@ import type {
 const ACTIVITY_FACTOR: Record<Activity, number> = { low: 1.2, mid: 1.4, high: 1.6 };
 const GOAL_FACTOR: Record<Goal, number> = { health: 1.0, lose: 0.8, gain: 1.12 };
 const PROTEIN_PER_KG: Record<Goal, number> = { health: 1.2, lose: 1.6, gain: 1.8 };
-const MEAL_RATIO: Record<Meal, number> = { breakfast: 0.3, lunch: 0.4, dinner: 0.35 };
+const MEAL_RATIO: Record<Meal, number> = { breakfast: 0.3, lunch: 0.4, dinner: 0.3 };
 
 const FAT_ENERGY_RATIO = 0.27;
 const CARBS_FLOOR_G = 60;

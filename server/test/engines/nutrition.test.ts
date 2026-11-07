@@ -69,6 +69,23 @@ describe('餐次目标（午餐 0.4）', () => {
   });
 });
 
+describe('餐次目标之和 = 日目标（v1.2.3 占比和=1.0）', () => {
+  it('三餐 kcal 之和 ≈ day_kcal', () => {
+    const { profile: p, mealTargets } = calcTargets(profile({ goal: 'health' }));
+    const sum =
+      mealTargets.breakfast.kcal + mealTargets.lunch.kcal + mealTargets.dinner.kcal;
+    expect(sum).toBeCloseTo(p.day_kcal, 0);
+  });
+  it('三餐 meal_ratio 之和 = 1.0', () => {
+    const { mealTargets } = calcTargets(profile({ goal: 'health' }));
+    const r =
+      mealTargets.breakfast.meal_ratio +
+      mealTargets.lunch.meal_ratio +
+      mealTargets.dinner.meal_ratio;
+    expect(r).toBeCloseTo(1.0, 6);
+  });
+});
+
 describe('边界：lose 不低于 BMR×1.05', () => {
   it('低代谢女性 lose：day_kcal 取地板值 1078 而非 986', () => {
     // BMR=1027(女 40/150/30)，TDEE×0.8≈986，BMR×1.05≈1078 → 取 1078
