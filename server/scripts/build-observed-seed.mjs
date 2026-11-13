@@ -42,7 +42,8 @@ const STALL = {
 // ---------- 名字归一 ----------
 const norm = (s) =>
   String(s)
-    .replace(/[（(].*?[)）]/g, '')
+    // 括号内容要保留：它常常是区分依据（「馄饨（猪肉馅）」≠「温州瘦肉丸·馄饨」）
+    .replace(/[（(]([^)）]*)[)）]/g, '$1')
     .replace(/[\s·、,，/／&+]/g, '')
     .replace(/份|个|根|碗|只|串|片|块|粉|丝/g, '');
 
@@ -151,6 +152,7 @@ function parseCombo(name) {
 }
 
 function inferNutrition(name, category) {
+  if (EXACT[name]) return { t: EXACT[name], how: 'exact' };
   const k = norm(name);
   if (EXACT[k]) return { t: EXACT[k], how: 'exact' };
 
@@ -209,7 +211,7 @@ for (const o of obs) {
           : '照片推测菜名（置信度低）；营养值按品类模板估算，待配料反推',
     floor: o.floor,
     stall: o.area,
-    serving_mode: st.serving,
+    serving_mode: o.serving_mode ?? st.serving,
     recommendable: st.recommendable,
     evidence: o.source,
     confidence: o.confidence,
