@@ -23,7 +23,7 @@
         "all": "全天"
       }
     },
-    "note": "实测菜单识别底稿。**本文件不含任何价格数据**——产品不向用户提供价格（2026-11-13 用户决策），价格不属于产品链路。菜名与档口来自照片牌面，置信度与来源逐条标注。"
+    "note": "实测菜单识别底稿。**本文件不含任何价格数据**——产品不向用户提供价格（2026-11-13 用户决策），价格不属于产品链路。菜名与档口来自照片牌面，置信度与来源逐条标注。`serving_mode` 为可选覆盖：缺省按档口默认（一楼自选线=plate，二楼档口=single 成品餐，轻食与麻辣烫=component 组件），显式给出时以此为准。"
   },
   "items": [
     {
@@ -362,7 +362,8 @@
       "category": "staple",
       "source": "user",
       "confidence": "high",
-      "note": "用户口述补充"
+      "note": "用户口述补充",
+      "serving_mode": "single"
     },
     {
       "id": "obs-027",
@@ -375,7 +376,8 @@
       "category": "staple",
       "source": "user",
       "confidence": "high",
-      "note": "用户口述补充"
+      "note": "用户口述补充",
+      "serving_mode": "single"
     },
     {
       "id": "obs-028",
@@ -388,7 +390,8 @@
       "category": "staple",
       "source": "user",
       "confidence": "high",
-      "note": "用户口述补充"
+      "note": "用户口述补充",
+      "serving_mode": "single"
     },
     {
       "id": "obs-029",
@@ -713,7 +716,8 @@
       "category": "staple",
       "source": "user",
       "confidence": "high",
-      "note": "用户口述补充"
+      "note": "用户口述补充",
+      "serving_mode": "single"
     },
     {
       "id": "obs-054",
@@ -726,7 +730,8 @@
       "category": "staple",
       "source": "user",
       "confidence": "high",
-      "note": "用户口述补充"
+      "note": "用户口述补充",
+      "serving_mode": "single"
     },
     {
       "id": "obs-055",
@@ -739,7 +744,8 @@
       "category": "staple",
       "source": "user",
       "confidence": "high",
-      "note": "用户口述补充"
+      "note": "用户口述补充",
+      "serving_mode": "single"
     },
     {
       "id": "obs-056",
@@ -752,7 +758,8 @@
       "category": "staple",
       "source": "user",
       "confidence": "high",
-      "note": "用户口述补充"
+      "note": "用户口述补充",
+      "serving_mode": "single"
     },
     {
       "id": "obs-057",
@@ -5598,6 +5605,21 @@
       "source": "photo",
       "confidence": "mid",
       "note": "朝陇阳灶台实拍明确可见（红色砂锅内番茄+炒蛋），牌面未单列价格"
+    },
+    {
+      "id": "obs-380",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "name": "白米饭",
+      "category": "staple",
+      "serving_mode": "single",
+      "source": "user",
+      "confidence": "high",
+      "note": "用户确认：白米饭存在，只在一楼供应；二楼各档口的盖浇饭类自带米饭"
     }
   ]
 }
