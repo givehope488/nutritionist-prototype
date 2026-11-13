@@ -23,7 +23,7 @@
         "all": "全天"
       }
     },
-    "note": "实测菜单识别底稿。**本文件不含任何价格数据**——产品不向用户提供价格（2026-11-13 用户决策），价格不属于产品链路。菜名与档口来自照片牌面，置信度与来源逐条标注。`serving_mode` 为可选覆盖：缺省按档口默认（一楼自选线=plate，二楼档口=single 成品餐，轻食与麻辣烫=component 组件），显式给出时以此为准。"
+    "note": "实测菜单识别底稿。**本文件不含任何价格数据**——产品不向用户提供价格（2026-11-13 用户决策），价格不属于产品链路。菜名与档口来自照片牌面或用户确认，置信度与来源逐条标注。`serving_mode` 为可选覆盖：缺省按档口默认（一楼自选线=plate，二楼档口=single 成品餐，轻食与麻辣烫=component 组件），显式给出时以此为准。"
   },
   "items": [
     {
@@ -5620,6 +5620,70 @@
       "source": "user",
       "confidence": "high",
       "note": "用户确认：白米饭存在，只在一楼供应；二楼各档口的盖浇饭类自带米饭"
+    },
+    {
+      "id": "obs-381",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "免费米饭",
+      "category": "staple",
+      "serving_mode": "component",
+      "source": "user",
+      "confidence": "mid",
+      "note": "麻辣烫档口配主食之一，免费供应（用户确认）；与一楼的单点白米饭不是同一份"
+    },
+    {
+      "id": "obs-382",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "番茄汤底",
+      "category": "soup",
+      "serving_mode": "component",
+      "source": "user",
+      "confidence": "mid",
+      "note": "麻辣烫三种汤底之一（用户确认）；番茄底，不辣"
+    },
+    {
+      "id": "obs-383",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "金汤底",
+      "category": "soup",
+      "serving_mode": "component",
+      "source": "user",
+      "confidence": "mid",
+      "note": "麻辣烫三种汤底之一（用户确认）；浓白骨汤，不辣"
+    },
+    {
+      "id": "obs-384",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "微辣汤底",
+      "category": "soup",
+      "serving_mode": "component",
+      "source": "user",
+      "confidence": "mid",
+      "note": "麻辣烫三种汤底之一（用户确认）；微辣档，油脂与钠偏高"
     }
   ]
 }
