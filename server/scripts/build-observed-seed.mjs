@@ -68,11 +68,13 @@ const TAG_RULES = [
   ['spicy', /辣|麻辣|红油|辣子|香辣|椒麻|藤椒|剁椒|酸辣|泡椒/],
   ['vegprotein', /豆腐|豆干|豆皮|腐竹|千张|豆泡|油豆腐|素肉|豆芽/],
 ];
-function inferTags(name, category, stall) {
+function inferTags(name, category) {
   const tags = [];
   for (const [tag, re] of TAG_RULES) if (re.test(name)) tags.push(tag);
-  // 麻辣烫档口的配菜都泡在辣汤里，菜名不带「辣」字但实际是辣的
-  if (stall === '二楼·西蜀毛哥麻辣烫' && category !== 'staple' && !tags.includes('spicy')) tags.push('spicy');
+  // 麻辣烫的辣度由**汤底**表达（番茄/金汤不辣、微辣辣），配菜本身不标 spicy。
+  // 早前版本给配菜一律补 spicy，导致「不吃辣」的档案连番茄汤底的麻辣烫都推不出来。
+  // 引擎的忌口过滤作用于组合前的整个候选池（engines/recommend.ts 的 allDishes.filter），
+  // 所以微辣汤底被排除后，麻辣烫的组合只剩番茄/金汤底——辣度由汤底把关即可。
   if (tags.some((t) => ['pork', 'beef', 'seafood', 'egg', 'milk'].includes(t))) tags.push('meat');
   if (category === 'veg' && !tags.includes('vegprotein') && !tags.includes('meat')) tags.push('vegprotein');
   return [...new Set(tags)];
@@ -198,7 +200,7 @@ for (const o of obs) {
     meals: st.meals,
     kcal: harmonize(t[0], t[1], t[2], t[3]),
     protein_g: t[1], fat_g: t[2], carbs_g: t[3], sodium_mg: t[4],
-    tags: inferTags(o.name, category, o.area),
+    tags: inferTags(o.name, category),
     drink: /奶|豆浆|可乐|雪碧|美年达|果汁/.test(o.name),
     reliability: 'B',
     status: 'active',

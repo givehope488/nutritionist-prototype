@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "exported_at": "2026-11-13T12:13:37.394Z",
+  "exported_at": "2026-11-13T12:26:49.965Z",
   "note": "v3 = 实测菜单。**一切餐食以照片数据为准**：原型估算的 55 道基线数据已全部抛弃，本种子只含照片识别与用户口述的条目。**本产品不向用户提供价格**：种子里不含任何价格字段。治理字段 floor/stall/serving_mode/recommendable/evidence/confidence 当前不入库、不出接口——seed.ts 是逐字段 INSERT，需 BE-B 扩 shared 类型与 SQLite 列后生效。serving_mode 语义：plate=一盘自选（只给餐食建议）/ single=独立成品餐 / component=可选组件（配菜、浇头）。",
   "dishes": [
     {
@@ -10296,7 +10296,6 @@
       "sodium_mg": 60,
       "tags": [
         "egg",
-        "spicy",
         "meat"
       ],
       "drink": false,
@@ -10329,7 +10328,6 @@
       "sodium_mg": 800,
       "tags": [
         "pork",
-        "spicy",
         "meat"
       ],
       "drink": false,
@@ -10361,8 +10359,7 @@
       "carbs_g": 2.5,
       "sodium_mg": 15,
       "tags": [
-        "vegprotein",
-        "spicy"
+        "vegprotein"
       ],
       "drink": false,
       "reliability": "B",
@@ -10422,8 +10419,7 @@
       "carbs_g": 4,
       "sodium_mg": 300,
       "tags": [
-        "vegprotein",
-        "spicy"
+        "vegprotein"
       ],
       "drink": false,
       "reliability": "B",
@@ -10454,8 +10450,7 @@
       "carbs_g": 10,
       "sodium_mg": 300,
       "tags": [
-        "vegprotein",
-        "spicy"
+        "vegprotein"
       ],
       "drink": false,
       "reliability": "B",
@@ -10486,8 +10481,7 @@
       "carbs_g": 4,
       "sodium_mg": 600,
       "tags": [
-        "vegprotein",
-        "spicy"
+        "vegprotein"
       ],
       "drink": false,
       "reliability": "B",
@@ -10518,7 +10512,6 @@
       "carbs_g": 16,
       "sodium_mg": 40,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -10551,7 +10544,6 @@
       "sodium_mg": 60,
       "tags": [
         "seafood",
-        "spicy",
         "meat"
       ],
       "drink": false,
@@ -10583,7 +10575,6 @@
       "carbs_g": 5,
       "sodium_mg": 25,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -10615,7 +10606,6 @@
       "carbs_g": 6,
       "sodium_mg": 10,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -10647,7 +10637,6 @@
       "carbs_g": 18,
       "sodium_mg": 5,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -10708,7 +10697,6 @@
       "carbs_g": 19,
       "sodium_mg": 15,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -10741,7 +10729,6 @@
       "sodium_mg": 700,
       "tags": [
         "seafood",
-        "spicy",
         "meat"
       ],
       "drink": false,
@@ -10775,7 +10762,6 @@
       "tags": [
         "seafood",
         "vegprotein",
-        "spicy",
         "meat"
       ],
       "drink": false,
@@ -10806,9 +10792,7 @@
       "fat_g": 11,
       "carbs_g": 6,
       "sodium_mg": 700,
-      "tags": [
-        "spicy"
-      ],
+      "tags": [],
       "drink": false,
       "reliability": "B",
       "status": "active",
@@ -10839,7 +10823,6 @@
       "sodium_mg": 60,
       "tags": [
         "egg",
-        "spicy",
         "meat"
       ],
       "drink": false,
@@ -10870,9 +10853,7 @@
       "fat_g": 17,
       "carbs_g": 3,
       "sodium_mg": 1200,
-      "tags": [
-        "spicy"
-      ],
+      "tags": [],
       "drink": false,
       "reliability": "B",
       "status": "active",
@@ -10903,7 +10884,6 @@
       "sodium_mg": 1200,
       "tags": [
         "pork",
-        "spicy",
         "meat"
       ],
       "drink": false,
@@ -10936,7 +10916,6 @@
       "sodium_mg": 900,
       "tags": [
         "beef",
-        "spicy",
         "meat"
       ],
       "drink": false,
@@ -10969,7 +10948,6 @@
       "sodium_mg": 300,
       "tags": [
         "pork",
-        "spicy",
         "meat"
       ],
       "drink": false,
@@ -11002,7 +10980,6 @@
       "sodium_mg": 600,
       "tags": [
         "seafood",
-        "spicy",
         "meat"
       ],
       "drink": false,
@@ -11033,9 +11010,7 @@
       "fat_g": 5,
       "carbs_g": 1,
       "sodium_mg": 500,
-      "tags": [
-        "spicy"
-      ],
+      "tags": [],
       "drink": false,
       "reliability": "B",
       "status": "active",
@@ -11065,7 +11040,6 @@
       "carbs_g": 6,
       "sodium_mg": 5,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -11097,7 +11071,6 @@
       "carbs_g": 6,
       "sodium_mg": 5,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -11129,7 +11102,6 @@
       "carbs_g": 5,
       "sodium_mg": 5,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -11161,7 +11133,6 @@
       "carbs_g": 2.5,
       "sodium_mg": 40,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -11193,7 +11164,6 @@
       "carbs_g": 2.6,
       "sodium_mg": 30,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -11225,7 +11195,6 @@
       "carbs_g": 3,
       "sodium_mg": 60,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -11257,7 +11226,6 @@
       "carbs_g": 3,
       "sodium_mg": 55,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -11289,7 +11257,6 @@
       "carbs_g": 1.5,
       "sodium_mg": 40,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -11472,8 +11439,7 @@
       "carbs_g": 8,
       "sodium_mg": 750,
       "tags": [
-        "gluten",
-        "spicy"
+        "gluten"
       ],
       "drink": false,
       "reliability": "B",
@@ -11504,7 +11470,6 @@
       "carbs_g": 4,
       "sodium_mg": 15,
       "tags": [
-        "spicy",
         "vegprotein"
       ],
       "drink": false,
@@ -11607,6 +11572,124 @@
       "recommendable": true,
       "evidence": "user",
       "confidence": "high"
+    },
+    {
+      "id": "mlt-41",
+      "name": "免费米饭",
+      "category": "staple",
+      "portion_label": "1 份",
+      "portion_grams": null,
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 232,
+      "protein_g": 4.4,
+      "fat_g": 0.6,
+      "carbs_g": 51.6,
+      "sodium_mg": 2,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "用户口述菜名；营养值按标准配方估算，待配料反推",
+      "floor": 2,
+      "stall": "二楼·西蜀毛哥麻辣烫",
+      "serving_mode": "component",
+      "recommendable": true,
+      "evidence": "user",
+      "confidence": "mid"
+    },
+    {
+      "id": "mlt-42",
+      "name": "番茄汤底",
+      "category": "soup",
+      "portion_label": "1 份",
+      "portion_grams": null,
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 120,
+      "protein_g": 3,
+      "fat_g": 6,
+      "carbs_g": 12,
+      "sodium_mg": 1400,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "用户口述菜名；营养值按标准配方估算，待配料反推",
+      "floor": 2,
+      "stall": "二楼·西蜀毛哥麻辣烫",
+      "serving_mode": "component",
+      "recommendable": true,
+      "evidence": "user",
+      "confidence": "mid"
+    },
+    {
+      "id": "mlt-43",
+      "name": "金汤底",
+      "category": "soup",
+      "portion_label": "1 份",
+      "portion_grams": null,
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 170,
+      "protein_g": 5,
+      "fat_g": 11,
+      "carbs_g": 8,
+      "sodium_mg": 1500,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "用户口述菜名；营养值按标准配方估算，待配料反推",
+      "floor": 2,
+      "stall": "二楼·西蜀毛哥麻辣烫",
+      "serving_mode": "component",
+      "recommendable": true,
+      "evidence": "user",
+      "confidence": "mid"
+    },
+    {
+      "id": "mlt-44",
+      "name": "微辣汤底",
+      "category": "soup",
+      "portion_label": "1 份",
+      "portion_grams": null,
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 190,
+      "protein_g": 7,
+      "fat_g": 14,
+      "carbs_g": 9,
+      "sodium_mg": 1800,
+      "tags": [
+        "spicy"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "用户口述菜名；营养值按标准配方估算，待配料反推",
+      "floor": 2,
+      "stall": "二楼·西蜀毛哥麻辣烫",
+      "serving_mode": "component",
+      "recommendable": true,
+      "evidence": "user",
+      "confidence": "mid"
     }
   ]
 }
