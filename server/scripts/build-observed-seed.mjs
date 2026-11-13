@@ -24,7 +24,7 @@ const obs = JSON.parse(readFileSync(OBS, 'utf8')).items;
 // ---------- 档口 → id 前缀 / 推荐池 / 上菜形态 ----------
 const STALL = {
   '一楼·早餐': { code: 'f1b', serving: 'plate', pricing: 'weigh', recommendable: true, meals: ['breakfast'] },
-  '一楼·中晚餐': { code: 'f1l', serving: 'single', pricing: 'fixed', recommendable: true, meals: ['lunch', 'dinner'] },
+  '一楼·中晚餐': { code: 'f1l', serving: 'combo', pricing: 'fixed', recommendable: true, meals: ['lunch', 'dinner'] },
   '二楼·兰州牛肉面': { code: 'lzx', serving: 'single', recommendable: true, meals: ['breakfast', 'lunch', 'dinner'] },
   '二楼·奉天朱家小馆': { code: 'ftj', serving: 'single', recommendable: true, meals: ['breakfast', 'lunch', 'dinner'] },
   '二楼·广东猪脚饭': { code: 'gzj', serving: 'single', recommendable: true, meals: ['breakfast', 'lunch', 'dinner'] },

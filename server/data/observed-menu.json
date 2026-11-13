@@ -5616,7 +5616,6 @@
       ],
       "name": "白米饭",
       "category": "staple",
-      "serving_mode": "single",
       "source": "user",
       "confidence": "high",
       "note": "用户确认：白米饭存在，只在一楼供应；二楼各档口的盖浇饭类自带米饭"
