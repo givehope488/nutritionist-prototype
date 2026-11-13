@@ -1,0 +1,1373 @@
+{
+  "version": 2,
+  "exported_at": "2026-11-06",
+  "note": "【基线存档】2026-11-13 前的 55 道种子（其自带 version=2 是「份量字段拆分版」的编号，与菜单版本无关）。build-observed-seed.mjs 从本文件读基线，不从 menu-seed.json 读——否则脚本重复运行会把生成结果当基线，v3 就再也加不进新菜。种子数据 v2：份量字段拆分（portion_label 展示用语不含克重 / portion_grams 数值，仅 A 级对外下发）；修正 s11-s13 猪肉馅缺 meat 标签。营养值仍为量级估算（可信度 B），配料依据见 ingredients 与 data/review 底稿。",
+  "dishes": [
+    {
+      "id": "s01",
+      "name": "白米饭",
+      "category": "staple",
+      "portion_label": "1 份",
+      "portion_grams": 200,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 232,
+      "protein_g": 4.4,
+      "fat_g": 0.6,
+      "carbs_g": 51.6,
+      "sodium_mg": 2,
+      "price_yuan": 1,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s02",
+      "name": "白米饭(半份)",
+      "category": "staple",
+      "portion_label": "半份",
+      "portion_grams": 100,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 116,
+      "protein_g": 2.2,
+      "fat_g": 0.3,
+      "carbs_g": 25.8,
+      "sodium_mg": 1,
+      "price_yuan": 0.5,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s03",
+      "name": "杂粮饭",
+      "category": "staple",
+      "portion_label": "1 份",
+      "portion_grams": 200,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 220,
+      "protein_g": 5.5,
+      "fat_g": 1.5,
+      "carbs_g": 45,
+      "sodium_mg": 3,
+      "price_yuan": 1.5,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s04",
+      "name": "馒头",
+      "category": "staple",
+      "portion_label": "1 个",
+      "portion_grams": 100,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 223,
+      "protein_g": 7,
+      "fat_g": 1.1,
+      "carbs_g": 47,
+      "sodium_mg": 150,
+      "price_yuan": 1,
+      "tags": [
+        "gluten"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s05",
+      "name": "葱油拌面",
+      "category": "staple",
+      "portion_label": "1 碗",
+      "portion_grams": 350,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 520,
+      "protein_g": 12,
+      "fat_g": 14,
+      "carbs_g": 84,
+      "sodium_mg": 900,
+      "price_yuan": 8,
+      "tags": [
+        "gluten"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s06",
+      "name": "片儿川",
+      "category": "staple",
+      "portion_label": "1 碗",
+      "portion_grams": 450,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 480,
+      "protein_g": 18,
+      "fat_g": 12,
+      "carbs_g": 72,
+      "sodium_mg": 1200,
+      "price_yuan": 12,
+      "tags": [
+        "pork",
+        "gluten",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s07",
+      "name": "鸡蛋面",
+      "category": "staple",
+      "portion_label": "1 碗",
+      "portion_grams": 400,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 430,
+      "protein_g": 16,
+      "fat_g": 9,
+      "carbs_g": 68,
+      "sodium_mg": 1000,
+      "price_yuan": 10,
+      "tags": [
+        "egg",
+        "gluten"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s08",
+      "name": "玉米",
+      "category": "staple",
+      "portion_label": "1 根",
+      "portion_grams": null,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 110,
+      "protein_g": 3.5,
+      "fat_g": 1.2,
+      "carbs_g": 24,
+      "sodium_mg": 2,
+      "price_yuan": 2,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s09",
+      "name": "蒸红薯",
+      "category": "staple",
+      "portion_label": "1 个",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 130,
+      "protein_g": 2,
+      "fat_g": 0.3,
+      "carbs_g": 31,
+      "sodium_mg": 20,
+      "price_yuan": 2,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s10",
+      "name": "白粥",
+      "category": "staple",
+      "portion_label": "1 碗",
+      "portion_grams": 300,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 92,
+      "protein_g": 2,
+      "fat_g": 0.3,
+      "carbs_g": 20,
+      "sodium_mg": 1,
+      "price_yuan": 1,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s11",
+      "name": "小笼包",
+      "category": "staple",
+      "portion_label": "8 只",
+      "portion_grams": null,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 300,
+      "protein_g": 11,
+      "fat_g": 12,
+      "carbs_g": 36,
+      "sodium_mg": 600,
+      "price_yuan": 7,
+      "tags": [
+        "pork",
+        "gluten",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s12",
+      "name": "蒸饺",
+      "category": "staple",
+      "portion_label": "6 只",
+      "portion_grams": null,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 260,
+      "protein_g": 9,
+      "fat_g": 9,
+      "carbs_g": 34,
+      "sodium_mg": 550,
+      "price_yuan": 6,
+      "tags": [
+        "pork",
+        "gluten",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s13",
+      "name": "肉包",
+      "category": "staple",
+      "portion_label": "1 个",
+      "portion_grams": null,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 230,
+      "protein_g": 8,
+      "fat_g": 8,
+      "carbs_g": 30,
+      "sodium_mg": 450,
+      "price_yuan": 2,
+      "tags": [
+        "pork",
+        "gluten",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s14",
+      "name": "菜包",
+      "category": "staple",
+      "portion_label": "1 个",
+      "portion_grams": null,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 180,
+      "protein_g": 5,
+      "fat_g": 5,
+      "carbs_g": 29,
+      "sodium_mg": 380,
+      "price_yuan": 1.5,
+      "tags": [
+        "gluten"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s15",
+      "name": "油条",
+      "category": "staple",
+      "portion_label": "1 根",
+      "portion_grams": null,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 250,
+      "protein_g": 4,
+      "fat_g": 16,
+      "carbs_g": 24,
+      "sodium_mg": 400,
+      "price_yuan": 2,
+      "tags": [
+        "gluten"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "s16",
+      "name": "煎饼果子",
+      "category": "staple",
+      "portion_label": "1 个",
+      "portion_grams": null,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 380,
+      "protein_g": 12,
+      "fat_g": 18,
+      "carbs_g": 42,
+      "sodium_mg": 800,
+      "price_yuan": 7,
+      "tags": [
+        "egg",
+        "gluten"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m01",
+      "name": "红烧肉",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 480,
+      "protein_g": 14,
+      "fat_g": 42,
+      "carbs_g": 8,
+      "sodium_mg": 900,
+      "price_yuan": 12,
+      "tags": [
+        "pork",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m02",
+      "name": "梅干菜扣肉",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 520,
+      "protein_g": 15,
+      "fat_g": 46,
+      "carbs_g": 10,
+      "sodium_mg": 1100,
+      "price_yuan": 12,
+      "tags": [
+        "pork",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m03",
+      "name": "干菜烧肉",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 500,
+      "protein_g": 15,
+      "fat_g": 44,
+      "carbs_g": 10,
+      "sodium_mg": 1200,
+      "price_yuan": 12,
+      "tags": [
+        "pork",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m04",
+      "name": "糖醋里脊",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 380,
+      "protein_g": 16,
+      "fat_g": 24,
+      "carbs_g": 26,
+      "sodium_mg": 700,
+      "price_yuan": 11,
+      "tags": [
+        "pork",
+        "gluten",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m05",
+      "name": "小炒肉",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 350,
+      "protein_g": 18,
+      "fat_g": 26,
+      "carbs_g": 10,
+      "sodium_mg": 850,
+      "price_yuan": 11,
+      "tags": [
+        "pork",
+        "spicy",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m06",
+      "name": "红烧鸡腿",
+      "category": "protein",
+      "portion_label": "1 只",
+      "portion_grams": null,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 220,
+      "protein_g": 18,
+      "fat_g": 13,
+      "carbs_g": 8,
+      "sodium_mg": 600,
+      "price_yuan": 7,
+      "tags": [
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m07",
+      "name": "宫保鸡丁",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 300,
+      "protein_g": 20,
+      "fat_g": 18,
+      "carbs_g": 14,
+      "sodium_mg": 800,
+      "price_yuan": 9,
+      "tags": [
+        "peanut",
+        "spicy",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m08",
+      "name": "白切鸡",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 120,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 190,
+      "protein_g": 22,
+      "fat_g": 10,
+      "carbs_g": 2,
+      "sodium_mg": 450,
+      "price_yuan": 9,
+      "tags": [
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m09",
+      "name": "香菇滑鸡",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 210,
+      "protein_g": 18,
+      "fat_g": 12,
+      "carbs_g": 8,
+      "sodium_mg": 650,
+      "price_yuan": 10,
+      "tags": [
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m10",
+      "name": "卤牛肉",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 100,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 200,
+      "protein_g": 26,
+      "fat_g": 8,
+      "carbs_g": 4,
+      "sodium_mg": 700,
+      "price_yuan": 13,
+      "tags": [
+        "beef",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m11",
+      "name": "清蒸鲈鱼",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 130,
+      "protein_g": 20,
+      "fat_g": 4,
+      "carbs_g": 3,
+      "sodium_mg": 400,
+      "price_yuan": 14,
+      "tags": [
+        "seafood",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m12",
+      "name": "虾仁炒蛋",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 200,
+      "protein_g": 18,
+      "fat_g": 13,
+      "carbs_g": 4,
+      "sodium_mg": 500,
+      "price_yuan": 11,
+      "tags": [
+        "seafood",
+        "egg",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m13",
+      "name": "番茄炒蛋",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 180,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 180,
+      "protein_g": 9,
+      "fat_g": 12,
+      "carbs_g": 7,
+      "sodium_mg": 450,
+      "price_yuan": 7,
+      "tags": [
+        "egg",
+        "vegprotein"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m14",
+      "name": "蒸蛋",
+      "category": "protein",
+      "portion_label": "1 碗",
+      "portion_grams": 120,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 90,
+      "protein_g": 8,
+      "fat_g": 5,
+      "carbs_g": 3,
+      "sodium_mg": 300,
+      "price_yuan": 4,
+      "tags": [
+        "egg",
+        "vegprotein"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m15",
+      "name": "麻婆豆腐",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 180,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 180,
+      "protein_g": 11,
+      "fat_g": 11,
+      "carbs_g": 9,
+      "sodium_mg": 700,
+      "price_yuan": 7,
+      "tags": [
+        "spicy",
+        "vegprotein"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m16",
+      "name": "家常豆腐",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 180,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 170,
+      "protein_g": 9,
+      "fat_g": 11,
+      "carbs_g": 10,
+      "sodium_mg": 600,
+      "price_yuan": 7,
+      "tags": [
+        "vegprotein"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m17",
+      "name": "水煮肉片",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 200,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 400,
+      "protein_g": 20,
+      "fat_g": 32,
+      "carbs_g": 8,
+      "sodium_mg": 1200,
+      "price_yuan": 13,
+      "tags": [
+        "pork",
+        "spicy",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m18",
+      "name": "鱼香肉丝",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 180,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 280,
+      "protein_g": 13,
+      "fat_g": 18,
+      "carbs_g": 16,
+      "sodium_mg": 800,
+      "price_yuan": 10,
+      "tags": [
+        "pork",
+        "spicy",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "m19",
+      "name": "手撕鸡丝",
+      "category": "protein",
+      "portion_label": "1 份",
+      "portion_grams": 100,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 150,
+      "protein_g": 20,
+      "fat_g": 6,
+      "carbs_g": 3,
+      "sodium_mg": 500,
+      "price_yuan": 8,
+      "tags": [
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "v01",
+      "name": "清炒时蔬",
+      "category": "veg",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 70,
+      "protein_g": 2,
+      "fat_g": 5,
+      "carbs_g": 5,
+      "sodium_mg": 400,
+      "price_yuan": 3,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "v02",
+      "name": "蒜蓉菠菜",
+      "category": "veg",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 60,
+      "protein_g": 3,
+      "fat_g": 4,
+      "carbs_g": 4,
+      "sodium_mg": 380,
+      "price_yuan": 3,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "v03",
+      "name": "炒青菜",
+      "category": "veg",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 80,
+      "protein_g": 2,
+      "fat_g": 6,
+      "carbs_g": 5,
+      "sodium_mg": 400,
+      "price_yuan": 3,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "v04",
+      "name": "醋溜土豆丝",
+      "category": "veg",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 120,
+      "protein_g": 2,
+      "fat_g": 6,
+      "carbs_g": 15,
+      "sodium_mg": 450,
+      "price_yuan": 4,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "v05",
+      "name": "手撕包菜",
+      "category": "veg",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 90,
+      "protein_g": 2,
+      "fat_g": 6,
+      "carbs_g": 7,
+      "sodium_mg": 420,
+      "price_yuan": 4,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "v06",
+      "name": "红烧茄子",
+      "category": "veg",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 190,
+      "protein_g": 2,
+      "fat_g": 15,
+      "carbs_g": 12,
+      "sodium_mg": 600,
+      "price_yuan": 5,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "v07",
+      "name": "凉拌黄瓜",
+      "category": "veg",
+      "portion_label": "1 份",
+      "portion_grams": 120,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 40,
+      "protein_g": 1,
+      "fat_g": 2,
+      "carbs_g": 4,
+      "sodium_mg": 300,
+      "price_yuan": 3,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "v08",
+      "name": "干锅花菜",
+      "category": "veg",
+      "portion_label": "1 份",
+      "portion_grams": 150,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 130,
+      "protein_g": 3,
+      "fat_g": 10,
+      "carbs_g": 8,
+      "sodium_mg": 550,
+      "price_yuan": 5,
+      "tags": [
+        "spicy"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "v09",
+      "name": "蒜泥生菜",
+      "category": "veg",
+      "portion_label": "1 份",
+      "portion_grams": 120,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 55,
+      "protein_g": 2,
+      "fat_g": 4,
+      "carbs_g": 3,
+      "sodium_mg": 350,
+      "price_yuan": 3,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "t01",
+      "name": "番茄蛋汤",
+      "category": "soup",
+      "portion_label": "1 碗",
+      "portion_grams": 250,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 60,
+      "protein_g": 3,
+      "fat_g": 3,
+      "carbs_g": 5,
+      "sodium_mg": 500,
+      "price_yuan": 2,
+      "tags": [
+        "egg"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "t02",
+      "name": "紫菜蛋花汤",
+      "category": "soup",
+      "portion_label": "1 碗",
+      "portion_grams": 250,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 50,
+      "protein_g": 3,
+      "fat_g": 2,
+      "carbs_g": 4,
+      "sodium_mg": 600,
+      "price_yuan": 2,
+      "tags": [
+        "seafood",
+        "egg",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "t03",
+      "name": "冬瓜排骨汤",
+      "category": "soup",
+      "portion_label": "1 碗",
+      "portion_grams": 250,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 120,
+      "protein_g": 6,
+      "fat_g": 8,
+      "carbs_g": 5,
+      "sodium_mg": 600,
+      "price_yuan": 4,
+      "tags": [
+        "pork",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "t04",
+      "name": "玉米排骨汤",
+      "category": "soup",
+      "portion_label": "1 碗",
+      "portion_grams": 250,
+      "meals": [
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 140,
+      "protein_g": 6,
+      "fat_g": 8,
+      "carbs_g": 12,
+      "sodium_mg": 650,
+      "price_yuan": 4,
+      "tags": [
+        "pork",
+        "meat"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "b01",
+      "name": "水煮蛋",
+      "category": "protein",
+      "portion_label": "1 个",
+      "portion_grams": null,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 70,
+      "protein_g": 6,
+      "fat_g": 5,
+      "carbs_g": 1,
+      "sodium_mg": 70,
+      "price_yuan": 1.5,
+      "tags": [
+        "egg",
+        "vegprotein"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "b02",
+      "name": "无糖豆浆",
+      "category": "protein",
+      "portion_label": "1 杯",
+      "portion_grams": null,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 80,
+      "protein_g": 7,
+      "fat_g": 3,
+      "carbs_g": 4,
+      "sodium_mg": 5,
+      "price_yuan": 2,
+      "tags": [
+        "vegprotein"
+      ],
+      "drink": true,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "b03",
+      "name": "甜豆浆",
+      "category": "protein",
+      "portion_label": "1 杯",
+      "portion_grams": null,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 130,
+      "protein_g": 7,
+      "fat_g": 3,
+      "carbs_g": 18,
+      "sodium_mg": 5,
+      "price_yuan": 2,
+      "tags": [
+        "vegprotein"
+      ],
+      "drink": true,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "b04",
+      "name": "牛奶",
+      "category": "protein",
+      "portion_label": "1 杯",
+      "portion_grams": null,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 130,
+      "protein_g": 8,
+      "fat_g": 7,
+      "carbs_g": 10,
+      "sodium_mg": 100,
+      "price_yuan": 3.5,
+      "tags": [
+        "milk",
+        "vegprotein"
+      ],
+      "drink": true,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "b05",
+      "name": "酸奶",
+      "category": "protein",
+      "portion_label": "1 杯",
+      "portion_grams": 150,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 120,
+      "protein_g": 5,
+      "fat_g": 4,
+      "carbs_g": 16,
+      "sodium_mg": 70,
+      "price_yuan": 4,
+      "tags": [
+        "milk",
+        "vegprotein"
+      ],
+      "drink": true,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "f01",
+      "name": "苹果",
+      "category": "fruit",
+      "portion_label": "1 个",
+      "portion_grams": null,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 90,
+      "protein_g": 0.5,
+      "fat_g": 0.3,
+      "carbs_g": 22,
+      "sodium_mg": 2,
+      "price_yuan": 2,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    },
+    {
+      "id": "f02",
+      "name": "香蕉",
+      "category": "fruit",
+      "portion_label": "1 根",
+      "portion_grams": null,
+      "meals": [
+        "breakfast"
+      ],
+      "kcal": 100,
+      "protein_g": 1.3,
+      "fat_g": 0.3,
+      "carbs_g": 24,
+      "sodium_mg": 1,
+      "price_yuan": 2,
+      "tags": [],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [],
+      "source": "原型估算种子数据，需按反推法复核"
+    }
+  ]
+}

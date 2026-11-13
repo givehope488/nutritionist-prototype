@@ -1,0 +1,5966 @@
+{
+  "meta": {
+    "title": "食堂菜品实测清单（照片识别）",
+    "source_dir": "D:/project/data",
+    "photos_total": 43,
+    "generated_at": "2026-11-13",
+    "generator": "WorkBuddy 图片识别",
+    "legend": {
+      "src": {
+        "sign": "菜单牌/价目表逐字读到",
+        "photo": "从菜品照片推测",
+        "user": "用户口述补充"
+      },
+      "conf": {
+        "high": "牌面有明确文字",
+        "mid": "照片较明确",
+        "low": "推测成分大"
+      },
+      "meal": {
+        "breakfast": "早餐",
+        "lunch": "午餐",
+        "dinner": "晚餐",
+        "all": "全天"
+      }
+    },
+    "note": "价格为照片上牌面价格（元）；null = 未识别到价格。此表只反映「有什么菜、多少钱」，营养值需另行反推。"
+  },
+  "items": [
+    {
+      "id": "obs-001",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "白面小笼包",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": "蒸笼内褶皱包子，8 只/份"
+    },
+    {
+      "id": "obs-002",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "酱肉包",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "low",
+      "note": "褐色小包子"
+    },
+    {
+      "id": "obs-003",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "白粥",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": "米粥"
+    },
+    {
+      "id": "obs-004",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "南瓜粥/小米粥",
+      "category": "staple",
+      "price_yuan": 2.5,
+      "source": "sign",
+      "confidence": "mid",
+      "note": "黄色稠粥；2.5 元为该档价格牌之一，具体对应关系待确认"
+    },
+    {
+      "id": "obs-005",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "馒头/花卷",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": "含红白螺旋花卷"
+    },
+    {
+      "id": "obs-006",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "茶叶蛋/卤蛋",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "mid",
+      "note": "6.0 为该档价牌之一"
+    },
+    {
+      "id": "obs-007",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "白煮蛋",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": "大量供应"
+    },
+    {
+      "id": "obs-008",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "煎饼果子/芝麻圆饼",
+      "category": "staple",
+      "price_yuan": 3.5,
+      "source": "sign",
+      "confidence": "mid",
+      "note": "椭圆带芝麻；价牌 3.5 或 4.5，待确认"
+    },
+    {
+      "id": "obs-009",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "韭菜盒子/煎蛋饼",
+      "category": "staple",
+      "price_yuan": 4.5,
+      "source": "sign",
+      "confidence": "mid",
+      "note": "黄绿相间扁饼；价牌 4.5"
+    },
+    {
+      "id": "obs-010",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "肉饼（圆）",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": "深褐色圆形肉饼"
+    },
+    {
+      "id": "obs-011",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "油条",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-012",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "油饼/葱油饼",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-013",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "蛋挞",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": "黄色圆形，2 个"
+    },
+    {
+      "id": "obs-014",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "香肠/烤肠",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-015",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "发糕/黄金糕",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "low",
+      "note": "白色方块"
+    },
+    {
+      "id": "obs-016",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "紫薯",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-017",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "甜玉米",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-018",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "炒面/炒米粉",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-019",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "炸物拼盘（炸丸/藕盒/玉米段/素菜/香肠）",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "photo",
+      "confidence": "mid",
+      "note": "多种油炸小吃混装，价牌 6.0"
+    },
+    {
+      "id": "obs-020",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "炸猪排/炸菜排",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "photo",
+      "confidence": "mid",
+      "note": "褐色裹粉片"
+    },
+    {
+      "id": "obs-021",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "凉拌素菜（丝状）",
+      "category": "veg",
+      "price_yuan": 1.5,
+      "source": "photo",
+      "confidence": "low",
+      "note": "价牌 1.5"
+    },
+    {
+      "id": "obs-022",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "豆制品（凉拌）",
+      "category": "veg",
+      "price_yuan": 5,
+      "source": "photo",
+      "confidence": "low",
+      "note": "价牌 5.0"
+    },
+    {
+      "id": "obs-023",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "盒装牛奶",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-024",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "袋装豆奶/早餐奶",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-025",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "袋装面包",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-026",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "葱油拌面",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "user",
+      "confidence": "high",
+      "note": "用户口述补充"
+    },
+    {
+      "id": "obs-027",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "饺子（猪肉馅）",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "user",
+      "confidence": "high",
+      "note": "用户口述补充"
+    },
+    {
+      "id": "obs-028",
+      "floor": 1,
+      "area": "一楼·早餐",
+      "meals": [
+        "breakfast"
+      ],
+      "name": "馄饨（猪肉馅）",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "user",
+      "confidence": "high",
+      "note": "用户口述补充"
+    },
+    {
+      "id": "obs-029",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "红烧肉/酱肉",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-030",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "炸猪排/炸鸡排",
+      "category": "protein",
+      "price_yuan": 3.5,
+      "source": "sign",
+      "confidence": "mid",
+      "note": "大块裹粉炸排，价牌 3.5"
+    },
+    {
+      "id": "obs-031",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "干锅虾/红油虾",
+      "category": "protein",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "mid",
+      "note": "红油大虾配青椒"
+    },
+    {
+      "id": "obs-032",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "炸肉丸/鸡米花",
+      "category": "protein",
+      "price_yuan": 1.5,
+      "source": "sign",
+      "confidence": "mid",
+      "note": "价牌 1.5"
+    },
+    {
+      "id": "obs-033",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "木耳肉片/炒肉",
+      "category": "protein",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-034",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "油豆腐/豆腐泡",
+      "category": "protein",
+      "price_yuan": 4,
+      "source": "sign",
+      "confidence": "mid",
+      "note": "浅褐方块浸汤"
+    },
+    {
+      "id": "obs-035",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "炸花生/炸肉串",
+      "category": "protein",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "low",
+      "note": ""
+    },
+    {
+      "id": "obs-036",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "炒青菜/炒小白菜",
+      "category": "veg",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-037",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "炒空心菜/绿叶菜",
+      "category": "veg",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "low",
+      "note": ""
+    },
+    {
+      "id": "obs-038",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "炒土豆丝",
+      "category": "veg",
+      "price_yuan": 4,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-039",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "炒粉丝/炒面",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-040",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "干豆腐/豆皮",
+      "category": "protein",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-041",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "腐竹",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-042",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "炒木耳",
+      "category": "veg",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-043",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "炒豆角/四季豆",
+      "category": "veg",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "low",
+      "note": ""
+    },
+    {
+      "id": "obs-044",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "干锅土豆片/干锅菜花",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": "褐色片状带辣椒"
+    },
+    {
+      "id": "obs-045",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "炒饭/炒米粉",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-046",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "炒黄豆/炒豆",
+      "category": "veg",
+      "price_yuan": 7,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-047",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "紫薯/南瓜块",
+      "category": "staple",
+      "price_yuan": 5,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-048",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "土豆块（炖）",
+      "category": "staple",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-049",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "腌黄瓜/酸黄瓜",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-050",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "冬瓜排骨汤",
+      "category": "soup",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-051",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "玉米排骨汤",
+      "category": "soup",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": "玉米段+红枣+笋块"
+    },
+    {
+      "id": "obs-052",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "哈密瓜/香瓜",
+      "category": "fruit",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-053",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "炸酱面",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "user",
+      "confidence": "high",
+      "note": "用户口述补充"
+    },
+    {
+      "id": "obs-054",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "肉丝面",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "user",
+      "confidence": "high",
+      "note": "用户口述补充"
+    },
+    {
+      "id": "obs-055",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "饺子（猪肉馅）",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "user",
+      "confidence": "high",
+      "note": "用户口述补充"
+    },
+    {
+      "id": "obs-056",
+      "floor": 1,
+      "area": "一楼·中晚餐",
+      "meals": [
+        "lunch"
+      ],
+      "name": "馄饨（猪肉馅）",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "user",
+      "confidence": "high",
+      "note": "用户口述补充"
+    },
+    {
+      "id": "obs-057",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "生菜",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-058",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "芝麻菜/苦苣",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-059",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "紫甘蓝",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-060",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "西兰花",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-061",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "菠菜",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-062",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "圣女果",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-063",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "黄瓜",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-064",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "玉米粒",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-065",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "黑芝麻",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-066",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "白煮蛋",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-067",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鸡胸肉丝",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": "白色带葱花"
+    },
+    {
+      "id": "obs-068",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鸡胸肉片/鸡肉块",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-069",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "卤鸡腿/手撕鸡",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-070",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "卤蛋",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-071",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "薯泥/土豆泥",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-072",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "紫薯泥/紫薯块",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-073",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "蛋黄沙拉/土豆沙拉",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-074",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "腐竹丝",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-075",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "凉拌藕片/南瓜片",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-076",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "凉拌木耳丝",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-077",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "海带丝/木耳",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-078",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "炒南瓜片",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-079",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "炒花生米/炒木耳",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-080",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "意面（白色细面）",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-081",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "酥肉/炸鸡柳",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": "「少油炙烤 高蛋白饱腹」木盒区"
+    },
+    {
+      "id": "obs-082",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "烤鸡腿肉/烤肉",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-083",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "烤鸡翅/鸡腿排",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-084",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鸡胸肉条/鸡肉卷",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-085",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "洋葱圈",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-086",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "肉松/碎肉",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "low",
+      "note": ""
+    },
+    {
+      "id": "obs-087",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "芝麻酱",
+      "category": "other",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-088",
+      "floor": 2,
+      "area": "二楼·健康餐",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "红油酱",
+      "category": "other",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-089",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "原味牛肉面",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": "兰青君；鲜骨熬汤 鲜肉鲜切 手工现做"
+    },
+    {
+      "id": "obs-090",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "红烧牛肉面",
+      "category": "staple",
+      "price_yuan": 15,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-091",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "酸菜牛肉面",
+      "category": "staple",
+      "price_yuan": 15,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-092",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "麻辣牛肉面",
+      "category": "staple",
+      "price_yuan": 15,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-093",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "大盘鸡拌面",
+      "category": "staple",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-094",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "土豆牛肉拌面",
+      "category": "staple",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-095",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "青椒牛肉拌面",
+      "category": "staple",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-096",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "辣子鸡拌面",
+      "category": "staple",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-097",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "爆炒拉条子",
+      "category": "staple",
+      "price_yuan": 15,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-098",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "凉皮拌面",
+      "category": "staple",
+      "price_yuan": 15,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-099",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "番茄鸡蛋拌面",
+      "category": "staple",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-100",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "巨无霸鸡拌面",
+      "category": "staple",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "mid",
+      "note": "菜名字样存疑"
+    },
+    {
+      "id": "obs-101",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "番茄鸡蛋盖浇饭",
+      "category": "staple",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-102",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "青椒肉丝盖浇饭",
+      "category": "staple",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-103",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "木耳牛肉盖浇饭",
+      "category": "staple",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-104",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "爆炒饭",
+      "category": "staple",
+      "price_yuan": 9,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-105",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "巨无霸肉丁盖浇饭",
+      "category": "staple",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "mid",
+      "note": "菜名字样存疑"
+    },
+    {
+      "id": "obs-106",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "辣子鸡盖浇饭",
+      "category": "staple",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-107",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "土豆牛肉盖浇饭",
+      "category": "staple",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-108",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "青椒牛肉盖浇饭",
+      "category": "staple",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-109",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "兰州炒饭",
+      "category": "staple",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-110",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "蛋炒饭",
+      "category": "staple",
+      "price_yuan": 9,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-111",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香辣丸子",
+      "category": "protein",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "high",
+      "note": "西北小吃"
+    },
+    {
+      "id": "obs-112",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "风味香肠",
+      "category": "protein",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-113",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "捞汁豆干",
+      "category": "protein",
+      "price_yuan": 1,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-114",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "茶叶蛋",
+      "category": "protein",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-115",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "肉夹馍",
+      "category": "staple",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-116",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "五香鸡腿",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-117",
+      "floor": 2,
+      "area": "二楼·兰州牛肉面",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "现煮蛋",
+      "category": "protein",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-118",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆特色羊杂面",
+      "category": "staple",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": "始于2008；免费加面（需提前告知）"
+    },
+    {
+      "id": "obs-119",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆清汤面",
+      "category": "staple",
+      "price_yuan": 9,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-120",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆辣肉面",
+      "category": "staple",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-121",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆招牌牛肉面",
+      "category": "staple",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-122",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆卤肉面",
+      "category": "staple",
+      "price_yuan": 15,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-123",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆猪排面",
+      "category": "staple",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-124",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆鸡柳面",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "low",
+      "note": "价格被反光遮挡，按同列梯度推测 12"
+    },
+    {
+      "id": "obs-125",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆肉燥汤面",
+      "category": "staple",
+      "price_yuan": 11,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-126",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆酸豆角汤面",
+      "category": "staple",
+      "price_yuan": 11,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-127",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆酸菜汤面",
+      "category": "staple",
+      "price_yuan": 11,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-128",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆辣肉拌面",
+      "category": "staple",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-129",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鸡柳麻辣拌面",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-130",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "猪排麻酱拌面",
+      "category": "staple",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-131",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆麻酱鸡丝拌面",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-132",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆肉燥拌面",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-133",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆酸豆角拌面",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-134",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆酸菜拌面",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-135",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆麻辣拌面",
+      "category": "staple",
+      "price_yuan": 9,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-136",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "猪排麻辣拌面",
+      "category": "staple",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-137",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆混合炸酱面",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-138",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆鸡蛋炸酱面",
+      "category": "staple",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-139",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小馆招牌炸酱面",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-140",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "辣番茄鸡蛋拌面",
+      "category": "staple",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-141",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "加牛肉",
+      "category": "protein",
+      "price_yuan": 7,
+      "source": "sign",
+      "confidence": "high",
+      "note": "卤味加料"
+    },
+    {
+      "id": "obs-142",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "加羊杂",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-143",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "加辣肉",
+      "category": "protein",
+      "price_yuan": 5,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-144",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "加鸡丝",
+      "category": "protein",
+      "price_yuan": 4,
+      "source": "sign",
+      "confidence": "mid",
+      "note": "数字较淡"
+    },
+    {
+      "id": "obs-145",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "狮子头",
+      "category": "protein",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": "2 元/个"
+    },
+    {
+      "id": "obs-146",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "淀粉肠",
+      "category": "protein",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "high",
+      "note": "3 元/根"
+    },
+    {
+      "id": "obs-147",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "炸蛋",
+      "category": "protein",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": "2 元/个"
+    },
+    {
+      "id": "obs-148",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "辣椒",
+      "category": "veg",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": "2 元/根"
+    },
+    {
+      "id": "obs-149",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鸡腿",
+      "category": "protein",
+      "price_yuan": 5,
+      "source": "sign",
+      "confidence": "high",
+      "note": "5 元/个"
+    },
+    {
+      "id": "obs-150",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "卤虎皮鸭腿",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": "6 元/个"
+    },
+    {
+      "id": "obs-151",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "卤干豆腐",
+      "category": "protein",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": "2 元/片"
+    },
+    {
+      "id": "obs-152",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "卤肉肠",
+      "category": "protein",
+      "price_yuan": 4,
+      "source": "sign",
+      "confidence": "high",
+      "note": "4 元/根"
+    },
+    {
+      "id": "obs-153",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "卤肠",
+      "category": "protein",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": "2 元/根"
+    },
+    {
+      "id": "obs-154",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "日式凉拌",
+      "category": "veg",
+      "price_yuan": 7,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-155",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "卤五花肉",
+      "category": "protein",
+      "price_yuan": 7,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-156",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "卤蛋",
+      "category": "protein",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": "2 元/个"
+    },
+    {
+      "id": "obs-157",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "卤豆腐",
+      "category": "protein",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-158",
+      "floor": 2,
+      "area": "二楼·奉天朱家小馆",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "黄金鸡柳",
+      "category": "protein",
+      "price_yuan": 5,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-159",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "脆皮鸭饭",
+      "category": "protein",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": "单只；最受欢迎 TOP.1；可双拼"
+    },
+    {
+      "id": "obs-160",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "金牌猪脚饭",
+      "category": "protein",
+      "price_yuan": 17,
+      "source": "sign",
+      "confidence": "high",
+      "note": "秘制现卤；唯一不可双拼的主菜"
+    },
+    {
+      "id": "obs-161",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "脆皮鸡饭",
+      "category": "protein",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": "单只"
+    },
+    {
+      "id": "obs-162",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香卤大肉肠饭",
+      "category": "protein",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-163",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "焖卤鸡腿饭",
+      "category": "protein",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-164",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "黑金卤肉饭",
+      "category": "protein",
+      "price_yuan": 15,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-165",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香卤鸭腿饭",
+      "category": "protein",
+      "price_yuan": 15,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-166",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "大块牛肉饭",
+      "category": "protein",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-167",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香酥鸡排饭",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-168",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "黑椒鸡扒饭",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": "奥尔良味"
+    },
+    {
+      "id": "obs-169",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鲍汁滑鸡饭",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-170",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "辣椒炒肉饭",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-171",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "水煮肉片饭",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-172",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "单加鸭腿",
+      "category": "protein",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-173",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "单加鸡腿",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-174",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "单加大肉肠",
+      "category": "protein",
+      "price_yuan": 4,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-175",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "加卤蛋",
+      "category": "protein",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": "2 元/个"
+    },
+    {
+      "id": "obs-176",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "加豆干",
+      "category": "protein",
+      "price_yuan": 1.5,
+      "source": "sign",
+      "confidence": "high",
+      "note": "1.5 元/片"
+    },
+    {
+      "id": "obs-177",
+      "floor": 2,
+      "area": "二楼·广东猪脚饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "套餐（主菜+米饭+素菜+小菜+肉汁）",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "sign",
+      "confidence": "high",
+      "note": "份量足又有料"
+    },
+    {
+      "id": "obs-178",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "任意双拼",
+      "category": "protein",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": "招牌推荐"
+    },
+    {
+      "id": "obs-179",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "孜然烧鸡饭",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": "新品推荐"
+    },
+    {
+      "id": "obs-180",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "招牌口水鸡",
+      "category": "protein",
+      "price_yuan": 15,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-181",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "肉沫茄子饭",
+      "category": "protein",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-182",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "西红柿鸡蛋饭",
+      "category": "protein",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-183",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "可乐鸡块饭",
+      "category": "protein",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-184",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "黑椒烧鸡饭",
+      "category": "protein",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-185",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "经典辣子鸡饭",
+      "category": "protein",
+      "price_yuan": 15,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-186",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香辣烧鸡饭",
+      "category": "protein",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-187",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "蜜汁酱鸭饭",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-188",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "咖喱鸡肉饭",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-189",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鱼香肉丝饭",
+      "category": "protein",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-190",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "广式叉烧鸭饭",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-191",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "铁板黑烧鸡饭",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-192",
+      "floor": 2,
+      "area": "二楼·拌个饭饭",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "酱香小炒鸡",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-193",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "年糕",
+      "category": "staple",
+      "price_yuan": 1.5,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-194",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "面筋",
+      "category": "staple",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-195",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "川香鸡柳",
+      "category": "protein",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-196",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香肠",
+      "category": "protein",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-197",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "大里脊肉",
+      "category": "protein",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-198",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "星星串",
+      "category": "protein",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-199",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "纯肉排",
+      "category": "protein",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-200",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "南瓜串",
+      "category": "veg",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-201",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鱿鱼须",
+      "category": "protein",
+      "price_yuan": 4,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-202",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "安井地瓜丸",
+      "category": "staple",
+      "price_yuan": 4,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-203",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鸡肉串（30串）",
+      "category": "protein",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-204",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鸭肠串（30串）",
+      "category": "protein",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-205",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "四合一",
+      "category": "protein",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "high",
+      "note": "小份 8 / 中份 11 / 大份 15"
+    },
+    {
+      "id": "obs-206",
+      "floor": 2,
+      "area": "二楼·炸串精选",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鸡锁骨",
+      "category": "protein",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": "小份 10 / 大份 14"
+    },
+    {
+      "id": "obs-207",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "蟹黄肉酱拌面/粉",
+      "category": "staple",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": "招牌"
+    },
+    {
+      "id": "obs-208",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "招牌黄牛肉汤面/粉",
+      "category": "staple",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": "招牌"
+    },
+    {
+      "id": "obs-209",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "招牌肉酱拌面/粉",
+      "category": "staple",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": "招牌；店内加香"
+    },
+    {
+      "id": "obs-210",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "黑椒腿排拌面/粉",
+      "category": "staple",
+      "price_yuan": 11,
+      "source": "sign",
+      "confidence": "high",
+      "note": "小份 11 / 大份 14；推荐"
+    },
+    {
+      "id": "obs-211",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "椒麻鸡丝拌面/粉",
+      "category": "staple",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": "推荐"
+    },
+    {
+      "id": "obs-212",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "葱油拌面/粉",
+      "category": "staple",
+      "price_yuan": 7,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-213",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "南昌拌粉",
+      "category": "staple",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-214",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "芝麻酱拌面",
+      "category": "staple",
+      "price_yuan": 9,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-215",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "酸菜拌面/粉",
+      "category": "staple",
+      "price_yuan": 9,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-216",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "经典杂酱拌面/粉",
+      "category": "staple",
+      "price_yuan": 11,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-217",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鱼香肉丝拌面/粉",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-218",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "巴西烤肉拌面/粉",
+      "category": "staple",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-219",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "水煮肉片拌面/粉",
+      "category": "staple",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-220",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "豆干",
+      "category": "protein",
+      "price_yuan": 1.5,
+      "source": "sign",
+      "confidence": "high",
+      "note": "必点小吃"
+    },
+    {
+      "id": "obs-221",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "煎蛋",
+      "category": "protein",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-222",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "卤蛋",
+      "category": "protein",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-223",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "淀粉肠",
+      "category": "protein",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-224",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "兰花串",
+      "category": "protein",
+      "price_yuan": 2.5,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-225",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "脆骨肠",
+      "category": "protein",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-226",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "大肉肠",
+      "category": "protein",
+      "price_yuan": 4,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-227",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "牛肉丸",
+      "category": "protein",
+      "price_yuan": 1,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-228",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鱼丸",
+      "category": "protein",
+      "price_yuan": 1,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-229",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "腿排",
+      "category": "protein",
+      "price_yuan": 4,
+      "source": "sign",
+      "confidence": "high",
+      "note": "小份 4 / 大份 8"
+    },
+    {
+      "id": "obs-230",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "番茄鸡蛋汤面/粉",
+      "category": "staple",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": "印刷体被手写贴纸覆盖"
+    },
+    {
+      "id": "obs-231",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "酸菜肉片汤面/粉",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-232",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香菇肉丝汤面/粉",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-233",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "水煮肉片汤面/粉",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-234",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "柳州螺蛳粉",
+      "category": "staple",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-235",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "陕西油泼面",
+      "category": "staple",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-236",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "酸菜油泼面",
+      "category": "staple",
+      "price_yuan": 11,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-237",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "炸酱油泼面",
+      "category": "staple",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-238",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "肉酱油泼面",
+      "category": "staple",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-239",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "椒麻鸡丝油泼面",
+      "category": "staple",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-240",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "网红土豆泥拌面/粉",
+      "category": "staple",
+      "price_yuan": 9,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-241",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "炸酱土豆泥拌面/粉",
+      "category": "staple",
+      "price_yuan": 11,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-242",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "肉酱土豆泥拌面/粉",
+      "category": "staple",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-243",
+      "floor": 2,
+      "area": "二楼·朝陇阳",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "蟹黄土豆泥拌面/粉",
+      "category": "staple",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-244",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "青椒炒蛋",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-245",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "肉沫茄子",
+      "category": "veg",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-246",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "酸豆角肉沫",
+      "category": "protein",
+      "price_yuan": 12,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-247",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "湘味小炒鸡",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-248",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "辣椒炒肉",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-249",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "农家一碗香",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "sign",
+      "confidence": "high",
+      "note": "价格未识别"
+    },
+    {
+      "id": "obs-250",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "茭笋炒肉",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "sign",
+      "confidence": "high",
+      "note": "价格未识别"
+    },
+    {
+      "id": "obs-251",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "芹菜炒肉",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-252",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "下饭香干炒肉",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-253",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "萝卜干炒腊肉",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "sign",
+      "confidence": "high",
+      "note": "价格未识别"
+    },
+    {
+      "id": "obs-254",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "竹笋炒猪肉",
+      "category": "protein",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-255",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小炒黄牛肉",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "sign",
+      "confidence": "high",
+      "note": "价格未识别"
+    },
+    {
+      "id": "obs-256",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "萝卜干炒牛肉",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "sign",
+      "confidence": "high",
+      "note": "价格未识别"
+    },
+    {
+      "id": "obs-257",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香干回锅肉",
+      "category": "protein",
+      "price_yuan": 16,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-258",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "榨菜炒肉",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-259",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "招牌卤肉饭",
+      "category": "protein",
+      "price_yuan": 15,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-260",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "椒麻鸡丝饭",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-261",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "招牌香肉饭",
+      "category": "protein",
+      "price_yuan": 15,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-262",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "藤椒香活鸡",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-263",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "卤香鸡腿饭",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "sign",
+      "confidence": "high",
+      "note": "价格未识别"
+    },
+    {
+      "id": "obs-264",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "爆炒牛肉饭",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-265",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "糖醋背背鸡",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-266",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "甜辣鸭翅根",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-267",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "卤汁肉卷饭",
+      "category": "protein",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-268",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "卤汁肉肠饭",
+      "category": "protein",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-269",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "糖醋小里脊",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-270",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "蒜香茄子",
+      "category": "veg",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-271",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "辣卤面筋饭",
+      "category": "protein",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-272",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "辣卤豆皮饭",
+      "category": "protein",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-273",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "孜然花菜饭",
+      "category": "veg",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-274",
+      "floor": 2,
+      "area": "二楼·江西小炒",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "孜然土豆饭",
+      "category": "veg",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-275",
+      "floor": 2,
+      "area": "二楼·绍兴小吃",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "炸鸡馍",
+      "category": "protein",
+      "price_yuan": 9,
+      "source": "sign",
+      "confidence": "high",
+      "note": "馍+炸鸡+土豆+生菜"
+    },
+    {
+      "id": "obs-276",
+      "floor": 2,
+      "area": "二楼·绍兴小吃",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "烤冷面",
+      "category": "staple",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "high",
+      "note": "冷面皮+鸡蛋+培根+生菜+洋葱"
+    },
+    {
+      "id": "obs-277",
+      "floor": 2,
+      "area": "二楼·绍兴小吃",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鸡蛋灌饼&手抓饼",
+      "category": "staple",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": "饼+鸡蛋+豆皮+生菜"
+    },
+    {
+      "id": "obs-278",
+      "floor": 2,
+      "area": "二楼·绍兴小吃",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "杂粮煎饼",
+      "category": "staple",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": "煎饼+鸡蛋+脆饼+生菜+香菜+小葱"
+    },
+    {
+      "id": "obs-279",
+      "floor": 2,
+      "area": "二楼·绍兴小吃",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "土豆丝/粉丝/豆皮/辣条",
+      "category": "veg",
+      "price_yuan": 1,
+      "source": "sign",
+      "confidence": "high",
+      "note": "配菜 1 元/份"
+    },
+    {
+      "id": "obs-280",
+      "floor": 2,
+      "area": "二楼·绍兴小吃",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "热狗/培根/肉松/火鸡面",
+      "category": "protein",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": "配菜 2 元/份"
+    },
+    {
+      "id": "obs-281",
+      "floor": 2,
+      "area": "二楼·绍兴小吃",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "脆骨肠/大肉串/大里脊",
+      "category": "protein",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "high",
+      "note": "配菜 3 元/份"
+    },
+    {
+      "id": "obs-282",
+      "floor": 2,
+      "area": "二楼·绍兴小吃",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "地道肠/鸡腿排",
+      "category": "protein",
+      "price_yuan": 4,
+      "source": "sign",
+      "confidence": "high",
+      "note": "配菜 4 元/份"
+    },
+    {
+      "id": "obs-283",
+      "floor": 2,
+      "area": "二楼·绍兴小吃",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "芝士",
+      "category": "protein",
+      "price_yuan": 5,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-284",
+      "floor": 2,
+      "area": "二楼·绍兴小吃",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小酥肉/无骨鸡柳/鸡叉骨",
+      "category": "protein",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-285",
+      "floor": 2,
+      "area": "二楼·绍兴小吃",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "酱料（沙拉/番茄/芝士）",
+      "category": "other",
+      "price_yuan": 0,
+      "source": "sign",
+      "confidence": "high",
+      "note": "酱料任选；相同价位可更换"
+    },
+    {
+      "id": "obs-286",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "梅干菜五花肉饼",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-287",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "葱加瘦肉饼",
+      "category": "protein",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-288",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "梅干菜瘦肉饼",
+      "category": "protein",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-289",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "全瘦肉饼",
+      "category": "protein",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-290",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "梅干菜薄饼",
+      "category": "veg",
+      "price_yuan": 5,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-291",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "白糖饼",
+      "category": "staple",
+      "price_yuan": 5,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-292",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "葱油饼",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "sign",
+      "confidence": "high",
+      "note": "价格未识别"
+    },
+    {
+      "id": "obs-293",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "温州瘦肉丸",
+      "category": "protein",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": "小份 10 / 大份 15"
+    },
+    {
+      "id": "obs-294",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "温州瘦肉丸·馄饨",
+      "category": "protein",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-295",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鲜肉小馄饨",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": "小份 6 / 大份 9"
+    },
+    {
+      "id": "obs-296",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "康师傅泡面",
+      "category": "staple",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-297",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "白象泡面",
+      "category": "staple",
+      "price_yuan": 7,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-298",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "乌冬面",
+      "category": "staple",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-299",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "汤达人",
+      "category": "staple",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-300",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "肉肠",
+      "category": "protein",
+      "price_yuan": 4,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-301",
+      "floor": 2,
+      "area": "二楼·缙云烧饼",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "王中王",
+      "category": "protein",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-302",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香辣鸡腿堡双鸡双堡套餐",
+      "category": "protein",
+      "price_yuan": 11,
+      "source": "sign",
+      "confidence": "low",
+      "note": "反光遮挡，菜名不完整；TOP.1"
+    },
+    {
+      "id": "obs-303",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "双享堡",
+      "category": "protein",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": "套餐内部分主食可互换"
+    },
+    {
+      "id": "obs-304",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "脆脆满满桶",
+      "category": "protein",
+      "price_yuan": 20.9,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-305",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "PAD大鸡排",
+      "category": "protein",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-306",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "黄金脆鸡",
+      "category": "protein",
+      "price_yuan": 9,
+      "source": "sign",
+      "confidence": "high",
+      "note": "默认苦辣+咸酥鲜粉"
+    },
+    {
+      "id": "obs-307",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "脆脆大块鸡桶",
+      "category": "protein",
+      "price_yuan": 18,
+      "source": "sign",
+      "confidence": "mid",
+      "note": "名称部分被反光遮挡"
+    },
+    {
+      "id": "obs-308",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "巨无霸肉桶/薯鸡桶",
+      "category": "protein",
+      "price_yuan": 28,
+      "source": "sign",
+      "confidence": "low",
+      "note": "名称被反光遮挡"
+    },
+    {
+      "id": "obs-309",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "脆爽牛鸡",
+      "category": "protein",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-310",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "韩式无骨炸鸡",
+      "category": "protein",
+      "price_yuan": 13.9,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-311",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "藤椒鸡腿堡",
+      "category": "protein",
+      "price_yuan": 7,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-312",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香辣鸡腿堡",
+      "category": "protein",
+      "price_yuan": 7,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-313",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "原味鸡腿堡",
+      "category": "protein",
+      "price_yuan": 7,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-314",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香辣鸡肉卷",
+      "category": "protein",
+      "price_yuan": 7,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-315",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "板烧鸡腿堡",
+      "category": "protein",
+      "price_yuan": 9,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-316",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "板烧鸡肉卷",
+      "category": "protein",
+      "price_yuan": 9,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-317",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "芝芝厚牛堡",
+      "category": "protein",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-318",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "黑松露风味牛堡",
+      "category": "protein",
+      "price_yuan": 13,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-319",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "潮童双堡套餐",
+      "category": "protein",
+      "price_yuan": 14,
+      "source": "sign",
+      "confidence": "mid",
+      "note": "潮童新系列"
+    },
+    {
+      "id": "obs-320",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香酥大鸡腿",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-321",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "劲爆鸡米花",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-322",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "辣卤翅根（×2）",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-323",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香麻麻大串（×2）",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-324",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "无骨香鸡柳",
+      "category": "protein",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-325",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "薯条",
+      "category": "staple",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-326",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "蛋挞（×2）",
+      "category": "staple",
+      "price_yuan": 6,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-327",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "水果派",
+      "category": "staple",
+      "price_yuan": 5,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-328",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "霸王鸡架",
+      "category": "protein",
+      "price_yuan": 5,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-329",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "黑椒鸡块",
+      "category": "protein",
+      "price_yuan": 5,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-330",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "百事可乐/雪碧/美年达",
+      "category": "other",
+      "price_yuan": 5,
+      "source": "sign",
+      "confidence": "high",
+      "note": "无限"
+    },
+    {
+      "id": "obs-331",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "加芝士片",
+      "category": "other",
+      "price_yuan": 2,
+      "source": "sign",
+      "confidence": "high",
+      "note": "加点小料"
+    },
+    {
+      "id": "obs-332",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "加培根片",
+      "category": "other",
+      "price_yuan": 3,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-333",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "加牛肉饼",
+      "category": "other",
+      "price_yuan": 9,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-334",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "薯多多",
+      "category": "staple",
+      "price_yuan": 8,
+      "source": "sign",
+      "confidence": "high",
+      "note": "超值双拼"
+    },
+    {
+      "id": "obs-335",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小食拼盒",
+      "category": "protein",
+      "price_yuan": 10.8,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-336",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "小食拼盘",
+      "category": "protein",
+      "price_yuan": 13.9,
+      "source": "sign",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-337",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "秘制黑椒鸡柳",
+      "category": "protein",
+      "price_yuan": 13.8,
+      "source": "sign",
+      "confidence": "low",
+      "note": "品名被遮挡"
+    },
+    {
+      "id": "obs-338",
+      "floor": 2,
+      "area": "二楼·汉堡工厂",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "招牌脆鸡圈",
+      "category": "protein",
+      "price_yuan": 10,
+      "source": "sign",
+      "confidence": "low",
+      "note": "品名被遮挡；12 种口味"
+    },
+    {
+      "id": "obs-339",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "带壳鸡蛋",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-340",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鸭血/猪血",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-341",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "豆芽",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-342",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "宽粉/粉条",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-343",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "千张/白豆皮",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-344",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "腐竹/油豆皮",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-345",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "豆腐泡/油豆腐",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-346",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "莲藕片",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-347",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "海带",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-348",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "紫甘蓝",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-349",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "木耳",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-350",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "土豆片",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-351",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "紫薯丸",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-352",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "玉米段",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-353",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "蟹棒/蟹柳",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-354",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鱼豆腐",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-355",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "肉丸/牛丸",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-356",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鹌鹑蛋",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-357",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "午餐肉",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-358",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "火腿肠/小香肠",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-359",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "牛肉片/腌肉片",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-360",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "鸡胸肉片/里脊片",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-361",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "虾滑/鱼滑",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-362",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "毛肚/千层肚/黄喉",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-363",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "金针菇",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-364",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香菇/花菇",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-365",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "白玉菇/口蘑/杏鲍菇",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-366",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "娃娃菜/白菜",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-367",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "生菜/油麦菜",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-368",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "上海青/油菜",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-369",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "茼蒿/空心菜/苋菜",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-370",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "香菜",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-371",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "粉丝",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "high",
+      "note": ""
+    },
+    {
+      "id": "obs-372",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "碱水面/细面",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-373",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "乌冬面",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "sign",
+      "confidence": "high",
+      "note": "包装袋上印「UDON NOODLES 乌冬面 500克」"
+    },
+    {
+      "id": "obs-374",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "特制米粉/大米粉",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "low",
+      "note": "包装袋红字，品名部分可辨"
+    },
+    {
+      "id": "obs-375",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "响铃/面筋结",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "low",
+      "note": ""
+    },
+    {
+      "id": "obs-376",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "包心丸/手工丸子",
+      "category": "protein",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-377",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "竹笋/白萝卜条",
+      "category": "veg",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "mid",
+      "note": ""
+    },
+    {
+      "id": "obs-378",
+      "floor": 2,
+      "area": "二楼·西蜀毛哥麻辣烫",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "汤圆",
+      "category": "staple",
+      "price_yuan": null,
+      "source": "photo",
+      "confidence": "low",
+      "note": "整盒白色圆球"
+    }
+  ]
+}
