@@ -23,8 +23,8 @@ const obs = JSON.parse(readFileSync(OBS, 'utf8')).items;
 
 // ---------- 档口 → id 前缀 / 推荐池 / 上菜形态 ----------
 const STALL = {
-  '一楼·早餐': { code: 'f1b', serving: 'plate', recommendable: true, meals: ['breakfast'] },
-  '一楼·中晚餐': { code: 'f1l', serving: 'plate', recommendable: true, meals: ['lunch', 'dinner'] },
+  '一楼·早餐': { code: 'f1b', serving: 'plate', pricing: 'weigh', recommendable: true, meals: ['breakfast'] },
+  '一楼·中晚餐': { code: 'f1l', serving: 'single', pricing: 'fixed', recommendable: true, meals: ['lunch', 'dinner'] },
   '二楼·兰州牛肉面': { code: 'lzx', serving: 'single', recommendable: true, meals: ['breakfast', 'lunch', 'dinner'] },
   '二楼·奉天朱家小馆': { code: 'ftj', serving: 'single', recommendable: true, meals: ['breakfast', 'lunch', 'dinner'] },
   '二楼·广东猪脚饭': { code: 'gzj', serving: 'single', recommendable: true, meals: ['breakfast', 'lunch', 'dinner'] },
@@ -34,8 +34,8 @@ const STALL = {
   '二楼·绍兴小吃': { code: 'sx', serving: 'single', recommendable: false, meals: ['breakfast', 'lunch', 'dinner'] },
   '二楼·缙云烧饼': { code: 'jy', serving: 'single', recommendable: false, meals: ['breakfast', 'lunch', 'dinner'] },
   '二楼·汉堡工厂': { code: 'hbj', serving: 'single', recommendable: false, meals: ['breakfast', 'lunch', 'dinner'] },
-  '二楼·西蜀毛哥麻辣烫': { code: 'mlt', serving: 'component', recommendable: true, meals: ['breakfast', 'lunch', 'dinner'] },
-  '二楼·健康餐': { code: 'jk', serving: 'component', recommendable: true, meals: ['breakfast', 'lunch', 'dinner'] },
+  '二楼·西蜀毛哥麻辣烫': { code: 'mlt', serving: 'component', pricing: 'weigh', recommendable: true, meals: ['breakfast', 'lunch', 'dinner'] },
+  '二楼·健康餐': { code: 'jk', serving: 'component', pricing: 'weigh', recommendable: true, meals: ['breakfast', 'lunch', 'dinner'] },
   '二楼·炸串精选': { code: 'zcj', serving: 'single', recommendable: false, meals: ['breakfast', 'lunch', 'dinner'] },
 };
 
@@ -214,6 +214,7 @@ for (const o of obs) {
     floor: o.floor,
     stall: o.area,
     serving_mode: o.serving_mode ?? st.serving,
+    pricing_mode: o.pricing_mode ?? st.pricing ?? 'fixed',
     recommendable: st.recommendable,
     evidence: o.source,
     confidence: o.confidence,

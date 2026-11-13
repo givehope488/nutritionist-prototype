@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "exported_at": "2026-11-13T12:26:49.965Z",
+  "exported_at": "2026-11-13T12:39:47.200Z",
   "note": "v3 = 实测菜单。**一切餐食以照片数据为准**：原型估算的 55 道基线数据已全部抛弃，本种子只含照片识别与用户口述的条目。**本产品不向用户提供价格**：种子里不含任何价格字段。治理字段 floor/stall/serving_mode/recommendable/evidence/confidence 当前不入库、不出接口——seed.ts 是逐字段 INSERT，需 BE-B 扩 shared 类型与 SQLite 列后生效。serving_mode 语义：plate=一盘自选（只给餐食建议）/ single=独立成品餐 / component=可选组件（配菜、浇头）。",
   "dishes": [
     {
@@ -28,6 +28,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -57,6 +58,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "low"
@@ -84,6 +86,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -111,6 +114,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -140,6 +144,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -170,6 +175,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -200,6 +206,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -229,6 +236,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -260,6 +268,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -289,6 +298,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -316,6 +326,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -345,6 +356,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -375,6 +387,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -405,6 +418,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -432,6 +446,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "low"
@@ -459,6 +474,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -486,6 +502,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -515,6 +532,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -545,6 +563,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -575,6 +594,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -604,6 +624,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "low"
@@ -633,6 +654,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "low"
@@ -663,6 +685,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -693,6 +716,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -722,6 +746,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "plate",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -751,6 +776,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "single",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "user",
       "confidence": "high"
@@ -782,6 +808,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "single",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "user",
       "confidence": "high"
@@ -813,6 +840,7 @@
       "floor": 1,
       "stall": "一楼·早餐",
       "serving_mode": "single",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "user",
       "confidence": "high"
@@ -840,7 +868,8 @@
       "source": "照片推测菜名（置信度低）；营养值按品类模板估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -871,7 +900,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -903,7 +933,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -931,7 +962,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -959,7 +991,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -989,7 +1022,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -1019,7 +1053,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "low"
@@ -1049,7 +1084,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -1079,7 +1115,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "low"
@@ -1109,7 +1146,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -1140,7 +1178,8 @@
       "source": "照片推测菜名（置信度低）；营养值按品类模板估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -1170,7 +1209,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -1200,7 +1240,8 @@
       "source": "照片推测菜名（置信度低）；营养值按品类模板估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -1230,7 +1271,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -1260,7 +1302,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "low"
@@ -1290,7 +1333,8 @@
       "source": "照片推测菜名（置信度低）；营养值按品类模板估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -1318,7 +1362,8 @@
       "source": "照片推测菜名（置信度低）；营养值按品类模板估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -1348,7 +1393,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -1376,7 +1422,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -1404,7 +1451,8 @@
       "source": "照片牌面抄录菜名；营养值按标准配方估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -1434,7 +1482,8 @@
       "source": "照片推测菜名（置信度低）；营养值按品类模板估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -1465,7 +1514,8 @@
       "source": "照片推测菜名（置信度低）；营养值按品类模板估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -1496,7 +1546,8 @@
       "source": "照片推测菜名（置信度低）；营养值按品类模板估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -1524,7 +1575,8 @@
       "source": "照片推测菜名（置信度低）；营养值按品类模板估算，待配料反推",
       "floor": 1,
       "stall": "一楼·中晚餐",
-      "serving_mode": "plate",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -1555,6 +1607,7 @@
       "floor": 1,
       "stall": "一楼·中晚餐",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "user",
       "confidence": "high"
@@ -1585,6 +1638,7 @@
       "floor": 1,
       "stall": "一楼·中晚餐",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "user",
       "confidence": "high"
@@ -1617,6 +1671,7 @@
       "floor": 1,
       "stall": "一楼·中晚餐",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "user",
       "confidence": "high"
@@ -1649,6 +1704,7 @@
       "floor": 1,
       "stall": "一楼·中晚餐",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "user",
       "confidence": "high"
@@ -1680,6 +1736,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -1711,6 +1768,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -1742,6 +1800,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -1773,6 +1832,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -1804,6 +1864,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -1835,6 +1896,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -1866,6 +1928,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -1897,6 +1960,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -1928,6 +1992,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -1960,6 +2025,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -1989,6 +2055,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2018,6 +2085,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2047,6 +2115,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2079,6 +2148,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2108,6 +2178,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2137,6 +2208,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2169,6 +2241,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -2200,6 +2273,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2231,6 +2305,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -2262,6 +2337,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2294,6 +2370,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -2325,6 +2402,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2357,6 +2435,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -2388,6 +2467,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2417,6 +2497,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2446,6 +2527,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2475,6 +2557,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2504,6 +2587,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2535,6 +2619,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2567,6 +2652,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "low"
@@ -2596,6 +2682,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2627,6 +2714,7 @@
       "floor": 2,
       "stall": "二楼·健康餐",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -2660,6 +2748,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -2693,6 +2782,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -2726,6 +2816,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -2760,6 +2851,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -2791,6 +2883,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -2824,6 +2917,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -2857,6 +2951,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -2889,6 +2984,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -2918,6 +3014,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -2949,6 +3046,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -2982,6 +3080,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3013,6 +3112,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -3045,6 +3145,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3074,6 +3175,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3106,6 +3208,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3135,6 +3238,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3164,6 +3268,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -3195,6 +3300,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3227,6 +3333,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3259,6 +3366,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3288,6 +3396,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3320,6 +3429,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3351,6 +3461,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3383,6 +3494,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3414,6 +3526,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3446,6 +3559,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3475,6 +3589,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3504,6 +3619,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3536,6 +3652,7 @@
       "floor": 2,
       "stall": "二楼·兰州牛肉面",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3567,6 +3684,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3598,6 +3716,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3630,6 +3749,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3663,6 +3783,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3694,6 +3815,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3727,6 +3849,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3758,6 +3881,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "low"
@@ -3789,6 +3913,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3820,6 +3945,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3851,6 +3977,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3883,6 +4010,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3915,6 +4043,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3948,6 +4077,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -3979,6 +4109,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4010,6 +4141,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4041,6 +4173,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4072,6 +4205,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4104,6 +4238,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4138,6 +4273,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4169,6 +4305,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4202,6 +4339,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4233,6 +4371,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4267,6 +4406,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4299,6 +4439,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4328,6 +4469,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4359,6 +4501,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4388,6 +4531,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "mid"
@@ -4417,6 +4561,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4446,6 +4591,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4478,6 +4624,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4510,6 +4657,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4539,6 +4687,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4568,6 +4717,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4599,6 +4749,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4631,6 +4782,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4660,6 +4812,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4691,6 +4844,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4720,6 +4874,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4752,6 +4907,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4783,6 +4939,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4812,6 +4969,7 @@
       "floor": 2,
       "stall": "二楼·奉天朱家小馆",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4841,6 +4999,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4873,6 +5032,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4902,6 +5062,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4934,6 +5095,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4963,6 +5125,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -4992,6 +5155,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5021,6 +5185,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5053,6 +5218,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5082,6 +5248,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5111,6 +5278,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5140,6 +5308,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5171,6 +5340,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5200,6 +5370,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5229,6 +5400,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5258,6 +5430,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5290,6 +5463,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5322,6 +5496,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5353,6 +5528,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5382,6 +5558,7 @@
       "floor": 2,
       "stall": "二楼·广东猪脚饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5411,6 +5588,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5440,6 +5618,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5469,6 +5648,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5498,6 +5678,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5530,6 +5711,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5559,6 +5741,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5588,6 +5771,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5619,6 +5803,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5650,6 +5835,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5679,6 +5865,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5708,6 +5895,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5740,6 +5928,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5772,6 +5961,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5801,6 +5991,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5830,6 +6021,7 @@
       "floor": 2,
       "stall": "二楼·拌个饭饭",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -5859,6 +6051,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -5890,6 +6083,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -5919,6 +6113,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -5951,6 +6146,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -5983,6 +6179,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -6012,6 +6209,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -6041,6 +6239,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -6072,6 +6271,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -6104,6 +6304,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -6133,6 +6334,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -6162,6 +6364,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -6191,6 +6394,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -6220,6 +6424,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -6249,6 +6454,7 @@
       "floor": 2,
       "stall": "二楼·炸串精选",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -6282,6 +6488,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6315,6 +6522,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6346,6 +6554,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6377,6 +6586,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6409,6 +6619,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6440,6 +6651,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6469,6 +6681,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6500,6 +6713,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6531,6 +6745,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6562,6 +6777,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6595,6 +6811,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6626,6 +6843,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6657,6 +6875,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6688,6 +6907,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6720,6 +6940,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6752,6 +6973,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6781,6 +7003,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6810,6 +7033,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6839,6 +7063,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6871,6 +7096,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6900,6 +7126,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6932,6 +7159,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6961,6 +7189,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -6994,6 +7223,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7025,6 +7255,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7056,6 +7287,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7087,6 +7319,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7116,6 +7349,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7147,6 +7381,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7178,6 +7413,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7209,6 +7445,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7240,6 +7477,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7272,6 +7510,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7303,6 +7542,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7334,6 +7574,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7365,6 +7606,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7398,6 +7640,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7430,6 +7673,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7461,6 +7705,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7490,6 +7735,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7519,6 +7765,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7550,6 +7797,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7579,6 +7827,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7608,6 +7857,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7637,6 +7887,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7666,6 +7917,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7698,6 +7950,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7730,6 +7983,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7762,6 +8016,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7794,6 +8049,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7823,6 +8079,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7852,6 +8109,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7881,6 +8139,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7912,6 +8171,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7941,6 +8201,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -7972,6 +8233,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -8001,6 +8263,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -8033,6 +8296,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -8062,6 +8326,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -8093,6 +8358,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -8122,6 +8388,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -8154,6 +8421,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -8186,6 +8454,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -8217,6 +8486,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -8249,6 +8519,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -8281,6 +8552,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -8312,6 +8584,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -8343,6 +8616,7 @@
       "floor": 2,
       "stall": "二楼·江西小炒",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -8372,6 +8646,7 @@
       "floor": 2,
       "stall": "二楼·绍兴小吃",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8403,6 +8678,7 @@
       "floor": 2,
       "stall": "二楼·绍兴小吃",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8436,6 +8712,7 @@
       "floor": 2,
       "stall": "二楼·绍兴小吃",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8467,6 +8744,7 @@
       "floor": 2,
       "stall": "二楼·绍兴小吃",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8499,6 +8777,7 @@
       "floor": 2,
       "stall": "二楼·绍兴小吃",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8532,6 +8811,7 @@
       "floor": 2,
       "stall": "二楼·绍兴小吃",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8564,6 +8844,7 @@
       "floor": 2,
       "stall": "二楼·绍兴小吃",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8593,6 +8874,7 @@
       "floor": 2,
       "stall": "二楼·绍兴小吃",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8625,6 +8907,7 @@
       "floor": 2,
       "stall": "二楼·绍兴小吃",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8654,6 +8937,7 @@
       "floor": 2,
       "stall": "二楼·绍兴小吃",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8686,6 +8970,7 @@
       "floor": 2,
       "stall": "二楼·绍兴小吃",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8717,6 +9002,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8748,6 +9034,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "mid"
@@ -8779,6 +9066,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "mid"
@@ -8810,6 +9098,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "mid"
@@ -8842,6 +9131,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "mid"
@@ -8873,6 +9163,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "mid"
@@ -8904,6 +9195,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8933,6 +9225,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8964,6 +9257,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -8995,6 +9289,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9026,6 +9321,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9057,6 +9353,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9088,6 +9385,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9117,6 +9415,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9149,6 +9448,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9178,6 +9478,7 @@
       "floor": 2,
       "stall": "二楼·缙云烧饼",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9209,6 +9510,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "low"
@@ -9238,6 +9540,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9267,6 +9570,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9296,6 +9600,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9325,6 +9630,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9354,6 +9660,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "mid"
@@ -9383,6 +9690,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "low"
@@ -9412,6 +9720,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "mid"
@@ -9441,6 +9750,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9472,6 +9782,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9503,6 +9814,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9532,6 +9844,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9563,6 +9876,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9592,6 +9906,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9621,6 +9936,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9650,6 +9966,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9679,6 +9996,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9708,6 +10026,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "mid"
@@ -9737,6 +10056,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9766,6 +10086,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9797,6 +10118,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9826,6 +10148,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9855,6 +10178,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9884,6 +10208,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9916,6 +10241,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9945,6 +10271,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -9974,6 +10301,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -10003,6 +10331,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -10032,6 +10361,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -10064,6 +10394,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -10096,6 +10427,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -10129,6 +10461,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -10158,6 +10491,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -10187,6 +10521,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -10216,6 +10551,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "high"
@@ -10245,6 +10581,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "low"
@@ -10274,6 +10611,7 @@
       "floor": 2,
       "stall": "二楼·汉堡工厂",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": false,
       "evidence": "sign",
       "confidence": "low"
@@ -10306,6 +10644,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10338,6 +10677,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10369,6 +10709,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10398,6 +10739,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10429,6 +10771,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10460,6 +10803,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10491,6 +10835,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10522,6 +10867,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10554,6 +10900,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10585,6 +10932,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10616,6 +10964,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10647,6 +10996,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10676,6 +11026,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -10707,6 +11058,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10739,6 +11091,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10772,6 +11125,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -10801,6 +11155,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10833,6 +11188,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10862,6 +11218,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10894,6 +11251,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10926,6 +11284,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10958,6 +11317,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -10990,6 +11350,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -11019,6 +11380,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -11050,6 +11412,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -11081,6 +11444,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -11112,6 +11476,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -11143,6 +11508,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -11174,6 +11540,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -11205,6 +11572,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -11236,6 +11604,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -11267,6 +11636,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -11296,6 +11666,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "high"
@@ -11327,6 +11698,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -11358,6 +11730,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "sign",
       "confidence": "high"
@@ -11387,6 +11760,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "low"
@@ -11418,6 +11792,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "low"
@@ -11449,6 +11824,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -11480,6 +11856,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -11509,6 +11886,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "weigh",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "low"
@@ -11541,6 +11919,7 @@
       "floor": 2,
       "stall": "二楼·朝陇阳",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "photo",
       "confidence": "mid"
@@ -11569,6 +11948,7 @@
       "floor": 1,
       "stall": "一楼·中晚餐",
       "serving_mode": "single",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "user",
       "confidence": "high"
@@ -11598,6 +11978,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "user",
       "confidence": "mid"
@@ -11627,6 +12008,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "user",
       "confidence": "mid"
@@ -11656,6 +12038,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "user",
       "confidence": "mid"
@@ -11687,6 +12070,7 @@
       "floor": 2,
       "stall": "二楼·西蜀毛哥麻辣烫",
       "serving_mode": "component",
+      "pricing_mode": "fixed",
       "recommendable": true,
       "evidence": "user",
       "confidence": "mid"
