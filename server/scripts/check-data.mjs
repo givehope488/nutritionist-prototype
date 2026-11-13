@@ -89,8 +89,19 @@ for (const d of seed.dishes) {
   }
 
   // ---- 营养值 ----
-  for (const k of ['kcal', 'protein_g', 'fat_g', 'carbs_g', 'sodium_mg', 'price_yuan']) {
+  for (const k of ['kcal', 'protein_g', 'fat_g', 'carbs_g', 'sodium_mg']) {
     if (typeof d[k] !== 'number' || !Number.isFinite(d[k]) || d[k] < 0) err(id, `${k} 非法：${d[k]}`);
+  }
+  // ---- 价格：产品不向用户提供价格（2026-11-13 决策）----
+  // 种子不应带价格字段；主干 55 道暂时还带着（旧契约遗留），
+  // 等 BE-B 删掉 shared/Dish.price_yuan 与 SQLite 列、PD 删掉主干种子的该字段后，
+  // 下面这条从 warn 收紧为 err。
+  if ('price_yuan' in d) {
+    if (typeof d.price_yuan !== 'number' || !Number.isFinite(d.price_yuan) || d.price_yuan < 0) {
+      err(id, `price_yuan 非法：${d.price_yuan}`);
+    } else {
+      warn(id, '种子含 price_yuan：产品不向用户提供价格，该字段应删除');
+    }
   }
   if (typeof d.kcal === 'number' && d.kcal > 1200) warn(id, `kcal 偏大：${d.kcal}，请确认是否单人份`);
   if (typeof d.kcal === 'number' && d.kcal > 0 && typeof d.protein_g === 'number') {

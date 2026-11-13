@@ -2,15 +2,14 @@
 /**
  * 由实测清单生成菜单种子 v3。
  *
- * 输入：server/data/observed-menu.json（照片识别结果，378 条）
- *      server/data/menu-seed.baseline-55.json（基线 55 道，冻结存档）
+ * 输入：server/data/observed-menu.json（照片识别结果，379 条）
  * 输出：server/data/menu-seed.v3.json
  *
  * 口径（2026-11-13 用户决策）：
- *   - 全量重建：实测菜全部入库
- *   - 虚构菜（照片中无实物）下线
+ *   - 一切餐食以照片数据为准：原型估算的 55 道基线数据**全部抛弃**，不读、不合并、不保留
+ *   - 产品不向用户提供价格：种子里**不含任何价格字段**
  *   - 二楼只有正餐档口进推荐池；汉堡工厂/缙云烧饼/绍兴小吃/炸串精选入库但不推荐
- *   - 一楼自选线不计价，只给餐食推荐 → serving_mode = 'plate'
+ *   - 一楼自选线只给餐食建议，不计价 → serving_mode = 'plate'
  *   - 二楼全天供应 → meals = breakfast/lunch/dinner
  *
  * 营养值：单菜精确 → 组合菜拆解（主食基底 + 浇头）→ 同类兜底，全部过 4/9/4 自洽。
@@ -20,10 +19,7 @@ import { EXACT, TOPPING, BASE, FALLBACK } from './nutrition-templates.mjs';
 
 const OBS = 'server/data/observed-menu.json';
 const SEED = 'server/data/menu-seed.v3.json';
-/** 基线冻结存档：从它读，不从 SEED 读，否则重复运行会把生成结果当基线 */
-const V1 = 'server/data/menu-seed.baseline-55.json';
 const obs = JSON.parse(readFileSync(OBS, 'utf8')).items;
-const v1 = JSON.parse(readFileSync(V1, 'utf8')).dishes;
 
 // ---------- 档口 → id 前缀 / 推荐池 / 上菜形态 ----------
 const STALL = {
@@ -41,28 +37,6 @@ const STALL = {
   '二楼·西蜀毛哥麻辣烫': { code: 'mlt', serving: 'component', recommendable: true, meals: ['breakfast', 'lunch', 'dinner'] },
   '二楼·健康餐': { code: 'jk', serving: 'component', recommendable: true, meals: ['breakfast', 'lunch', 'dinner'] },
   '二楼·炸串精选': { code: 'zcj', serving: 'single', recommendable: false, meals: ['breakfast', 'lunch', 'dinner'] },
-};
-
-// ---------- 虚构菜下线清单（照片中找不到对应实物） ----------
-// 依据：43 张照片全量识别后仍无对应实物；多数是 11-06 按原型编的虚构菜。
-const DOWNLINE = new Set([
-  '杂粮饭', '片儿川', '鸡蛋面', '蒸红薯', '蒸饺', '菜包', '梅干菜扣肉', '干菜烧肉',
-  '宫保鸡丁', '白切鸡', '香菇滑鸡', '卤牛肉', '清蒸鲈鱼', '虾仁炒蛋', '蒸蛋',
-  '麻婆豆腐', '家常豆腐', '清炒时蔬', '手撕包菜', '红烧茄子', '紫菜蛋花汤',
-  '无糖豆浆', '甜豆浆', '牛奶', '酸奶', '苹果', '香蕉',
-]);
-
-// ---------- 合并映射：基线菜名 → 实测条目名（实测已覆盖，基线条目删除） ----------
-const MERGE = {
-  '葱油拌面': '葱油拌面',
-  '煎饼果子': '煎饼果子/芝麻圆饼',
-  '玉米': '甜玉米',
-  '白粥': '白粥',
-  '小笼包': '白面小笼包',
-  '肉包': '酱肉包',
-  '油条': '油条',
-  '馒头': '馒头/花卷',
-  '红烧肉': '红烧肉/酱肉',
 };
 
 // ---------- 名字归一 ----------
@@ -152,9 +126,7 @@ function tryParseCombo(name) {
       // 油泼面自带油泼浇头
       const base = BASE.noodle_oil;
       const oil = [120, 3, 8, 12, 600];
-      return {
-        t: [0, base[1] + oil[0], base[2] + oil[1], base[3] + oil[2], base[4] + oil[3], base[5]],
-      };
+      return { t: [0, base[1] + oil[0], base[2] + oil[1], base[3] + oil[2], base[4] + oil[3], base[5]] };
     }
     return null; // 认不出浇头，交给兜底
   }
@@ -200,26 +172,22 @@ function inferNutrition(name, category) {
 // ---------- 组装 ----------
 const out = [];
 const seq = {};
-const stats = { exact: 0, combo: 0, partial: 0, fallback: 0, reused: 0, legacy: 0, downlined: 0 };
+const stats = { exact: 0, combo: 0, partial: 0, fallback: 0 };
 const fallbackNames = [];
 
-function pushObsDish(o, extra = {}) {
+for (const o of obs) {
   const st = STALL[o.area];
+  if (!st) throw new Error(`未知档口：${o.area}`);
   seq[st.code] = (seq[st.code] || 0) + 1;
+
   let category = o.category;
   if (category === 'other') category = 'protein';
+
   const { t, how } = inferNutrition(o.name, category);
   stats[how]++;
   if (how === 'fallback') fallbackNames.push(`${o.area} · ${o.name}`);
-  // 一楼自选线按用户口径不计价：牌面价无法对应到具体菜，price 记 0 并注明
-  const noPrice = o.price_yuan === null;
-  const priceNote =
-    noPrice && st.serving === 'plate'
-      ? '一楼自选线不计价（用户口径）：牌面价无法对应到具体菜'
-      : noPrice
-        ? '照片未拍到该菜价格'
-        : '';
-  return {
+
+  out.push({
     id: `${st.code}-${String(seq[st.code]).padStart(2, '0')}`,
     name: o.name,
     category,
@@ -228,7 +196,6 @@ function pushObsDish(o, extra = {}) {
     meals: st.meals,
     kcal: harmonize(t[0], t[1], t[2], t[3]),
     protein_g: t[1], fat_g: t[2], carbs_g: t[3], sodium_mg: t[4],
-    price_yuan: o.price_yuan ?? 0,
     tags: inferTags(o.name, category, o.area),
     drink: /奶|豆浆|可乐|雪碧|美年达|果汁/.test(o.name),
     reliability: 'B',
@@ -236,7 +203,7 @@ function pushObsDish(o, extra = {}) {
     ingredients: [],
     source:
       o.source === 'sign'
-        ? '照片牌面抄录菜名与价格；营养值按标准配方估算，待配料反推'
+        ? '照片牌面抄录菜名；营养值按标准配方估算，待配料反推'
         : o.source === 'user'
           ? '用户口述菜名；营养值按标准配方估算，待配料反推'
           : '照片推测菜名（置信度低）；营养值按品类模板估算，待配料反推',
@@ -246,69 +213,25 @@ function pushObsDish(o, extra = {}) {
     recommendable: st.recommendable,
     evidence: o.source,
     confidence: o.confidence,
-    observed_price_yuan: o.price_yuan,
-    price_note: priceNote,
-    ...extra,
-  };
-}
-
-// 1) 基线 55 道：下线的下线，有实测对应的以实测为准（名字、价格、营养推断都用实测的），
-//    没有实测对应的保留原型数据并标注待核实
-const usedObs = new Set();
-for (const d of v1) {
-  if (DOWNLINE.has(d.name)) { stats.downlined++; continue; }
-
-  const k = norm(d.name);
-  let hit = obs.find((o) => !usedObs.has(o.id) && (norm(o.name) === k || (norm(o.name).includes(k) && k.length >= 2)));
-  if (!hit && MERGE[d.name]) {
-    hit = obs.find((o) => !usedObs.has(o.id) && o.name === MERGE[d.name]);
-  }
-
-  if (hit) {
-    usedObs.add(hit.id);
-    stats.reused++;
-    out.push(pushObsDish(hit, { merged_from: d.name }));
-    continue;
-  }
-
-  // 没有实测对应物：保留原型数据，标注待核实
-  out.push({
-    ...d,
-    id: `lgc-${d.id}`,
-    ingredients: d.ingredients || [],
-    floor: 1,
-    stall: d.meals.includes('breakfast') ? '一楼·早餐' : '一楼·中晚餐',
-    serving_mode: 'plate',
-    recommendable: true,
-    evidence: 'legacy',
-    confidence: 'low',
-    note: '照片中未找到对应实物，暂按原型数据保留，待核实或下线',
-    source: '原型估算数据，照片中未找到对应实物，待核实',
   });
-  stats.legacy++;
-}
-
-// 2) 实测清单里剩余的全部作为新菜
-for (const o of obs) {
-  if (usedObs.has(o.id)) continue;
-  out.push(pushObsDish(o));
 }
 
 const payload = {
   version: 3,
   exported_at: new Date().toISOString(),
   note:
-    'v3 = 实测菜单（2026-11-13 照片识别 378 条；虚构菜已下线，与实测重复的基线菜已合并）。' +
-    '新增字段 floor/stall/serving_mode/recommendable/evidence/confidence 为治理字段，' +
-    '当前 seed.ts 逐字段 INSERT，它们暂不入库、也不出接口，需 BE-B 扩 shared 类型与 SQLite 列后生效。' +
-    'serving_mode 语义：plate=一盘自选（不计价，只给餐食推荐）/ single=独立成品餐 / component=可选组件（配菜、浇头）。',
+    'v3 = 实测菜单。**一切餐食以照片数据为准**：原型估算的 55 道基线数据已全部抛弃，本种子只含照片识别与用户口述的条目。' +
+    '**本产品不向用户提供价格**：种子里不含任何价格字段。' +
+    '治理字段 floor/stall/serving_mode/recommendable/evidence/confidence 当前不入库、不出接口——' +
+    'seed.ts 是逐字段 INSERT，需 BE-B 扩 shared 类型与 SQLite 列后生效。' +
+    'serving_mode 语义：plate=一盘自选（只给餐食建议）/ single=独立成品餐 / component=可选组件（配菜、浇头）。',
   dishes: out,
 };
 
 writeFileSync(SEED, JSON.stringify(payload, null, 2) + '\n');
 
 console.log(`已生成 seed v3：${out.length} 道`);
-console.log('处理：', JSON.stringify(stats));
+console.log('营养值来源：', JSON.stringify(stats));
 const byS = {};
 out.forEach((d) => { byS[d.serving_mode] = (byS[d.serving_mode] || 0) + 1; });
 console.log('上菜形态：', JSON.stringify(byS));
@@ -316,5 +239,6 @@ console.log('推荐池内：', out.filter((d) => d.recommendable !== false).leng
 const byM = {};
 out.forEach((d) => d.meals.forEach((m) => { byM[m] = (byM[m] || 0) + 1; }));
 console.log('餐段覆盖：', JSON.stringify(byM));
+console.log('含价格字段的条目：', out.filter((d) => 'price_yuan' in d).length);
 console.log('仍靠兜底的（人工复核优先）：', fallbackNames.length, '道');
 if (fallbackNames.length) console.log('  ' + fallbackNames.join('\n  '));
