@@ -348,3 +348,17 @@ PR #6 评审给出 3 处契约不一致 + 1 条建议，逐条处理如下。
 边界：`api/__mock__/db.ts` 与 `dev/fixtures.ts` 的 `price_yuan`（FE-A 第 4 项）、`shared` 类型与 SQLite 列（BE-B 第 5 项）不在本次改动内——展示层先摘掉，契约删除由各自负责人并行完成，不会互相阻塞。
 
 复跑：lint / typecheck / **60 用例** / build 全绿。
+
+### 15.1 PR #36 的 CI 红灯定位（2026-11-14）
+
+PR #36（`feat/fe-b-remove-price`）的 `test` job 红，失败点不在 web：
+
+```
+FAIL  server/test/user-endpoints.test.ts > ... > 统计采纳率 = 采纳餐数 / 记录餐数
+AssertionError: expected +0 to be 2   (test/user-endpoints.test.ts:334)
+```
+
+- 用例把两条 meal-log 日期写死为 `2026-11-06`，再用 `days=7` 查 `/insights/summary`。
+- `server/src/routes/insights.ts` 的窗口是「今天 − days」：2026-11-14 算出 `sinceDate=2026-11-07`，`2026-11-06` 被过滤，`logged_meals` 变 0。
+- `origin/main` 同文件同代码，11-13 的 CI 还是绿的 ⇒ 跨日期触发的时间炸弹，与本分支无关。
+- 处理：已在 PR #36 评论并 @yangelect（`server/test/` 的 CODEOWNERS），同时在 `docs/PROGRESS.md` §6 登记；未改 `server/` 避免越界。web 侧 lint / typecheck / 60 用例 / build 全绿。
