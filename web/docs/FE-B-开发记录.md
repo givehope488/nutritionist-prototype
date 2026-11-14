@@ -191,9 +191,10 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 1. 与 FE-A 合并建档/推荐页：把路由 `/`、`/profile`、`/recommend` 的临时重定向改回，并按议题 Q6 重写 e2e 前两步。
 2. 议题余下 Q1/Q3–Q7 提交评审（Q2/Q8–Q11 已结案）；通过后删掉对应兜底代码（`__mock__` 目录整体删除是最大一块）。
 3. ~~W3 剩余边界（TEAM v1.2）~~ ✅ 2026-11-06 已补测：限流 429、菜品下架后回填旧记录、跨天回填（凌晨填昨晚），见 §14。
-4. 周三中途集成点（TEAM v1.2 新增）：从 main 拉最新代码真机冒烟，需要 BE-A 的菜单/推荐 API 到位后把 `VITE_API_BASE` 切到真实后端跑同一套 e2e。
+4. 真机冒烟：后端 6 个用户端端点已进主干（#18/#23/#26），可择期把 `VITE_API_BASE` 切到真实后端跑同一套 e2e；端到端用例归 PD（11-20）。
 5. 视觉回归：目前靠肉眼过故事页，等 CI 有基线后补截图对比。
-6. ~~集成收尾~~ ✅ Q10 由 main #12 结案；本分支 `d6f2e4d` 的 CI 三项已全绿。
+6. ~~集成收尾~~ ✅ Q10 由 main #12 结案；PR #6 已合并（`163a661`）。
+7. ~~P0 删价格（展示侧）~~ ✅ 2026-11-14 完成，见 §15。
 
 ---
 
@@ -332,3 +333,18 @@ PR #6 评审给出 3 处契约不一致 + 1 条建议，逐条处理如下。
 | 跨天草稿隔离 | `useLogDraft` 同一实例把日期从今天切到昨天 | 今天已选份数不带到昨天，幂等 id 也不同 |
 
 复跑：lint 无告警、typecheck 0 错、**54/54 用例**（新增 4 条）、build 通过；`41c4caa` 的 CI 三项全绿。
+
+---
+
+## 15. P0 删价格展示（2026-11-14）
+
+产品 2026-11-13 决策「不向用户提供价格」，FE-B 负责展示侧：
+
+- `components/business/DishCard.vue`：删价格行与 `formatYuan` 引用；份量后的分隔点一并删，避免留下孤零零的「·」。
+- `utils/display.ts`：`formatYuan` 全仓已无调用，删除。
+- `tests/unit/components.test.ts`：新增断言，卡片文本不含 `¥` 或「N.N 元」。
+- 顺带清 PD 留的非阻塞项：`avoidOptionsContract.test.ts` 改用 `?raw` 让 Vite 直接读 `docs/API.md`，不再依赖「必须在 `web/` 下跑 vitest」；jsdom 下 `import.meta.url` 不是 file 协议，所以没有采用 `fileURLToPath` 方案。
+
+边界：`api/__mock__/db.ts` 与 `dev/fixtures.ts` 的 `price_yuan`（FE-A 第 4 项）、`shared` 类型与 SQLite 列（BE-B 第 5 项）不在本次改动内——展示层先摘掉，契约删除由各自负责人并行完成，不会互相阻塞。
+
+复跑：lint / typecheck / **60 用例** / build 全绿。
