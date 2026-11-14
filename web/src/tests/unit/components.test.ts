@@ -56,6 +56,12 @@ describe('DishCard 份量展示（D4：A / B 同一套 UI）', () => {
     expect(wrapper.text()).not.toContain('估算值');
     expect(wrapper.text()).not.toMatch(/\d+\s*(g|ml)\b/);
   });
+
+  it('不展示价格（产品 2026-11-13 决策：不向用户提供价格）', () => {
+    const wrapper = mount(DishCard, { props: { dish: sampleDishA, modelValue: 1 } });
+    expect(wrapper.text()).not.toContain('¥');
+    expect(wrapper.text()).not.toMatch(/\d+\.\d\s*元/);
+  });
 });
 
 describe('MacroBar 对比条', () => {

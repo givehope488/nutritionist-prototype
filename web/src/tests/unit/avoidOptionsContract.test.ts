@@ -1,14 +1,14 @@
 // 契约护栏（附录 D）：忌口全表是唯一事实源，Mock 必须逐行一致，漂移即红。
 // 对应评审意见「前端也建议加一条同样的比对」——服务端有 contract.test.ts，前端这边由本文件守。
-import { readFileSync } from 'node:fs';
-import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import apiMdRaw from '../../../../docs/API.md?raw';
 import { AVOID_OPTIONS } from '@/api/__mock__/avoidOptions';
 import { handleMockRequest } from '@/api/__mock__';
 import { API_PREFIX } from '@canteen/shared';
 import type { MenuResponse } from '@canteen/shared';
 
-const API_MD = join(process.cwd(), '..', 'docs', 'API.md');
+// 由 Vite 直接读文本：不依赖 cwd，也不依赖 jsdom 下 import.meta.url 的协议
+const API_MD = apiMdRaw as string;
 
 interface AppendixRow {
   key: string;
@@ -17,7 +17,7 @@ interface AppendixRow {
 }
 
 function appendixD(): AppendixRow[] {
-  const text = readFileSync(API_MD, 'utf-8').replace(/\r\n/g, '\n');
+  const text = API_MD.replace(/\r\n/g, '\n');
   const start = text.indexOf('### 附录 D');
   if (start === -1) throw new Error('docs/API.md 找不到「附录 D」');
   const rest = text.slice(start);

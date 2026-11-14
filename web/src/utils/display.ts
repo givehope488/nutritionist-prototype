@@ -14,10 +14,6 @@ export function formatSodium(value: number): string {
   return `${Math.round(value)} mg`;
 }
 
-export function formatYuan(value: number): string {
-  return `¥${value.toFixed(1)}`;
-}
-
 /** 对比条填充比例：以目标为满格（100%），超出部分封顶，避免条形溢出轨道 */
 export function ratioPercent(actual: number, target: number, cap = 100): number {
   if (target <= 0) return 0;
