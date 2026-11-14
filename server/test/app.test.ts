@@ -74,7 +74,6 @@ describe('GET /api/v1/menu', () => {
       'fat_g',
       'carbs_g',
       'sodium_mg',
-      'price_yuan',
       'tags',
       'drink',
       'reliability',

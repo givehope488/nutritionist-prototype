@@ -53,7 +53,6 @@ function toContractDish(raw: (typeof rawSeed.dishes)[number]): Dish {
     fat_g: raw.fat_g,
     carbs_g: raw.carbs_g,
     sodium_mg: raw.sodium_mg,
-    price_yuan: raw.price_yuan,
     tags: raw.tags,
     drink: raw.drink,
     reliability: raw.reliability,

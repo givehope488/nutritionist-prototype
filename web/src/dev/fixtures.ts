@@ -12,7 +12,6 @@ export const sampleDishA: Dish = {
   fat_g: 0.6,
   carbs_g: 51.6,
   sodium_mg: 2,
-  price_yuan: 1,
   tags: [],
   drink: false,
   reliability: 'A',
@@ -30,7 +29,6 @@ export const sampleDishB: Dish = {
   fat_g: 10,
   carbs_g: 0,
   sodium_mg: 450,
-  price_yuan: 9,
   tags: ['meat'],
   reliability: 'B',
 };
@@ -44,7 +42,6 @@ export const sampleDishDrink: Dish = {
   fat_g: 7,
   carbs_g: 6,
   sodium_mg: 100,
-  price_yuan: 3,
   tags: ['milk', 'vegprotein'],
   drink: true,
   meals: ['breakfast'],

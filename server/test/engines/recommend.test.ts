@@ -150,7 +150,6 @@ function mk(
     fat_g: 5,
     carbs_g: 30,
     sodium_mg: 100,
-    price_yuan: 2,
     tags,
     drink: false,
     reliability: 'B',
