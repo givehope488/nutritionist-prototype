@@ -1,9 +1,9 @@
 <script setup lang="ts">
-// 菜品行卡（回填页）：名称 + 份量 + 价格 + 份数步进器。
+// 菜品行卡（回填页）：名称 + 份量 + 份数步进器。
 // D4：只展示份量用语、不展示克重，A / B 级用同一套 UI、不加「估算」标记。
 // 依据 API.md v1.2.1：portion_grams 一律不下发，前端本来就拿不到克重。
+// 产品决策 2026-11-13：不向用户展示价格，卡片不再渲染 price_yuan。
 import type { Dish } from '@canteen/shared';
-import { formatYuan } from '@/utils/display';
 import AppStepper from '../base/AppStepper.vue';
 import AppBadge from '../base/AppBadge.vue';
 
@@ -26,8 +26,6 @@ const selected = (value: number): boolean => value > 0;
       </div>
       <p class="dish__meta">
         <span>{{ dish.portion_label }}</span>
-        <span class="dish__dot" aria-hidden="true">·</span>
-        <span class="tabular">{{ formatYuan(dish.price_yuan) }}</span>
       </p>
     </div>
     <AppStepper :model-value="modelValue" :size="'sm'" @update:model-value="emit('update:modelValue', $event)" />
@@ -65,8 +63,5 @@ const selected = (value: number): boolean => value > 0;
   margin: 2px 0 0;
   color: var(--color-text-tertiary);
   font-size: var(--font-size-sm);
-}
-.dish__dot {
-  margin: 0 var(--space-1);
 }
 </style>
