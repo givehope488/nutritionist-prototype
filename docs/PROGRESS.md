@@ -224,6 +224,7 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 
 ## 5. 变更记录
 
+- 2026-11-14 PD | 变更 | **修掉一个卡住全队的时间炸弹**：`server/test/user-endpoints.test.ts` 把两条 meal-log 的日期写死成 `2026-11-06`，而 insights 的统计窗口是「今天 − days」（`routes/insights.ts` 用 `toISOString().slice(0,10)` 算 `sinceDate`）。11-13 时 `sinceDate` 恰好是 11-06、测试还绿；**11-14 起 `sinceDate` 变成 11-07，两条日志被过滤，`logged_meals` 断言 2 实得 0**——于是从当天起**主干与所有 PR 的 CI `test` 全红**，且与任何业务改动无关。FE-B 的 PR #36 正是被它卡在 gateway 上（他已定位并如实登记，且没有越界改 `server/`）。修法：固化日期换成 `daysAgo(n)` 相对当天生成，**算法与 insights 一致**（同样是 `setDate` + `toISOString().slice(0,10)`），两边永远对齐；6 处固化日期一并改掉。已由 PR #37 修复合入（`be28735`），#36 随后正常合入（`f05f0eb`） | 全体：CI 恢复绿色，主干可正常接收 PR。**这是 PD 的止血动作**，`server/test/` 归 BE-B，请复核这处改法是否符合你对测试数据构造的约定（尤其：是否更倾向用固定时钟 `vi.setSystemTime` 而不是相对日期——两者都能解决，我选相对日期是因为它不需要额外依赖与全局钩子，代价是「用例依赖系统时钟」这一属性仍在）
 > 所有人可追加，只加不改别人的行。格式见 §0.3。新的在上。
 
 - 2026-11-14 wyf-111 | 变更 | **P0 删价格（展示侧）完成**：`DishCard` 删价格行与 `formatYuan` 引用，`utils/display.ts` 删 `formatYuan`，组件测试加「无 `¥`」断言；顺带清掉 PD 留的非阻塞项——附录 D 比对测试改用 `?raw` 读 `docs/API.md`，不再依赖 vitest 的 cwd。lint / typecheck / 60 用例 / build 全绿 | FE-A（mock 与 fixtures 去 `price_yuan`）、BE-B（`shared` 与 SQLite 删列）可并行；展示层已无价格
@@ -280,6 +281,7 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 
 ## 6. 问题登记
 
+- 2026-11-14 PD | 风险 | **前端测试里还埋着同一类时间炸弹**：`web/src/tests/unit/closureEndpoints.test.ts` 第 90、183 行把 meal-log 日期写死成 `2026-11-04`，而同一文件第 217 行用 `days: 7` 查 insights。现在没红是因为 `web/src/api/__mock__` 的 `getInsightsSummary` **不做「今天 − days」窗口过滤**；一旦 mock 补上窗口（议题 Q8~Q11 的目标）或直接切真接口，这条立刻会以与服务端同样的方式炸掉 | 需要 FE-A / FE-B（`web/src/tests/` 归你们共同）：把固化日期改成相对当天生成。建议同时决定一件事——**mock 要不要补上窗口过滤**？不补的话 mock 与真接口在 insights 语义上不一致，联调时可能出现「mock 通过、真接口失败」
 > 所有人可追加，只加不改别人的行。解决后在行尾补 `✅ 已解决 YYYY-MM-DD`。
 
 - 2026-11-14 wyf-111 | 阻塞 | **服务端用例出现「时间炸弹」，从今天起所有 PR 的 CI `test` 都会红**：`server/test/user-endpoints.test.ts:334`「统计采纳率」把两条 meal-log 日期写死为 `2026-11-06`，再用 `days=7` 查 insights；`routes/insights.ts` 的窗口是「今天 − days」，今天 11-14 算出 `sinceDate=2026-11-07`，两条日志被过滤，`logged_meals` 断言 2 实得 0。`origin/main` 同文件同代码，11-13 CI 还是绿的，属跨日期触发，与本分支改动无关（web 侧 lint / typecheck / 60 用例 / build 全绿）。我的 PR #36 因此 gateway 卡住 | 需要 BE-B（`server/test/` 归你）把该用例日期改成相对当天生成，**11-14 内**，否则今天起全队 PR 和 main 推送都会红；我没有动 `server/` 避免越界
