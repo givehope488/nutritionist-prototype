@@ -106,7 +106,7 @@ FE-B 名下目录（CODEOWNERS 口径）：`web/src/views/log|feedback|history/`
 | Q3 | 缺 `GET /api/v1/meal-logs/:id` | `composables/useMealLogLookup.ts` 头注释 | 反馈页刷新/换设备后要拉整页列表才能定位一条 | sessionStorage 缓存 + 列表过滤兜底 |
 | Q4 | §2.4 `MealLog.target` 只有 `kcal` 与 `protein_g` | `views/FeedbackView.vue:31` 注释 | 反馈页脂肪/碳水/钠三条对比条只能显示「暂无目标」 | `MacroBar` 无目标时不画目标线、文案「暂无目标」（不显示「目标 0」） |
 | Q5 | 「忌口过滤后无解」的判据未定义 | `tests/unit/closureEndpoints.test.ts:67` | 55 道菜 + 现有组合结构下，实测任何忌口组合都还有解，`notice` 分支在真实数据上不可达 | 断言改为「返回合法 combos」；`NoSolutionNotice` 组件与其单测保留，等 BE-A 给出无解判据 |
-| Q6 | e2e 里建档/推荐两步是接口模拟 | `tests/e2e/closureFlow.test.ts` 头注释 | FE-A 页面合并前，e2e 不覆盖真实建档交互 | FE-A 合并后把两步替换成真实页面跳转（需 FE-A 提供可测的 DOM 锚点） |
+| Q6 | e2e 里建档/推荐两步是接口模拟 | `tests/e2e/closureFlow.test.ts` 头注释 | FE-A 页面合并前，e2e 不覆盖真实建档交互 | ✅ 已解决 2026-11-15：FE-A 建档 / 推荐页已进主干，首条用例改为驱动真实页面（填表单 → 保存 → 推荐页采纳 → 跳回填），见 §17 |
 | Q7 | 传输层失败（断网/超时/取消）没有契约错误码 | `api/client.ts:48` 注释 | 前端只能借用 `INTERNAL`，与"服务端异常"混在同一文案桶 | 借 `INTERNAL` + 可操作文案；请评审是否补 `CLIENT_NETWORK_ERROR` |
 | Q8 | 根配置缺 `.nvmrc`，Node 版本未锁 | COLLAB.md 防线 3 要求；CODEOWNERS 已预留 `/.nvmrc` | 成员 Node 版本不一致时 CI 结果不可复现（本机 v22.23.4，文档示例 v24） | ✅ 已解决：根 `.nvmrc` = `22`，CI 用 `node-version-file` 读取 |
 | Q9 | CODEOWNERS 未覆盖 `web/src/composables/`、`web/src/utils/`、`web/src/dev/` | `.github/CODEOWNERS`（`1275782` 引入）只列了 views 子目录、`components/`、`api/` | 这三个目录的 PR 会被兜底规则派给 @be-b，FE-B 成了非所有者，Review 链条绕人 | ✅ 已解决：现覆盖 `/web/` 兜底 + `composables/` `utils/` `tests/` `dev/`（@Aredjdhd @wyf-111） |
@@ -395,3 +395,18 @@ AssertionError: expected +0 to be 2   (test/user-endpoints.test.ts:334)
 遗留项核对：②`NoSolutionNotice.vue` 已无「早饭无解」兜底文案（组件只渲染服务端 `notice`），无需再删；③`feat/fe-b-web` 分支删除是远端共享动作，未执行，等确认。
 
 复跑：lint / typecheck / **68 用例** / build 全绿。
+
+---
+
+## 17. 闭环 e2e 改走真实页面（Q6 结项，2026-11-15）
+
+- 背景：`closureFlow.test.ts` 的建档 / 推荐两步一直是「直接调 `saveProfile` / `createRecommendation` + 手写推荐缓存」，只验证了 FE-B 三页，不覆盖「推荐页采纳 → 回填页预填」这条跨页交接。FE-A 三页已进主干（#42），Q6 的阻塞解除。
+- 改动：首条用例改为真实页面链路——
+  1. 挂载 `ProfileView`，填身高 / 体重 / 年龄三个 `.numfield__input`，点保存，断言路由到 `goal`；
+  2. 跳 `recommend` 并挂载 `RecommendView`，断言至少 1 套组合，点第一套「就去吃这组」，断言路由为 `log` 且带 `meal=lunch` 与 `combo`；
+  3. 挂载 `LogView`，断言「已按推荐搭配预填」且预填项数等于该套组合的菜品数（从 `.combo__dishes` 数出来，不读缓存，避免用被测函数自证）；
+  4. 之后仍是提交 → 反馈 → 历史的原断言。
+- 其余三条用例只关心 FE-B 三页，保留接口铺数据的 `seedProfileAndCombo()`，避免每条都重走表单、拖慢单测。
+- 结果：`closureFlow.test.ts` 4 条全过（首条 552ms），web 用例总数不变（68）。
+
+复跑：lint / typecheck / 68 用例 / build 全绿。
