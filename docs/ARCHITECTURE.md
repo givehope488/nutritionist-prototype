@@ -97,8 +97,12 @@ POST /api/v1/recommendations
 
 ```
 dishes        id*, name, category, portion_label, meals[], kcal, protein_g,
-              fat_g, carbs_g, sodium_mg, price_yuan, tags[], drink,
+              fat_g, carbs_g, sodium_mg, tags[], drink,
               reliability(A/B/C), status, updated_at
+              # 菜单 v3 增加的五个可选字段（55 道原型种子取值为 NULL）：
+              floor, stall, serving_mode(combo/single/component/plate),
+              pricing_mode(fixed/weigh), recommendable(bool)
+              # price_yuan 已于 2026-11-13 按产品决策删除（不向用户提供价格），不要再加回
 dish_revisions  id*, dish_id, changed_fields{}, operator, reason, created_at   # 修订留痕
 profiles      session_id*, sex, height_cm, weight_kg, age, activity,
               goal, avoid[], default_meal, created_at, updated_at
