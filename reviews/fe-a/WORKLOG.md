@@ -816,3 +816,9 @@ root: npm run check → lint / typecheck / test / smoke / check:data / check:pro
 
 `#42`（`feat/fe-a-w1-pages` → `main`）已创建，reviewer：`wyf-111`（FE-B）、`givehope488`（PD，文档目录）。功能提交 `f4d5997` 上 CI 三 job（lint / typecheck / test）全 success。
 
+### 18.7 远端再复核（2026-11-15 下午）
+
+- `origin/main` 前移到 `9cd0295`（PR #43 已合并）：PD 把 §1「前端」行更正为「FE-A 三页尚未实现」，并在 §6 登记「W1 核心目标未达成、逾期 2 天」阻塞。该结论基于 `344b253`，**看不到本分支**；三页已在 PR #42，故按「只加不改别人的行」在 §6 追加回应行，未改 PD 的 §1 / 阻塞原文。
+- 合并 `origin/main` 时 `docs/PROGRESS.md` 的 §6 顶部出现冲突（双方都在同一位置追加）：保留 PD 的阻塞行与原有风险行，另加本方的交付回应，三条按时间倒序排列。
+- `docs/API.md` 的两处价格残留（§0.4 / §2.1）与 `docs/ARCHITECTURE.md` 第 100 行仍未修；PR #44（BE-A 套数坍缩）仍 open，与前端无冲突。
+
