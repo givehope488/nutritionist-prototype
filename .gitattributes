@@ -1,0 +1,33 @@
+# 行尾统一（根治 CRLF/LF 混用导致的「整文件假 diff」）
+#
+# 背景：2026-11-15 两个 PR 因行尾混用被判冲突，`PROGRESS.md` 出现 -289/+302 的
+# 整文件假 diff，真实改动只有 25 行，review 时间全花在辨别真假上。
+#
+# 规则：仓库内文本文件一律 LF；Windows 脚本保留 CRLF（否则 cmd/PowerShell 5.1 上会有问题）。
+# 说明：`eol=lf` 表示「工作区也用 LF」，不随 core.autocrlf 变化，团队成员机器配置不同也不会再打架。
+
+* text=auto eol=lf
+
+# Windows 专属脚本保留 CRLF
+*.ps1   text eol=crlf
+*.bat   text eol=crlf
+*.cmd   text eol=crlf
+
+# 二进制：禁止 Git 做任何行尾或文本转换
+*.png   binary
+*.jpg   binary
+*.jpeg  binary
+*.gif   binary
+*.ico   binary
+*.webp  binary
+*.woff  binary
+*.woff2 binary
+*.ttf   binary
+*.pdf   binary
+*.zip   binary
+*.db    binary
+*.exe   binary
+
+# 数据文件按文本处理（LF），保证 diff 可读
+*.csv   text eol=lf
+*.json  text eol=lf
