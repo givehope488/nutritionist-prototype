@@ -822,3 +822,9 @@ root: npm run check → lint / typecheck / test / smoke / check:data / check:pro
 - 合并 `origin/main` 时 `docs/PROGRESS.md` 的 §6 顶部出现冲突（双方都在同一位置追加）：保留 PD 的阻塞行与原有风险行，另加本方的交付回应，三条按时间倒序排列。
 - `docs/API.md` 的两处价格残留（§0.4 / §2.1）与 `docs/ARCHITECTURE.md` 第 100 行仍未修；PR #44（BE-A 套数坍缩）仍 open，与前端无冲突。
 
+
+### 18.8 合并后体检修复
+
+- 合并后跑根 `npm run check`：lint / typecheck / test（server 58 用例）/ smoke 12/12 / check:data（55 道）全过，`check:progress` 报 1 条格式错——§6 新增行的描述里写了 `profile|goal|recommend`，竖线被当成列分隔符，四列变七列。
+- 修法：把该段改为 `profile`、`goal`、`recommend` 三页，语义不变；未动 PD 的其他行。
+- 复跑：`check:progress` 通过；web `lint` 干净、`build` 成功（174.21 kB / gzip 59.63 kB）、`test` 10 文件 67 用例全过。
