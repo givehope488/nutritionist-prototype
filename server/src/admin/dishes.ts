@@ -228,3 +228,107 @@ export function bulkImport(rows: unknown[], operator = 'unknown'): BulkImportRes
 
   return result;
 }
+
+/* ------------------------------------------------------------------ 新增菜品 */
+
+const CATEGORIES = new Set(['staple', 'protein', 'veg', 'soup', 'fruit']);
+const MEALS = new Set(['breakfast', 'lunch', 'dinner']);
+const RELIABILITIES = new Set(['A', 'B', 'C']);
+const DISH_STATUSES = new Set(['active', 'hidden']);
+const SERVING_MODES = new Set(['combo', 'single', 'component', 'plate']);
+const PRICING_MODES = new Set(['fixed', 'weigh']);
+
+export interface DishCreateInput {
+  id: string;
+  name: string;
+  category: string;
+  portion_label: string;
+  meals: string[];
+  kcal: number;
+  protein_g: number;
+  fat_g: number;
+  carbs_g: number;
+  sodium_mg: number;
+  tags?: string[];
+  drink?: boolean;
+  reliability: string;
+  status?: string;
+  floor?: number;
+  stall?: string;
+  serving_mode?: string;
+  pricing_mode?: string;
+  recommendable?: boolean;
+}
+
+function fail(path: string, issue: string): never {
+  throw new HttpError('VALIDATION_ERROR', '请求参数不合法', [{ path, issue }]);
+}
+
+/**
+ * 新增菜品（API.md §3 的 `POST /admin/dishes`）。
+ *
+ * 与 `updateDish` 的分工：这里是「从无到有」，所以全字段校验、id 唯一性检查；
+ * 修订留痕只在**改已有菜品**时产生，新增本身记录在 `reason` 里。
+ */
+export function createDish(input: DishCreateInput, operator = 'unknown'): Dish {
+  if (typeof input.id !== 'string' || input.id.trim().length === 0) fail('id', '必填');
+  if (typeof input.name !== 'string' || input.name.trim().length === 0) fail('name', '必填');
+  if (!CATEGORIES.has(input.category)) fail('category', `取值须为 ${[...CATEGORIES].join('/')}`);
+  if (typeof input.portion_label !== 'string' || input.portion_label.length === 0) {
+    fail('portion_label', '必填（只放展示用语）');
+  }
+  if (!Array.isArray(input.meals) || input.meals.length === 0) fail('meals', '至少一个餐段');
+  for (const meal of input.meals) if (!MEALS.has(meal)) fail('meals', `未知餐段 ${meal}`);
+  if (!RELIABILITIES.has(input.reliability)) fail('reliability', '取值须为 A/B/C');
+
+  for (const field of NUMERIC_FIELDS) {
+    const value = input[field];
+    if (typeof value !== 'number' || !Number.isFinite(value) || value < 0) {
+      fail(field, '必须是非负数字');
+    }
+  }
+  const status = input.status ?? 'active';
+  if (!DISH_STATUSES.has(status)) fail('status', '取值须为 active/hidden');
+  if (input.serving_mode !== undefined && !SERVING_MODES.has(input.serving_mode)) {
+    fail('serving_mode', `取值须为 ${[...SERVING_MODES].join('/')}`);
+  }
+  if (input.pricing_mode !== undefined && !PRICING_MODES.has(input.pricing_mode)) {
+    fail('pricing_mode', `取值须为 ${[...PRICING_MODES].join('/')}`);
+  }
+
+  const exists = getDb().prepare('SELECT 1 FROM dishes WHERE id = ?').get(input.id);
+  if (exists !== undefined) throw new HttpError('CONFLICT', `菜品已存在: ${input.id}`);
+
+  getDb()
+    .prepare(
+      `INSERT INTO dishes (
+         id, name, category, portion_label, meals, kcal, protein_g, fat_g, carbs_g, sodium_mg,
+         tags, drink, reliability, status, floor, stall, serving_mode, pricing_mode, recommendable,
+         updated_at
+       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, datetime('now'))`,
+    )
+    .run(
+      input.id,
+      input.name,
+      input.category,
+      input.portion_label,
+      JSON.stringify(input.meals),
+      input.kcal,
+      input.protein_g,
+      input.fat_g,
+      input.carbs_g,
+      input.sodium_mg,
+      JSON.stringify(input.tags ?? []),
+      input.drink ? 1 : 0,
+      input.reliability,
+      status,
+      input.floor ?? null,
+      input.stall ?? null,
+      input.serving_mode ?? null,
+      input.pricing_mode ?? null,
+      input.recommendable === undefined ? null : input.recommendable ? 1 : 0,
+    );
+
+  writeRevision(input.id, { created: { from: null, to: input.id } }, operator, '新增菜品');
+  return findDish(input.id);
+}
