@@ -121,6 +121,27 @@ describe('回填 → 反馈 → 历史', () => {
     expect(feedback.text()).toContain('这次是自选搭配');
   });
 
+  it('切到其他餐次时不再套用上一餐的推荐组合', async () => {
+    const reco = await seedProfileAndCombo();
+    expect(reco).not.toBeNull();
+    const router = makeRouter();
+    await router.push({ name: 'log', query: { meal: 'lunch', combo: reco!.combos[0].id } });
+    await router.isReady();
+    const wrapper = mount(LogView, { global: { plugins: [router] } });
+    await settle();
+    expect(wrapper.text()).toContain('已按推荐搭配预填');
+
+    const dinner = wrapper.findAll('button').find((node) => node.text() === '晚餐');
+    await dinner?.trigger('click');
+    await settle();
+
+    // 午餐组合不能预填进晚餐，也不能把晚餐算成「按推荐」
+    expect(wrapper.text()).not.toContain('已按推荐搭配预填');
+    expect(wrapper.text()).toContain('0 项已选');
+    const submit = wrapper.findAll('button').find((node) => node.text().includes('生成反馈'));
+    expect(submit?.attributes('disabled')).toBeDefined();
+  });
+
   it('断网/接口报错时给出可重试提示，不静默失败', async () => {
     await seedProfileAndCombo();
     const router = makeRouter();

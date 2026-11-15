@@ -40,10 +40,14 @@ function read(): CachedRecommendation | null {
   }
 }
 
-/** combo.id 有效期 24 小时；过期或不存在返回 null，页面回落为自选回填 */
-export function findCachedCombo(comboId: string, sessionId: string) {
+/**
+ * combo.id 有效期 24 小时；过期或不存在返回 null，页面回落为自选回填。
+ * 传 meal 时还要校验缓存来自同一餐段——回填页切换餐次后不能把上一餐的组合预填进来。
+ */
+export function findCachedCombo(comboId: string, sessionId: string, meal?: Meal) {
   const cached = read();
   if (!cached || cached.session_id !== sessionId) return null;
+  if (meal !== undefined && cached.meal !== meal) return null;
   return cached.response.combos.find((combo) => combo.id === comboId) ?? null;
 }
 

@@ -362,3 +362,36 @@ AssertionError: expected +0 to be 2   (test/user-endpoints.test.ts:334)
 - `server/src/routes/insights.ts` 的窗口是「今天 − days」：2026-11-14 算出 `sinceDate=2026-11-07`，`2026-11-06` 被过滤，`logged_meals` 变 0。
 - `origin/main` 同文件同代码，11-13 的 CI 还是绿的 ⇒ 跨日期触发的时间炸弹，与本分支无关。
 - 处理：已在 PR #36 评论并 @yangelect（`server/test/` 的 CODEOWNERS），同时在 `docs/PROGRESS.md` §6 登记；未改 `server/` 避免越界。web 侧 lint / typecheck / 60 用例 / build 全绿。
+
+---
+
+## 16. W2 联调：回填 / 反馈 / 历史切真接口（2026-11-15）
+
+环境：根目录 `npm ci`（装 `shared` / `server`）→ `npm run seed` → `npm run start`（8787）；web 用 `VITE_API_BASE=` 空值启动，请求走同源 `/api` 的 dev 代理（#59 的口径）。**不要写 `web/.env.local`**——vitest 也会读它，Mock 用例会改走真网络而全红；联调时用行内环境变量启动即可。
+
+真实接口实测（Chromium，全程无 Mock）：
+
+| 场景 | 结果 |
+|---|---|
+| 建档 172cm / 65kg / 20 岁 / 男 / 每周几次 | BMI 21.97、日目标 2282 kcal 由服务端返回 |
+| 推荐午餐 | 3 套；采纳第一套跳回填 |
+| 回填预填 | 「已按推荐搭配预填 4 项」，带 combo id 提交 |
+| 反馈 | 872 kcal vs 本餐目标 912.8，判「吃得挺准」，标「按推荐搭配」 |
+| 历史 | 近 7 天：1 餐、采纳率 100%、均热 872 kcal |
+| 分页 | 追加 12 条记录后首屏 10 条，「加载更多（共 14 条）」点后全部展开 |
+| `combo.id` 过期 | 提示「推荐组合已超过 24 小时」，不报错；自选 1 项提交后反馈「这次是自选搭配」（`adopted: false`） |
+| 反馈页回落 | 清 `sessionStorage`（保留 `localStorage` 的 session）后刷新，仍能按 id 从 `/meal-logs` 列表找到并渲染 |
+| B6 无价格 | 回填 / 推荐 / 反馈页文本均无 `¥`、无「元」 |
+
+### 16.1 修掉的问题：切餐次/切日期仍套用上一餐的推荐组合
+
+- 现象：从午餐推荐进入回填（`?meal=lunch&combo=…`）后切到晚餐，仍预填午餐的 4 道菜，并把晚餐当成「按推荐」计入采纳率。
+- 根因：`findCachedCombo` 只按 combo id 查缓存，不校验缓存所属餐段；回填页 watch 每次餐次/日期变化都会重跑预填。
+- 修法：
+  - `useRecommendationCache.findCachedCombo(comboId, sessionId, meal?)` 增可选 `meal`，校验 `cached.meal`。
+  - `LogView` 记住带来组合的餐段与日期，只有两者都没变时才预填；切到其他餐次或「昨天」按自选处理。
+- 回归：`tests/e2e/closureFlow.test.ts` 新增「切到其他餐次时不再套用上一餐的推荐组合」。
+
+遗留项核对：②`NoSolutionNotice.vue` 已无「早饭无解」兜底文案（组件只渲染服务端 `notice`），无需再删；③`feat/fe-b-web` 分支删除是远端共享动作，未执行，等确认。
+
+复跑：lint / typecheck / **68 用例** / build 全绿。

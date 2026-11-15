@@ -31,6 +31,11 @@ const date = ref<string>(
 
 const draft = useLogDraft(sessionId, date, meal);
 
+// 推荐组合只对「带来它的那次餐次 + 日期」有效：切餐次或补填昨天都视为自选，
+// 否则会把午餐组合预填进晚餐、并按 adopted 计入采纳率。
+const comboMeal = meal.value;
+const comboDate = date.value;
+
 const dishes = ref<Dish[]>([]);
 const menuLoading = ref(false);
 const menuError = ref<ApiError | null>(null);
@@ -107,7 +112,8 @@ async function loadMenu(): Promise<void> {
 function applyPrefillFromCombo(): void {
   const comboId = typeof route.query.combo === 'string' ? route.query.combo : '';
   if (!comboId) return;
-  const combo = findCachedCombo(comboId, sessionId);
+  if (meal.value !== comboMeal || date.value !== comboDate) return;
+  const combo = findCachedCombo(comboId, sessionId, meal.value);
   if (!combo) {
     prefillNotice.value = '推荐组合已超过 24 小时，请自选这餐吃了什么';
     return;
