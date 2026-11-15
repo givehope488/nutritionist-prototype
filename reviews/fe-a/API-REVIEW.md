@@ -317,3 +317,11 @@ W1 三页（建档 / 目标与忌口 / 推荐）交付前的远端复核。以�
 5. **菜单 v3 数据就绪但未上线**：`server/data/menu-seed.v3.json` 已存在，需 `SEED_PATH=...` 才试跑；默认仍是 55 道原型种子（`check:data` 输出 55 道全过）。推荐页按「1~3 套都能渲染」实现，不假设恒 3 套。
 6. **Mock 统计窗口口径**：`getInsightsSummary` 的 Mock 实现按 `[今天 − days + 1, 今天]` 过滤（`isoDate(days-1)` → `isoDate()`），与真实服务端一致；2026-11-14 PROGRESS 备注所担心的「Mock 不过滤」实测不成立。本轮只把 `closureEndpoints.test.ts` 的固化日期改为「今天」，并新增窗口断言（昨天计入、30 天前不计入），README 所指时间炸弹关闭。
 7. **W1 交付**：`ProfileView` / `GoalView` / `RecommendView` + 路由（`/` → `/profile`）与底部导航；web lint / build 全绿，单测 **10 文件 / 67 用例**；浏览器实测「建档 → 目标 → 推荐（3 套）→ 采纳 → 回填预填 3 项」链路通过。
+
+### 8. W2 联调期契约观察（2026-11-15 晚，`origin/main` @ `fa63413`）
+
+1. **菜单章节草稿（v1.2.4）尚未定稿**：`reviews/pd/API-MENU-SECTION-DRAFT-2026-11-15.md` 由 PD 起草、待 pigQAQ 定稿。`shared/Dish` 的五个 v3 可选字段已实现，前端按类型渲染，不依赖草稿措辞；定稿前不据此改契约或页面。
+2. **推荐响应缺称重判据（A6）**：`ComboDish` 只有营养字段，没有 `pricing_mode` / `serving_mode`，前端无法识别称重菜并展示「份量以现场称重为准」。需要 BE-A 按附录 C 补字段，或由服务端直接下发参考区间与文案。已登记 PROGRESS §6。
+3. **契约无删除档案端点（C6 / A3）**：§2.2 只有 `POST /profiles` 与 `GET /profiles/me`。前端不能自造接口删数据；需要 BE-A 定契约、PD 拍板是否进 W3。已登记 PROGRESS §6。
+4. **`VITE_API_BASE` 口径**：`.env.example` 原示例把 `/api/v1` 写进 BASE，与 `client.ts` 的 `API_PREFIX` 叠加导致 `/api/v1/api/v1/...`；已改为「BASE 只填源」，并加 dev 同源代理。绝对地址模式仍需服务端放行 CORS（部署时同源反代）。
+5. **B5 真实接口实测通过**：55 道种子 + 真实 HTTP 走通建档 → 目标（BMI 21.97、日目标 2282）→ 推荐（午餐 730.4、3 套）→ 采纳 → 回填预填 3 项 → 反馈（差 0.4 kcal，判定达标）→ 历史（采纳率 100%）；无 Mock 响应、无价格、控制台无报错。

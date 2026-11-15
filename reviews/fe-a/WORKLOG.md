@@ -841,3 +841,44 @@ root: npm run check → lint / typecheck / test / smoke / check:data / check:pro
 - 本分支按常规 merge 同步 `origin/main`：`docs/PROGRESS.md` §6 与本文件尾部各一处冲突（主干已含 18.1~18.6，本分支在其后追加 18.7~18.9）。解决方式：保留主干全部内容，仅保留本分支的追加段落；§6 中本方「回应 W1 阻塞」一行按事实更正为「PR #42 已并入主干（`6dea02d`）」，未改 PD 的任何文字。
 - 同步后复跑根 `npm run check`：lint / typecheck / test / smoke 12/12 / check:data（55 道）/ check:progress 全过；web 10 文件 67 用例全过。
 - 随后 PD 的 #45（D1~D4 口径回写，`b9859ef`）也合入主干：同步无冲突，§1「前端」行已由 PD 更正为「FE-A 三页已交付」；本分支相对主干只剩本条与 §6 一行。
+
+## 19. W2 联调：真实接口问题复盘（2026-11-15 晚）
+
+### 19.1 远端再核对
+
+- 远端在 PR #46 之后连续合并：#49（管理端 CLI）、#50（e2e 进 CI）、#51（W2 派单）、#52（配比复核）、#53（API.md 菜单章节草稿，待 pigQAQ 定稿），`origin/main` = `fa63413`。
+- 同步 `fa63413` 后发现主干 §6 有我方「时间炸弹」风险行的**相邻重复**（#46 合并带入），按「只动自己的行」删掉一条；`check:progress` 通过。
+
+### 19.2 B5 真实接口联调：先撞到两堵墙
+
+用 `npm run dev -w @canteen/server`（8787，55 道种子库）+ `VITE_API_BASE=http://127.0.0.1:8787/api/v1` 起 web，控制台报：
+
+```
+Access to fetch at 'http://127.0.0.1:8787/api/v1/api/v1/profiles/me?session_id=…'
+blocked by CORS policy: No 'Access-Control-Allow-Origin' header
+```
+
+- **墙一：路径重复。** `client.ts` 统一拼 `API_PREFIX`，而 `.env.example` 示例把 `/api/v1` 也写进了 BASE，实际请求成了 `/api/v1/api/v1/...`。已把示例改成「只填源」。
+- **墙二：跨端口 CORS。** 服务端未放行 `Access-Control-Allow-Origin`（`OPTIONS` 预检只回 `Allow: POST`）。前端侧在 `vite.config.ts` 加 dev 代理 `/api` → `http://localhost:8787`，`VITE_API_BASE` 留空即走同源代理；绝对地址模式仍需服务端补 CORS（部署时按同源反代处理）。
+
+### 19.3 联调实测（真实接口，非 Mock）
+
+`VITE_API_BASE=` 留空 + dev 代理，浏览器走完：
+
+```
+/profile 172cm / 65kg / 20 岁 → 保存
+→ /goal 服务端档案 BMI 21.97（正常）· 日目标 2282 kcal；忌口 9 项顺序与附录 D 一致
+→ 选减脂 + 素食 → /recommend 日目标 1826 kcal、午餐 730.4 kcal、3 套
+→ 采纳搭配一（combo aee1440a）→ /log 预填 3 项
+→ 生成反馈：730 kcal 对目标 730.4，判定「吃得挺准」
+→ /history：近 7 天已回填 1 餐、采纳率 100%、平均 730 kcal / 22 g
+```
+
+- 网络面板：`POST /api/v1/recommendations` 两次（进页 + 换一批），全部走 `localhost:5180` 同源代理；`GET /api/v1/profiles/me` 建档前 404（页面正确显示空表单）、建档后 200。
+- 控制台只有建档前那一条预期 404，无其他报错；页面未出现价格或 `¥`（B6 真实数据回归）。
+- 已知：真实接口下含蛋菜仍可出现（素食= `nomeat`，不禁蛋，属后端标签口径，不是前端过滤）。
+
+### 19.4 记入 §6 的两个契约缺口（不在本次改码）
+
+- C6/A3「删除档案入口」：契约 §2.2 没有删除端点，前端不自造。
+- A6「称重菜参考值」：推荐响应的 `ComboDish` 没有 `pricing_mode`/称重标记，前端无法识别，故无法加「份量以现场称重为准」文案。
