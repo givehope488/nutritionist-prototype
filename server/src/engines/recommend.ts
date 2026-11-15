@@ -246,25 +246,50 @@ export function recommendCombos(
     })
     .sort((a, b) => b.score - a.score);
 
-  // 取得分靠前的 8 套，在其中随机抽 3 套（「换一批」可变化，仍保证主食互不相同、主菜不重复）
-  const top = scored.slice(0, Math.min(8, scored.length));
-  const drawPool = shuffle(top);
-  const combos: Combo[] = [];
+  // 选 3 套：先放全局最优（贴合度最佳，保证「至少一套热量偏离 ≤10%」验收有兜底），
+  // 其余按主食分组、组内降序，再在各组里随机抽「主食互不相同、主菜不重复」的最优凑满 3 套。
+  // 这样无论评分如何集中到某一主食（#27 套数坍缩根因），都能保证凑满 3 套并保留可变化性，
+  // 同时各组取最优自然保住贴合度（#28 贴合度退步验收）。
+  type Scored = { candidate: Candidate; score: number };
+  const stapleId = (c: Candidate) => c.dishes.find((d) => d.category === 'staple')?.id;
+  const proteinId = (c: Candidate) => c.dishes.find((d) => d.category === 'protein')?.id;
+
+  const chosen: Scored[] = [];
   const usedStaples = new Set<string>();
   const usedProteins = new Set<string>();
-  for (const { candidate } of drawPool) {
-    if (combos.length >= 3) break;
-    const staple = candidate.dishes.find((d) => d.category === 'staple');
-    const protein = candidate.dishes.find((d) => d.category === 'protein');
-    if (staple && usedStaples.has(staple.id)) continue;
-    if (protein && usedProteins.has(protein.id)) continue;
-    if (staple) usedStaples.add(staple.id);
-    if (protein) usedProteins.add(protein.id);
-    combos.push(toCombo(candidate.dishes, target));
+  const take = (s: Scored) => {
+    const sid = stapleId(s.candidate);
+    const pid = proteinId(s.candidate);
+    if (sid) usedStaples.add(sid);
+    if (pid) usedProteins.add(pid);
+    chosen.push(s);
+  };
+
+  // 1) 全局最优先占位（贴合度最佳）
+  take(scored[0]);
+
+  // 2) 其余按主食分组（排除已占用的主食），组内按得分降序
+  const byStaple = new Map<string, Scored[]>();
+  for (const s of scored.slice(1)) {
+    const sid = stapleId(s.candidate);
+    if (!sid || usedStaples.has(sid)) continue;
+    if (!byStaple.has(sid)) byStaple.set(sid, []);
+    byStaple.get(sid)!.push(s);
+  }
+  for (const arr of byStaple.values()) arr.sort((a, b) => b.score - a.score);
+
+  // 3) 随机顺序遍历各组，组内取首个「主菜未被占用」的最优，凑满 3 套
+  for (const sid of shuffle([...byStaple.keys()])) {
+    if (chosen.length >= 3) break;
+    const group = byStaple.get(sid)!;
+    const pick = group.find((g) => {
+      const pid = proteinId(g.candidate);
+      return !pid || !usedProteins.has(pid);
+    });
+    if (!pick) continue; // 该主食下候选主菜都已占用，跳过此组
+    take(pick);
   }
 
-  if (combos.length === 0) {
-    return { combos: [], notice: NO_SOLUTION_NOTICE };
-  }
+  const combos = chosen.map((c) => toCombo(c.candidate.dishes, target));
   return { combos, notice: null };
 }

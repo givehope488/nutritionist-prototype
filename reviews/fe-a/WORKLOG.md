@@ -834,3 +834,9 @@ root: npm run check → lint / typecheck / test / smoke / check:data / check:pro
 - 再次 push 被拒：远端 `feat/fe-a-w1-pages` 已到 `fc3eb27`（`41967c1` + `origin/main 9cd0295` 的合并提交，应为 PR 页「Update branch」产生），比本地多一个合并提交。
 - 按「不 force-push」原则把 `origin/feat/fe-a-w1-pages` 合回本地；`docs/PROGRESS.md` §6 同一位置再次冲突（远端把「时间炸弹」风险行排在 PD 阻塞行之上）。保留 PD 阻塞行原文，把本方「三页已交付」回应行放最上，风险行居中，未改任何他人文字。
 - 冲突检查：`grep -c '^<<<<<<<\|^=======\|^>>>>>>>' docs/PROGRESS.md` = 0；`npm run check:progress` 通过（PD 专区指纹未变）。
+
+### 18.10 PR #42 已并入主干，同步 #44（2026-11-15 晚）
+
+- 远端事实：`origin/main` 现为 `ddcbb7a`。其中 `6dea02d` 即 PR #42（W1 建档/目标/推荐三页 + 修前端时间炸弹）的合并提交，三页与 `API-REVIEW` / WORKLOG §18.1~18.6 已在主干；`ddcbb7a` 是 PR #44（BE-A 修套数坍缩与贴合度退步，只动 `server/src/engines/recommend.ts` 与其用例）。
+- 本分支按常规 merge 同步 `origin/main`：`docs/PROGRESS.md` §6 与本文件尾部各一处冲突（主干已含 18.1~18.6，本分支在其后追加 18.7~18.9）。解决方式：保留主干全部内容，仅保留本分支的追加段落；§6 中本方「回应 W1 阻塞」一行按事实更正为「PR #42 已并入主干（`6dea02d`）」，未改 PD 的任何文字。
+- 同步后复跑根 `npm run check`：lint / typecheck / test / smoke 12/12 / check:data（55 道）/ check:progress 全过；web 10 文件 67 用例全过。
