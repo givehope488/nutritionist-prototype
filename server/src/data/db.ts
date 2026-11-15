@@ -104,6 +104,19 @@ function migrate(db: DatabaseSync): void {
 
     CREATE INDEX IF NOT EXISTS idx_meal_logs_session_date
       ON meal_logs (session_id, date DESC);
+
+    -- 菜品修订留痕（ARCHITECTURE §5）：管理端每改一次营养数据写一行，审计用
+    CREATE TABLE IF NOT EXISTS dish_revisions (
+      id             INTEGER PRIMARY KEY AUTOINCREMENT,
+      dish_id        TEXT NOT NULL,
+      changed_fields TEXT NOT NULL,
+      operator       TEXT NOT NULL,
+      reason         TEXT NOT NULL,
+      created_at     TEXT NOT NULL DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_dish_revisions_dish
+      ON dish_revisions (dish_id, id DESC);
   `);
 
   upgradeDishesSchema(db);

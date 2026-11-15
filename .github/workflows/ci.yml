@@ -72,6 +72,14 @@ jobs:
       - name: 端点契约 smoke
         if: hashFiles('server/scripts/smoke.ts') != ''
         run: npm run smoke
+      # 端到端流程：建档 → 推荐 → 回填 → 反馈/复盘，走真实 HTTP 不走 Mock。
+      # 与 smoke 的分工——smoke 断言单接口的契约层，本用例断言**跨接口是否接得上**
+      # （推荐里的菜在菜单里吗？回填的热量等于被采纳组合的热量吗？重复提交幂等吗？）。
+      # 单接口都通过、串起来却对不上，是最常见也最容易被漏掉的 bug。
+      # 用 hashFiles 门控：脚本是 PR #49 引入的，主干上还没有时这一步直接跳过。
+      - name: 端到端流程
+        if: hashFiles('server/scripts/e2e-flow.ts') != ''
+        run: npx tsx server/scripts/e2e-flow.ts
       - name: web 依赖
         if: hashFiles('web/package.json') != ''
         working-directory: web
