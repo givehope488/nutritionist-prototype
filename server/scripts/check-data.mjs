@@ -126,8 +126,17 @@ for (const d of seed.dishes) {
     if (d.portion_grams === null) err(id, 'A 级必须提供 portion_grams（称重）');
     if (!Array.isArray(d.ingredients) || d.ingredients.length === 0) err(id, 'A 级必须提供 ingredients 配料依据');
   }
-  if (d.reliability === 'B' && Array.isArray(d.ingredients) && d.ingredients.length > 0) {
-    warn(id, '已填配料依据但仍为 B 级，可考虑升 A 级');
+  // 提示升 A 级：**只有同时具备称重依据时才提示**。
+  // README 的口径是「A 称重 / B 反推 / C 众包」——已填配料依据恰恰就是 B 级的标准状态
+  // （2026-11-15 起 v3 的 384 道全部按标准配比反推并填了配料），
+  // 若在「有配料」时就提示升 A，会让 384 道全部刷 warn，等于把告警变成噪声。
+  // 真正的升级条件是拿到了实测克重（portion_grams）。
+  if (
+    d.reliability === 'B' &&
+    d.portion_grams !== null &&
+    d.portion_grams !== undefined
+  ) {
+    warn(id, '已有称重依据（portion_grams），可考虑升 A 级');
   }
 }
 
