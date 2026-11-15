@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // 应用外壳：页面容器 + 底部导航 + 全局免责声明。
-// FE-B 只在导航里挂自己负责的两页，FE-A 页面合并后补「推荐」入口。
+// 主流程入口：建档 → 推荐 → 回填 → 历史；组件库是 FE-B 的开发页，保留在最后。
 import { useRoute } from 'vue-router';
 import AppDisclaimer from '@/components/base/AppDisclaimer.vue';
 
@@ -17,6 +17,8 @@ const isStory = route.name === 'design-system';
     </main>
 
     <nav v-if="!isStory" class="tabbar" aria-label="主导航">
+      <RouterLink class="tabbar__item" to="/profile">建档</RouterLink>
+      <RouterLink class="tabbar__item" to="/recommend">推荐</RouterLink>
       <RouterLink class="tabbar__item" to="/log">回填</RouterLink>
       <RouterLink class="tabbar__item" to="/history">历史</RouterLink>
       <RouterLink class="tabbar__item tabbar__item--dev" to="/dev/components">组件库</RouterLink>

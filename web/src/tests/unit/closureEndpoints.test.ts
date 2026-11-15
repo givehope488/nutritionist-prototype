@@ -2,6 +2,11 @@
 import { describe, expect, it } from 'vitest';
 import type { MealLogRequest, Meal, ProfileInput } from '@canteen/shared';
 import { createMealLog, createRecommendation, getInsightsSummary, listMealLogs, saveProfile } from '@/api/endpoints';
+import { toDateStr } from '@/utils/display';
+
+// 时间口径：回填日期用「今天」，避免固化日期在若干天后落到统计窗口外（README 指出的时间炸弹）。
+// Mock 与真实服务端一致：summary 只统计 [今天 − days + 1, 今天]。
+const today = toDateStr(new Date());
 
 const baseProfile: ProfileInput = {
   session_id: 'flow-session',
@@ -87,7 +92,7 @@ describe('回填（§2.4）', () => {
     return {
       id: 'client-uuid-1',
       session_id: baseProfile.session_id,
-      date: '2026-11-04',
+      date: today,
       meal: 'lunch',
       items: [
         { dish_id: 's01', servings: 1 },
@@ -180,7 +185,7 @@ describe('记录与统计（§2.5）', () => {
       await createMealLog({
         id: `page-${index}`,
         session_id: baseProfile.session_id,
-        date: '2026-11-04',
+        date: today,
         meal: 'lunch',
         items: [{ dish_id: 's01', servings: 1 }],
         adopted_combo_id: null,
@@ -221,6 +226,30 @@ describe('记录与统计（§2.5）', () => {
     expect(result.data.adopted).toBe(1);
     expect(result.data.adoption_rate).toBe(0.5);
     expect(result.data.avg_kcal).toBeGreaterThan(0);
+  });
+
+  it('summary 只统计 days 窗口内的记录', async () => {
+    await seed();
+    const yesterday = toDateStr(new Date(Date.now() - 86400000));
+    const outside = toDateStr(new Date(Date.now() - 30 * 86400000));
+    for (const [id, date] of [
+      ['win-in', yesterday],
+      ['win-out', outside],
+    ]) {
+      const logged = await createMealLog({
+        id,
+        session_id: baseProfile.session_id,
+        date,
+        meal: 'lunch',
+        items: [{ dish_id: 's01', servings: 1 }],
+        adopted_combo_id: null,
+      });
+      expect(logged.ok).toBe(true);
+    }
+    const result = await getInsightsSummary({ session_id: baseProfile.session_id, days: 7 });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.data.logged_meals).toBe(1);
   });
 
   it('没有任何记录时统计为 0 而不是报错', async () => {
