@@ -828,3 +828,9 @@ root: npm run check → lint / typecheck / test / smoke / check:data / check:pro
 - 合并后跑根 `npm run check`：lint / typecheck / test（server 58 用例）/ smoke 12/12 / check:data（55 道）全过，`check:progress` 报 1 条格式错——§6 新增行的描述里写了 `profile|goal|recommend`，竖线被当成列分隔符，四列变七列。
 - 修法：把该段改为 `profile`、`goal`、`recommend` 三页，语义不变；未动 PD 的其他行。
 - 复跑：`check:progress` 通过；web `lint` 干净、`build` 成功（174.21 kB / gzip 59.63 kB）、`test` 10 文件 67 用例全过。
+
+### 18.9 远端分支被「Update branch」更新（2026-11-15）
+
+- 再次 push 被拒：远端 `feat/fe-a-w1-pages` 已到 `fc3eb27`（`41967c1` + `origin/main 9cd0295` 的合并提交，应为 PR 页「Update branch」产生），比本地多一个合并提交。
+- 按「不 force-push」原则把 `origin/feat/fe-a-w1-pages` 合回本地；`docs/PROGRESS.md` §6 同一位置再次冲突（远端把「时间炸弹」风险行排在 PD 阻塞行之上）。保留 PD 阻塞行原文，把本方「三页已交付」回应行放最上，风险行居中，未改任何他人文字。
+- 冲突检查：`grep -c '^<<<<<<<\|^=======\|^>>>>>>>' docs/PROGRESS.md` = 0；`npm run check:progress` 通过（PD 专区指纹未变）。
