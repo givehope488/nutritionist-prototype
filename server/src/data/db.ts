@@ -59,11 +59,15 @@ function migrate(db: DatabaseSync): void {
       fat_g         REAL NOT NULL,
       carbs_g       REAL NOT NULL,
       sodium_mg     REAL NOT NULL,
-      price_yuan    REAL NOT NULL,
       tags          TEXT NOT NULL,
       drink         INTEGER NOT NULL,
       reliability   TEXT NOT NULL,
       status        TEXT NOT NULL,
+      floor           INTEGER,
+      stall           TEXT,
+      serving_mode    TEXT,
+      pricing_mode    TEXT,
+      recommendable   INTEGER,
       updated_at    TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -101,6 +105,45 @@ function migrate(db: DatabaseSync): void {
     CREATE INDEX IF NOT EXISTS idx_meal_logs_session_date
       ON meal_logs (session_id, date DESC);
   `);
+
+  upgradeDishesSchema(db);
+}
+
+/**
+ * dishes 表的增量升级（老库升级不能报错，必须幂等）。
+ *
+ * 1. **删 `price_yuan`**（用户 2026-11-13 决策：产品不向用户提供价格）。
+ *    页面上写的是「SQLite 删列要重建表」，但 **Node 24 内置的 SQLite 是 3.50.4，
+ *    支持 `ALTER TABLE ... DROP COLUMN`**（3.35+ 即支持），所以不必重建表、
+ *    也不必搬数据。这里实测过：老库带 `price_yuan NOT NULL`，DROP 直接成功。
+ * 2. **加菜单 v3 的五个字段**（`floor` / `stall` / `serving_mode` / `pricing_mode` /
+ *    `recommendable`），逐列判断是否已存在，避免 `duplicate column` 报错。
+ *
+ * 用 PRAGMA table_info 探当前列，而不是捕获异常——报错会被吞掉真实问题。
+ */
+function upgradeDishesSchema(db: DatabaseSync): void {
+  const columns = new Set(
+    (db.prepare('PRAGMA table_info(dishes)').all() as unknown as Array<{ name: string }>).map(
+      (row) => row.name,
+    ),
+  );
+
+  if (columns.has('price_yuan')) {
+    db.exec('ALTER TABLE dishes DROP COLUMN price_yuan');
+  }
+
+  const additions: Array<[string, string]> = [
+    ['floor', 'INTEGER'],
+    ['stall', 'TEXT'],
+    ['serving_mode', 'TEXT'],
+    ['pricing_mode', 'TEXT'],
+    ['recommendable', 'INTEGER'],
+  ];
+  for (const [name, type] of additions) {
+    if (!columns.has(name)) {
+      db.exec(`ALTER TABLE dishes ADD COLUMN ${name} ${type}`);
+    }
+  }
 }
 
 /** 测试用：清空业务表（保留表结构），避免用例互相污染 */

@@ -81,9 +81,11 @@ check('GET /api/v1/menu?meal=lunch → 200 + dishes/avoid_options', async () => 
   const body = res.json as MenuResponse;
   assert.ok(body.dishes.length > 0, 'dishes 为空');
   assert.ok(body.avoid_options.length > 0, 'avoid_options 为空');
-  for (const key of ['id', 'name', 'category', 'portion_label', 'meals', 'kcal', 'protein_g', 'fat_g', 'carbs_g', 'sodium_mg', 'price_yuan', 'tags', 'drink', 'reliability', 'status']) {
+  for (const key of ['id', 'name', 'category', 'portion_label', 'meals', 'kcal', 'protein_g', 'fat_g', 'carbs_g', 'sodium_mg', 'tags', 'drink', 'reliability', 'status']) {
     assert.ok(key in body.dishes[0]!, `dish 缺少字段 ${key}`);
   }
+  // 产品决策 2026-11-13：不向用户提供价格，契约里已无该字段，接口不得再下发
+  assert.ok(!('price_yuan' in body.dishes[0]!), 'dish 不应再下发 price_yuan');
 });
 
 check('POST /api/v1/profiles → 200 + bmi / bmi_tag / day_kcal', async () => {

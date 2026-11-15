@@ -75,6 +75,22 @@ export type ApiResult<T> =
 
 /* ---------- 菜品与菜单（API.md §2.1） ---------- */
 
+/**
+ * 份量形态（菜单 v3 实测数据引入）。
+ *
+ * - `combo`     ：一楼中晚餐，拿盘选几样、每样按标价牌累加，是组合的**成员**（25 道）
+ * - `single`    ：二楼成品档口 + 一楼面点，一份即一餐，**不得再配主食**（258 道）
+ * - `component` ：轻食 / 麻辣烫配菜，需按「汤底 + 配菜」或按克重组合（76 道）
+ * - `plate`     ：一楼早餐自选线，称重不可单点，只给配盘建议、不进 `combos`（25 道）
+ *
+ * 板上的规格只写了前三种（`plate | single | component`），但实测数据里有 25 道
+ * `combo`，漏掉它会让 `menu-seed.v3.json` 无法通过类型检查。
+ */
+export type ServingMode = 'combo' | 'single' | 'component' | 'plate';
+
+/** 结算方式：`fixed` 按标价牌 / `weigh` 称重（称重份量现场定，热量只作参考） */
+export type PricingMode = 'fixed' | 'weigh';
+
 export interface Dish {
   id: string;
   name: string;
@@ -86,11 +102,23 @@ export interface Dish {
   fat_g: number;
   carbs_g: number;
   sodium_mg: number;
-  price_yuan: number;
   tags: DishTag[];
   drink: boolean;
   reliability: Reliability;
   status: DishStatus;
+
+  /**
+   * 以下五个字段来自菜单 v3（`server/data/menu-seed.v3.json`），**全部可选**：
+   * 55 道原型种子没有它们，v3 的 384 道才有。只有 v3 才用得到的逻辑自己判空。
+   *
+   * `price_yuan` 已按 2026-11-13 的产品决策删除（产品不向用户提供价格），
+   * 不要再加回来。
+   */
+  floor?: number;
+  stall?: string;
+  serving_mode?: ServingMode;
+  pricing_mode?: PricingMode;
+  recommendable?: boolean;
 }
 
 /** 忌口选项由服务端下发，前后端不各存一份（API.md §2.1） */

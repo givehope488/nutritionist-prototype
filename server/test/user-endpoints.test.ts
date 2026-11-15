@@ -12,23 +12,21 @@ import type {
 import { createApp } from '../src/app';
 import { resetDatabase } from '../src/data/db';
 import { seedDishes } from '../src/data/seed';
+import { windowStartDate } from '../src/routes/insights';
 
 /**
- * 相对今天往前推 n 天，返回 YYYY-MM-DD。
+ * 相对今天往前推 n 天，返回 `YYYY-MM-DD`（**本地日期**）。
  *
  * 为什么不用固化日期（曾经写成 '2026-11-06'）：
- * insights 的窗口是「今天 − days」（routes/insights.ts 用 `toISOString().slice(0,10)` 算），
- * 固化日期会随时间推移滑出窗口——2026-11-13 时 sinceDate 恰好是 11-06、测试还绿，
- * 11-14 起 sinceDate 变成 11-07、日志被过滤、`logged_meals` 断言实得 0，
- * 于是**从那天起主干与所有 PR 的 CI `test` 全红**，且与任何业务改动无关。
+ * insights 的窗口是「今天 − days」，固化日期会随时间推移滑出窗口——
+ * 2026-11-13 时 sinceDate 恰好是 11-06、测试还绿，11-14 起 sinceDate 变成 11-07、
+ * 日志被过滤、`logged_meals` 断言实得 0，于是**从那天起主干与所有 PR 的 CI 全红**，
+ * 且与任何业务改动无关。
  *
- * 这里用与 insights 相同的算法生成日期，两边永远对齐。
+ * 现在两边共用同一个纯函数 `windowStartDate`（`routes/insights.ts` 导出），
+ * 口径不可能再分叉；它接收可注入的 `now`，边界用例可以确定性断言。
  */
-const daysAgo = (n: number): string => {
-  const d = new Date();
-  d.setDate(d.getDate() - n);
-  return d.toISOString().slice(0, 10);
-};
+const daysAgo = (n: number): string => windowStartDate(n);
 
 let server: Server | undefined;
 let baseUrl = '';
@@ -351,5 +349,26 @@ describe('GET /api/v1/meal-logs 与 insights', () => {
     expect(body.logged_meals).toBe(2);
     expect(body.adopted).toBe(1);
     expect(body.adoption_rate).toBe(0.5);
+  });
+});
+
+describe('insights 窗口起点（本地日期，不是 UTC）', () => {
+  const localDate = (d: Date): string =>
+    `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+  it('正常时刻：往前 7 天落在本地日历上', () => {
+    const now = new Date(2026, 10, 14, 14, 0, 0); // 2026-11-14 14:00 本地
+    expect(windowStartDate(7, now)).toBe('2026-11-07');
+  });
+
+  it('凌晨 00:30 也按本地日期算（旧实现用 toISOString 会退回前一天）', () => {
+    const now = new Date(2026, 11, 2, 0, 30, 0); // 2026-12-02 00:30 本地
+    const expected = new Date(2026, 11, 1); // 本地 12-01
+    expect(windowStartDate(1, now)).toBe(localDate(expected));
+  });
+
+  it('跨年也正确', () => {
+    const now = new Date(2027, 0, 2, 8, 0, 0); // 2027-01-02
+    expect(windowStartDate(3, now)).toBe('2026-12-30');
   });
 });
