@@ -43,11 +43,13 @@
 | 路 | 做什么 | 负责 | 状态 |
 |---|---|---|---|
 | 展示层 | `DishCard` 删价格行、删 `formatYuan`、加「卡片无 `¥`」防回归断言 | FE-B | ✅ 已合（#36） |
-| mock 层 | `api/__mock__/db.ts` 与 `dev/fixtures.ts` 去 `price_yuan`；顺手修前端测试里的同类时间炸弹 | FE-A | ⏳ 待做 |
-| 契约层 | `shared` 删 `Dish.price_yuan`、SQLite 删列、seed 与投影、test / smoke 字段清单 | BE-B | ⏳ 待做 |
+| mock 层 | `api/__mock__/db.ts` 与 `dev/fixtures.ts` 去 `price_yuan`（已由 #40 顺带完成） | BE-B 代做 | ✅ 已合（#40） |
+| 契约层 | `shared` 删 `Dish.price_yuan`、SQLite 删列、seed 与投影、test / smoke 字段清单 | BE-B | ✅ 已合（#40） |
 
-> **契约层没做完之前，接口响应里仍然带 `price_yuan`**——卡片不渲染它，但数据在响应里。
-> 后端那半才是「删价格」的真正收口，也是菜单 v3 上线的前置条件。
+> **契约层已于 #40 落地：接口响应里不再有 `price_yuan`**（smoke 加了反向断言防回归），
+> 种子与体检脚本也已清零——体检里「种子含 price_yuan」现在是 **error**，带回来就红。
+>
+> 剩 FE-A 一件事：前端测试里的同类时间炸弹（`closureEndpoints.test.ts` 的固化日期）。
 
 **共同底线**：改完之后，「青椒肉丝盖浇饭 + 红烧肉 + 炒青菜」这种双主食组合不应再出现在任何推荐结果里；任何接口响应、任何界面都不应出现价格。
 

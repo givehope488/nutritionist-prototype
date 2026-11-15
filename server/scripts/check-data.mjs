@@ -93,15 +93,11 @@ for (const d of seed.dishes) {
     if (typeof d[k] !== 'number' || !Number.isFinite(d[k]) || d[k] < 0) err(id, `${k} 非法：${d[k]}`);
   }
   // ---- 价格：产品不向用户提供价格（2026-11-13 决策）----
-  // 种子不应带价格字段；主干 55 道暂时还带着（旧契约遗留），
-  // 等 BE-B 删掉 shared/Dish.price_yuan 与 SQLite 列、PD 删掉主干种子的该字段后，
-  // 下面这条从 warn 收紧为 err。
+  // 契约、SQLite 列、接口、前端都已删除该字段，种子里更不该有。
+  // 这条从 warn 收紧为 err（2026-11-15，BE-B 的 #40 落地、PD 清完主干种子后生效）：
+  // 防止将来有人从旧分支或模板把 price_yuan 带回来。
   if ('price_yuan' in d) {
-    if (typeof d.price_yuan !== 'number' || !Number.isFinite(d.price_yuan) || d.price_yuan < 0) {
-      err(id, `price_yuan 非法：${d.price_yuan}`);
-    } else {
-      warn(id, '种子含 price_yuan：产品不向用户提供价格，该字段应删除');
-    }
+    err(id, '种子含 price_yuan：产品不向用户提供价格（2026-11-13 决策），该字段必须删除');
   }
   if (typeof d.kcal === 'number' && d.kcal > 1200) warn(id, `kcal 偏大：${d.kcal}，请确认是否单人份`);
   if (typeof d.kcal === 'number' && d.kcal > 0 && typeof d.protein_g === 'number') {

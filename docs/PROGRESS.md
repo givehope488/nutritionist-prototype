@@ -46,9 +46,9 @@
 
 | 项 | 状态 |
 |---|---|
-| 阶段 | W1（11-09 ~ 11-13）收尾，**菜单 v3 切换进行中**；当前主战场是「删价格」三路并行（FE-B ✅ / FE-A ⏳ / BE-B ⏳）与引擎四路分流 |
-| 主干 | `main` = `2d6f2da`，CI 三绿；web lint / typecheck / test（**60 用例**）与服务端（**55 用例**）全绿；smoke 12/12。**已含实测菜单 v3 数据层**（`server/data/menu-seed.v3.json`，384 道，候选文件未上线）与 web 侧删价格展示（#36） |
-| 契约 | `docs/API.md` **v1.2.3**，文档、类型、实现三者已对齐（附录 D 是忌口唯一事实源；`portion_grams` 一律不下发；组合结构已定义，早餐 = 主食 × 主菜；**三餐占比之和 = 1.0**；**钠罚分已给系数**） |
+| 阶段 | W1（11-09 ~ 11-13）收尾，**菜单 v3 切换进行中**；「删价格」三路已合两路半（展示层 ✅ / 契约层 ✅ / mock 层由 #40 顺带完成），**剩下唯一的主战场是引擎四路分流** |
+| 主干 | `main` = `8b972b0`，CI 三绿；web lint / typecheck / test（**60 用例**）与服务端（**58 用例**）全绿；smoke 12/12。**已含实测菜单 v3 数据层**（384 道，候选文件未上线）、**后端删价格**（#40，契约 / DB / 投影 / smoke 全部到位）与 web 展示侧删价格（#36） |
+| 契约 | `docs/API.md` **v1.2.3**；`Dish` 已删 `price_yuan`、加五个 v3 可选字段（#40，shared 与实现已对齐）。**`docs/API.md` 第 58 行的 Dish 示例仍带 `price_yuan`，待 BE-A（pigQAQ）同步**；`docs/ARCHITECTURE.md` 第 100 行待 BE-B 补 |
 | 后端能跑 | **用户端 7 个端点全通**（`bbf2dd4`）：`/healthz`、`/menu`（读真实种子）、`/profiles`、`/recommendations`、`/meal-logs`（含幂等）、`/insights/summary`、404 包络。SQLite 落库（`node:sqlite`）已进主干，`npm run seed` 幂等。**建档 / 推荐 / 回填三处目标同源**（都走 `calcTargets`），15 组实测（4 类用户 × 三餐 + 匿名 × 三餐）完全一致，日目标精确等于三餐之和 |
 | 后端还没写 | **管理端**，以及**菜单 v3 的引擎适配**——现有引擎硬编码「主食×主菜×素菜」，真实菜单有四种份量形态（`combo` / `single` / `component` / `plate`），不改会出现双主食组合。规格与验收标准见 `reviews/pd/MENU-V3-2026-11-13.md`，分派见 §2.2 BE-A 第 5 项 |
 | 前端 | **已进主干**（`163a661`，70 文件），含 FE-A 的 `client.ts` 解包单测。三页可从 Mock 走到真实接口，切 `VITE_API_BASE` 即可 |
@@ -80,9 +80,10 @@
 | 2 | ~~SQLite 落库 + `npm run seed`~~ **已完成并合并**（#18，`ff1206a`，squash）：6 个端点 + 落库 + 12 条 smoke 全进门禁 | —— | ✅ 11-06 |
 | 3 | ~~`meal-logs` 的本餐目标接真实引擎~~ **已完成并合并**（#26，`bbf2dd4`）：5 处 `PLACEHOLDER_TARGET` 清零，改调 `calcTargets(档案).mealTargets[meal]`，兜底体征与推荐路由逐字一致；`data/recommendations.ts` 整文件删除（181 行死代码，`buildMockRecommendation` 全仓已无引用）；判语 `gap` 补 `round1`，消除 `107.60000000000002` 这类浮点尾巴并加了正则回归断言。实测 15 组（4 类用户 × 三餐 + 匿名 × 三餐）与推荐端目标完全一致 | 窗口已关闭，主干不再有「推荐真算 / 回填 730」的不一致 | ✅ 11-07 |
 | 4 | **W1 下一件**：`insights` 的采纳率与统计细化（`services/meallog` 的判定规则），以及管理端接口的前置调研 | 这两块目前还是最粗的占位实现，W2 要用 | 11-11 |
-| 5 | **P0 删价格**（**后端侧，唯一还没动的一半**；可独立先合，不必等 v3）：①`shared/src/types.ts` 删 `Dish.price_yuan`；②`server/src/data/db.ts` 的 dishes 表删 `price_yuan` 列（**SQLite 删列要重建表，注意保留已有数据**；`ALTER TABLE DROP COLUMN` 在旧版 SQLite 上不可用，需「建新表→搬数据→换名」，且要幂等，先 `PRAGMA table_info(dishes)` 判断再执行，不能每次 `npm run seed` 都报错）；③`server/src/data/seed.ts` 的 INSERT 与 `server/src/data/dishes.ts` 的 `toDish` 投影去掉 price（**别漏投影**——漏了会静默多下发一个键，接口不报错但仍带价格）；④`server/test/app.test.ts` 与 `server/scripts/smoke.ts` 的字段清单去掉 `price_yuan` | 用户 2026-11-13 决策：**产品不向用户提供价格**。价格只出现在契约类型、SQLite 列、种子写入、前端展示四处，**引擎与服务层本来就不依赖价格**（`grep price server/src/engines/ server/src/services/ server/src/routes/` 无命中），所以这是边界清晰的小改动。⑤ 做完请知会 PD：PD 会跟进删掉主干 55 道种子的 `price_yuan` 字段，并把 `check-data.mjs` 里那条 warn 收紧成 error | **11-14（今天，最急）** |
-| 6 | **菜单 v3 的 schema 扩展**（**v3 上线的必要条件**）：`shared/src/types.ts` 加 `ServingMode = 'plate' | 'single' | 'component'` 与 `Dish` 的 `floor` / `stall` / `serving_mode` / `recommendable` 四个**可选**字段；`server/src/data/db.ts` 的 dishes 表加 4 列（`ALTER TABLE` 要幂等，老库升级不能报错）；`seed.ts` 的 INSERT 与 `dishes.ts` 的 `toDish` 投影补上这 4 列 | 实测菜单 **379 道**已就绪（`server/data/menu-seed.v3.json`），但 `serving_mode` 只在 JSON 里、引擎读不到，**不做这步 v3 不能上线** | **11-14**（与 BE-A 的引擎 PR 配套） |
-| 7 | **复核 PD 的一处止血改动**（`server/test/user-endpoints.test.ts`，PR #37 已合入 `be28735`）：把 6 处固化日期 `2026-11-06` / `2026-11-05` 改成 `daysAgo(n)` 相对当天生成，算法与 `routes/insights.ts` 的 `sinceDate` 一致（`setDate` + `toISOString().slice(0,10)`）。背景：固化日期会随时间推移滑出 insights 的「今天 − days」窗口，**11-14 起主干与所有 PR 的 CI `test` 全红**（与业务改动无关），FE-B 的 PR #36 就是被它卡住。**`server/test/` 归你，这处由 PD 越界代改，请复核或接管** | 需要你回答一个问题：**是否更倾向用固定时钟 `vi.setSystemTime`？** 两种都能解决这个时间炸弹——相对日期不需要额外依赖与全局钩子，代价是「用例仍依赖系统时钟」这个属性仍在；固定时钟更确定但每个用例要自己设时间。选定后按你的写法统一 | **11-15** |
+| 5 | ~~**P0 删价格**（后端侧）~~ **已完成** | ✅ 11-14，PR #40 合入（`8b972b0`）：`shared` 删 `Dish.price_yuan`、dishes 表删列、seed INSERT 与 `toDish` 投影去掉、test / smoke 字段清单同步，smoke 加了反向断言 `!('price_yuan' in dish)` 防回归。**SQLite 删列实测直接用 `ALTER TABLE ... DROP COLUMN` 即可**（Node 24 内置 SQLite 3.50.4，3.35+ 即支持），不必重建表搬数据——PD 派单里写「要重建表」是保守误判，已按实测更正 |
+| 6 | ~~**菜单 v3 的 schema 扩展**~~ **已完成** | ✅ 11-14，PR #40 合入（`8b972b0`）：`shared` 加 `ServingMode = 'combo' | 'single' | 'component' | 'plate'`（含实测的 25 道 `combo`，派单时的三态 union 会类型检查失败）与 `PricingMode = 'fixed' | 'weigh'`，`Dish` 加 `floor` / `stall` / `serving_mode` / `pricing_mode` / `recommendable` 五个**可选**字段；dishes 表用 `PRAGMA table_info` 逐列判断后幂等 `ADD COLUMN`；**老种子（55 道）为 NULL 时不写该键**，避免接口多下发 null。另加 `SEED_PATH` 环境变量：`SEED_PATH=server/data/menu-seed.v3.json npm run seed` 可试灌 v3，**默认值仍读 55 道**，未擅自切换上线时机。PD 已实测灌库：384 道、combo 25 / single 258 / component 76 / plate 25、fixed 284 / weigh 100，新列齐全、`price_yuan` 不存在 |
+| 7 | ~~**复核 PD 的一处止血改动**~~ **已完成，且比 PD 的方案更好** | ✅ 11-14，PR #40 合入（`8b972b0`）。BE-B 的处理：把 PD 的 `daysAgo` 升级成**生产代码导出的纯函数 `windowStartDate(days, now = new Date())`**（`routes/insights.ts`），路由与测试共用同一个函数，**口径不可能再分叉**。选型也回答了 PD 的问题——**不用 `vi.setSystemTime`**：假定时器会一并冻结 `setTimeout` / `setInterval`，而 HTTP 服务器与 supertest/fetch 都依赖真实定时器；改成「纯函数 + 注入 `now`」后边界用例传固定时刻即可确定性断言。补了 3 条边界用例（凌晨 00:30 / 正常 14:00 / 跨年）。**并在复核中发现一个生产环境的真 bug**：`toISOString().slice(0,10)` 取的是 **UTC 日期**，在 UTC+8 的凌晨 00:00~07:59 统计窗口会多算一整天（不是测试问题，是每天凌晨 8 小时里的真实统计偏差），已改本地日期格式化 |
+| 8 | **补 `docs/ARCHITECTURE.md` 第 100 行**：字段表里还留着 `price_yuan`，与 #40 之后的实现不一致（文档与实现分叉会误导后来人）。顺手把五个新字段也补进去：`floor` / `stall` / `serving_mode` / `pricing_mode` / `recommendable` | 契约源是 `docs/API.md`（已由 BE-A 同步），但 ARCHITECTURE 的字段表也会被人当依据看。**这一行归你**，PD 不越界改 | 11-16 |
 
 > 说明：这不是替你改主意，是「11-08 硬截止 + 你不在线 + 只差两行配置」三者叠加，我按 §2 里写的建议值先落地了。你要改成并进 workspace 也可以，那要重生成根 lock 并删 `web/package-lock.json`，在 §5 记一行即可。
 >
@@ -110,7 +111,7 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 | 2 | 推荐引擎 | `server/src/engines/recommend.ts` + 测试 | ⚠️ **已进主干，但套数未达验收**（原判据「每次返回 3 套」）→ 见第 4 项 |
 | 3 | `POST /api/v1/recommendations` | `server/src/routes/recommendations.ts` | ✅ **已进主干**：正常返回 `target` + `combos`；忌口无解返回 **200 + `combos: []` + `notice`**（不是 404/500） |
 | 4 | **修推荐的「套数坍缩」+ 热量贴合度退步** | `server/src/engines/recommend.ts` 的抽取段（现为 `scored.slice(0, 8)` → `shuffle` → 贪婪去重）+ `server/test/engines/recommend.test.ts` | ①**早餐、午餐各抽 30 次，每次必须 3 套**（同一次响应内主食互不相同、主菜不重复）；②**三套里至少有一套热量偏离目标 ≤10%**（与回填端「差 10% 算准」同口径——用户至少要能看到一套「照着吃会判达标」的）。把测试里现在那句 `expect(combos.length).toBeGreaterThanOrEqual(1)` 改成断言 3 套，另加一条贴合度断言——这两句都太松，CI 才没抓到 |
-| 5 | **菜单 v3 的引擎适配**（**v3 上线的必要条件**，与 BE-B 第 6 项配套）：引擎要认得出**四种份量形态**——`combo`（25 道，一楼中晚餐，拿盘选几样每样累加，**走的正是现有 `staple × protein × veg` 逻辑，这一路几乎不用写代码**，只是候选池从 55 道换成 384 道）、`single`（258 道，二楼成品档口 251 + 一楼面点 7，一份即一餐，**不得再配主食**）、`component`（76 道，轻食 32 + 麻辣烫 44，麻辣烫是「汤底必选 + 配菜任选」的三段式）、`plate`（25 道，一楼早餐自选线，称重不可单点，只给配盘建议不进 `combos`）。另需处理**结算方式**：`pricing_mode === 'weigh'` 的 100 道份量现场定，热量只给参考值、评分惩罚要放宽、文案不给点值。评分沿用现有 `penalty` 逻辑，不另起一套 | 现有引擎硬编码「主食×主菜×素菜」，直接换种子实测 3 条测试已红，会产出「青椒肉丝盖浇饭 + 红烧肉 + 炒青菜」这种双主食组合。**规格、验收标准（D1~D6 / E1~E8 / I1~I5）与分步建议见 `reviews/pd/MENU-V3-2026-11-13.md`** | 11-15 |
+| 5 | **菜单 v3 的引擎适配**（**v3 上线的必要条件**，与 BE-B 第 6 项配套）：引擎要认得出**四种份量形态**——`combo`（25 道，一楼中晚餐，拿盘选几样每样累加，**走的正是现有 `staple × protein × veg` 逻辑，这一路几乎不用写代码**，只是候选池从 55 道换成 384 道）、`single`（258 道，二楼成品档口 251 + 一楼面点 7，一份即一餐，**不得再配主食**）、`component`（76 道，轻食 32 + 麻辣烫 44，麻辣烫是「汤底必选 + 配菜任选」的三段式）、`plate`（25 道，一楼早餐自选线，称重不可单点，只给配盘建议不进 `combos`）。另需处理**结算方式**：`pricing_mode === 'weigh'` 的 100 道份量现场定，热量只给参考值、评分惩罚要放宽、文案不给点值。评分沿用现有 `penalty` 逻辑，不另起一套 | 现有引擎硬编码「主食×主菜×素菜」，直接换种子实测 3 条测试已红，会产出「青椒肉丝盖浇饭 + 红烧肉 + 炒青菜」这种双主食组合。**规格、验收标准（D1~D6 / E1~E8 / I1~I5）与分步建议见 `reviews/pd/MENU-V3-2026-11-13.md`** **另附一项契约同步（你是 pigQAQ，API.md 归你）**：`docs/API.md` 第 58 行 §2.1 的 Dish 示例里还有 `price_yuan`，#40 已把契约类型与实现都删了，文档要跟上；建议顺手补上五个新字段的说明。| 11-15 |
 
 **第 4 项（套数坍缩 + 贴合度退步）的根因与修法**，实测数据已经定位好了，不用重查：
 
@@ -144,7 +145,7 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 | 1 | ~~`web/src/api/client.ts`~~ **已完成** | ✅ 11-06，随 PR #17 并进 #6 分支后进主干。4 类单测 + 修掉「2xx 非 JSON 当成功」 |
 | 2 | 建档页 + 目标页 | 必填校验、范围提示与 §2.2 一致；数值一律来自接口（`day_kcal` 不许前端算） |
 | 3 | 推荐页 | 渲染 3 套卡片；「换一批」= 重新请求；无解时展示 `notice` |
-| 4 | **P0 删价格**（前端 mock 与 fixture 侧）：`web/src/api/__mock__/db.ts` 的 Dish 映射去掉 `price_yuan`；`web/src/dev/fixtures.ts` 里的 fixture 同步去掉该字段。**顺带处理一个同类时间炸弹**：`web/src/tests/unit/closureEndpoints.test.ts` 第 90、183 行把 meal-log 日期写死成 `2026-11-04`，同文件第 217 行用 `days: 7` 查 insights——现在没红是因为 mock 的 `getInsightsSummary` **不做「今天 − days」窗口过滤**，一旦 mock 补上窗口（议题 Q8~Q11 的目标）或直接切真接口就会以与服务端同样的方式炸掉，建议一并改成相对当天生成 | 用户 2026-11-13 决策：**产品不向用户提供价格**。服务端契约（`shared/src/types.ts`）与 DB 列由 BE-B 同时删（§2.1 第 5 项），前端这边要跟着对齐，否则 mock 与真接口形状不一致。**另有一个需要你们定的语义问题：mock 要不要补上「今天 − days」窗口过滤？** 不补的话 mock 与真接口在 insights 语义上不一致，联调时可能出现「mock 通过、真接口失败」。详见 `reviews/pd/MENU-V3-2026-11-13.md` §3 | **11-14（今天）** |
+| 4 | **P0 删价格**（前端侧剩余两件）：①`web/src/tests/unit/closureEndpoints.test.ts` 第 90、183 行的固化日期 `2026-11-04` 改成相对当天生成（同文件第 217 行用 `days: 7`；现在没红是因为 mock 的 `getInsightsSummary` **不做「今天 − days」窗口过滤**，一旦 mock 补上窗口或切真接口就会以与服务端同样的方式炸）；②**mock 要不要补上窗口过滤？** 这个语义要你们定——不补的话 mock 与真接口在 insights 语义上不一致，联调时可能出现「mock 通过、真接口失败」 | ✅ `web/src/dev/fixtures.ts` 与 `web/src/api/__mock__/db.ts` 的 `price_yuan` **已由 BE-B 在 #40 里顺带删掉**（不删 web typecheck 必红，属必要连带，已在 #40 描述里说明），所以第 4 项的「删 mock 与 fixture」部分**已完成，不用重复做**；剩上面两件 | 11-16 |
 
 **依赖：** 后端接口就绪前，先用 FE-B 的 Mock 开发，但**字段名必须照 `shared/src/types.ts`**，不许自己造。
 
@@ -225,6 +226,7 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 
 ## 5. 变更记录
 
+- 2026-11-15 PD | 变更 | **PD 侧收口：种子不再有任何价格字段，体检从 warn 收紧为 err**：BE-B 的 #40 合入后，按约定做两件收口——①从 `server/data/menu-seed.json`（55 道）与 `menu-seed.baseline-55.json`（基线存档）删掉 `price_yuan`；②`server/scripts/check-data.mjs` 里「种子含 price_yuan」从 warn **收紧为 err**，防止将来有人从旧分支或模板把价格字段带回来。同时实测验证 `SEED_PATH=server/data/menu-seed.v3.json npm run seed`：384 道灌库成功，形态分布 combo 25 / single 258 / component 76 / plate 25、结算 fixed 284 / weigh 100，与识别底稿逐项一致，`price_yuan` 列已不存在 | 全体：**产品链路的价格到此彻底清零**——契约、SQLite、接口响应、前端展示、种子五处都不再有价格。`docs/API.md` 第 58 行（BE-A 本人）与 `docs/ARCHITECTURE.md` 第 100 行（BE-B）两处文档残留已在 §2 派单。**菜单 v3 现在只剩「引擎四路分流」一个卡点**（§2.2 BE-A 第 5 项）
 - 2026-11-14 PD | 变更 | **修掉一个卡住全队的时间炸弹**：`server/test/user-endpoints.test.ts` 把两条 meal-log 的日期写死成 `2026-11-06`，而 insights 的统计窗口是「今天 − days」（`routes/insights.ts` 用 `toISOString().slice(0,10)` 算 `sinceDate`）。11-13 时 `sinceDate` 恰好是 11-06、测试还绿；**11-14 起 `sinceDate` 变成 11-07，两条日志被过滤，`logged_meals` 断言 2 实得 0**——于是从当天起**主干与所有 PR 的 CI `test` 全红**，且与任何业务改动无关。FE-B 的 PR #36 正是被它卡在 gateway 上（他已定位并如实登记，且没有越界改 `server/`）。修法：固化日期换成 `daysAgo(n)` 相对当天生成，**算法与 insights 一致**（同样是 `setDate` + `toISOString().slice(0,10)`），两边永远对齐；6 处固化日期一并改掉。已由 PR #37 修复合入（`be28735`），#36 随后正常合入（`f05f0eb`） | 全体：CI 恢复绿色，主干可正常接收 PR。**这是 PD 的止血动作**，`server/test/` 归 BE-B，请复核这处改法是否符合你对测试数据构造的约定（尤其：是否更倾向用固定时钟 `vi.setSystemTime` 而不是相对日期——两者都能解决，我选相对日期是因为它不需要额外依赖与全局钩子，代价是「用例依赖系统时钟」这一属性仍在）
 > 所有人可追加，只加不改别人的行。格式见 §0.3。新的在上。
 
@@ -285,6 +287,7 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 
 ## 6. 问题登记
 
+- 2026-11-15 PD | 风险 | **insights 的统计窗口此前用的是 UTC 日期，是生产环境的真偏差**：`routes/insights.ts` 算 `sinceDate` 用 `toISOString().slice(0,10)`，那是 UTC 日期；在 UTC+8 的凌晨 00:00~07:59，UTC 还停在前一天，**统计窗口会多算一整天**。而日志的 `date` 存的是本地日期字符串，两边口径本来就不该一致。这个偏差不是测试问题，是每天凌晨 8 小时里的真实统计错误，BE-B 在复核 PD 的时间炸弹时发现并已修（#40，改为本地日期格式化 + 抽出可注入时钟的纯函数 `windowStartDate`） | 已解决 ✅ 11-14（#40）。**留档是因为同类写法可能还在别处**：全仓凡是「今天 ± N 天」类的日期计算，都要确认走的是本地日期而非 UTC
 - 2026-11-14 PD | 风险 | **前端测试里还埋着同一类时间炸弹**：`web/src/tests/unit/closureEndpoints.test.ts` 第 90、183 行把 meal-log 日期写死成 `2026-11-04`，而同一文件第 217 行用 `days: 7` 查 insights。现在没红是因为 `web/src/api/__mock__` 的 `getInsightsSummary` **不做「今天 − days」窗口过滤**；一旦 mock 补上窗口（议题 Q8~Q11 的目标）或直接切真接口，这条立刻会以与服务端同样的方式炸掉 | 需要 FE-A / FE-B（`web/src/tests/` 归你们共同）：把固化日期改成相对当天生成。建议同时决定一件事——**mock 要不要补上窗口过滤**？不补的话 mock 与真接口在 insights 语义上不一致，联调时可能出现「mock 通过、真接口失败」
 > 所有人可追加，只加不改别人的行。解决后在行尾补 `✅ 已解决 YYYY-MM-DD`。
 
