@@ -812,3 +812,7 @@ root: npm run check → lint / typecheck / test / smoke / check:data / check:pro
 
 `getInsightsSummary` 的 Mock 实现确实按 `[今天 − days + 1, 今天]` 过滤（`isoDate(days-1)` → `isoDate()`），与真实服务端一致；此前「Mock 不过滤」的担心不成立。本轮只改测试日期，不改 Mock。
 
+### 18.6 PR
+
+`#42`（`feat/fe-a-w1-pages` → `main`）已创建，reviewer：`wyf-111`（FE-B）、`givehope488`（PD，文档目录）。功能提交 `f4d5997` 上 CI 三 job（lint / typecheck / test）全 success。
+
