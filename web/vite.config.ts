@@ -18,6 +18,11 @@ export default defineConfig({
   server: {
     port: 5173,
     fs: { allow: ['..'] },
+    // 本地联调：VITE_API_BASE 置空时请求走同源 /api/v1，由 dev server 代理到真实后端，
+    // 不依赖服务端 CORS（B5 联调用法见 web/.env.example）。
+    proxy: {
+      '/api': { target: 'http://localhost:8787', changeOrigin: true },
+    },
   },
   test: {
     environment: 'jsdom',
