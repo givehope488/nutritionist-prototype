@@ -16,6 +16,7 @@
  */
 import { readFileSync, writeFileSync } from 'node:fs';
 import { EXACT, TOPPING, BASE, FALLBACK } from './nutrition-templates.mjs';
+import { buildIngredients, sumKcal } from './ingredient-engine.mjs';
 
 const OBS = 'server/data/observed-menu.json';
 const SEED = 'server/data/menu-seed.v3.json';
@@ -178,6 +179,8 @@ const out = [];
 const seq = {};
 const stats = { exact: 0, combo: 0, partial: 0, fallback: 0 };
 const fallbackNames = [];
+const ingStats = { recipe: 0, combo: 0, fallback: 0 };
+const ingReview = [];
 
 for (const o of obs) {
   const st = STALL[o.area];
@@ -191,6 +194,19 @@ for (const o of obs) {
   stats[how]++;
   if (how === 'fallback') fallbackNames.push(`${o.area} · ${o.name}`);
 
+  const kcal = harmonize(t[0], t[1], t[2], t[3]);
+
+  // 配料反推：菜名 → 配方 → 按标注热量校准
+  const ing = buildIngredients(o.name, kcal, category, Object.keys(TOPPING));
+  ingStats[ing.how]++;
+  const ingKcal = sumKcal(ing.ingredients);
+  const ingGap = kcal > 0 ? (ingKcal - kcal) / kcal : 0;
+  if (ing.how === 'fallback' || Math.abs(ingGap) > 0.08) {
+    ingReview.push(
+      `${o.area} · ${o.name}｜${ing.how}｜配比校准系数 ${ing.ratio.toFixed(2)}｜配料加总 ${Math.round(ingKcal)} vs 标注 ${kcal}（偏差 ${(ingGap * 100).toFixed(1)}%）`
+    );
+  }
+
   out.push({
     id: `${st.code}-${String(seq[st.code]).padStart(2, '0')}`,
     name: o.name,
@@ -198,19 +214,19 @@ for (const o of obs) {
     portion_label: cleanLabel(t[5]),
     portion_grams: null,
     meals: st.meals,
-    kcal: harmonize(t[0], t[1], t[2], t[3]),
+    kcal,
     protein_g: t[1], fat_g: t[2], carbs_g: t[3], sodium_mg: t[4],
     tags: inferTags(o.name, category),
     drink: /奶|豆浆|可乐|雪碧|美年达|果汁/.test(o.name),
     reliability: 'B',
     status: 'active',
-    ingredients: [],
+    ingredients: ing.ingredients,
     source:
       o.source === 'sign'
-        ? '照片牌面抄录菜名；营养值按标准配方估算，待配料反推'
+        ? '照片牌面抄录菜名；营养值按标准配方估算；配料已按标准配比反推'
         : o.source === 'user'
-          ? '用户口述菜名；营养值按标准配方估算，待配料反推'
-          : '照片推测菜名（置信度低）；营养值按品类模板估算，待配料反推',
+          ? '用户口述菜名；营养值按标准配方估算；配料已按标准配比反推'
+          : '照片推测菜名（置信度低）；营养值按品类模板估算；配料已按标准配比反推',
     floor: o.floor,
     stall: o.area,
     serving_mode: o.serving_mode ?? st.serving,
@@ -247,3 +263,6 @@ console.log('餐段覆盖：', JSON.stringify(byM));
 console.log('含价格字段的条目：', out.filter((d) => 'price_yuan' in d).length);
 console.log('仍靠兜底的（人工复核优先）：', fallbackNames.length, '道');
 if (fallbackNames.length) console.log('  ' + fallbackNames.join('\n  '));
+console.log('配料来源：', JSON.stringify(ingStats));
+console.log('需人工复核的配料（兜底或偏差 >8%）：', ingReview.length, '道');
+if (ingReview.length) console.log('  ' + ingReview.join('\n  '));
