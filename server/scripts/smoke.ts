@@ -222,6 +222,11 @@ check('GET /api/v1/insights/summary → 200 + 采纳率', async () => {
   assert.equal(typeof body.adoption_rate, 'number');
 });
 
+check('管理端接口无令牌 → 401（安全默认）', async () => {
+  const res = await req('GET', '/api/v1/admin/dishes');
+  assert.equal(res.status, 401, '管理端接口在无 X-Admin-Token 时必须是 401');
+  assert.equal(errorOf(res.json).code, 'UNAUTHORIZED');
+});
 check('未知端点 → 404 + error 包络', async () => {
   const res = await req('GET', '/api/v1/does-not-exist');
   assert.equal(res.status, 404);
