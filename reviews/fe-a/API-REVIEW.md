@@ -7,6 +7,7 @@
 > **v1.3 复核（2026-11-06 晚追加）**：`origin/main` 已前移至 `496c1ef`（本单 PR #1 合入 + #2 脚手架/shared/CI + #3 COLLAB 防线 7 + #4 种子 v2）。**C1/C3/C5 已结案**；B2/Y5/Y6 的证据被上游更新；另发现 F1~F4 四处「代码先行、契约未跟」。逐条处置见文末「复核增补」；正文保留评审时点原文不改写。
 > **v1.4 复核（2026-11-06 深夜追加）**：`origin/main` 已前移至 `b29deff`（#5 本复核 PR 合入 + #7 CODEOWNERS web 覆盖 + #9 API v1.2 + #10 PROGRESS.md 机制 + #12 CI web 独立安装 + #13 API v1.2.1 + #14 进程同步）。**API.md 升到 v1.2.1，本单 B1/B2/B3 与 Y5 全部拿到结论，FE-A 签字条件达成**（详见文末「二次复核增补」）。
 > **v1.5 事实同步（2026-11-06 深夜，`origin/main` @ `70f9f52`）**：API.md 升到 **v1.2.2**（§2.3 补组合槽位表、早餐放宽；PROGRESS §4.1-E 记录）；PR #6（`web/`）已合并 `163a661`（含本人 #17 的 client 单测）。本节只做四处事实同步，不新增评审结论；签字版本随之为 v1.2.2（条件未增加）。
+> **v1.6 事实同步（2026-11-15，`origin/main` @ `344b253`）**：API.md 现为 **v1.2.3**（三餐占比与钠罚系数修正）；价格字段已按 11-13 产品决策全链路删除（G2 作废）；PR #18 已合并、e2e 归 PD；同时发现 API.md 仍有 2 处价格残留（见 §7，归 BE-A）。本轮交付 W1 建档 / 目标 / 推荐三页。
 > 评审视角：**只评「前端能不能不靠猜就把页面写出来」**，不评算法口径（归 BE-A）、不评数据准确性（归 PD）。
 > 流程约束：按 COLLAB.md 防线 5 / API.md 附录 C.5，本单所有「改字段」的建议**都只是提请评审议题**，FE-A 与其 Agent 均不自行改动契约，也不在前端做兜底实现。
 
@@ -304,3 +305,15 @@ git ls-tree -r --name-only origin/main:web | wc -l                 # 69
 git grep -n "not.toMatch" origin/main -- web/src/tests             # components.test.ts:50,57
 git show origin/main:server/data/menu-seed.json | node -e "…按 meals/tags 统计…"   # pork=13、缺 meat=0、g/ml=0
 ```
+
+### 7. v1.2.3 / 主干 #41 事实同步（2026-11-15，`origin/main` @ `344b253`）
+
+W1 三页（建档 / 目标与忌口 / 推荐）交付前的远端复核。以下为事实同步，另附一处新发现的契约文档缺口；**不新增评审结论，也未改动契约**。
+
+1. **API.md 升 v1.2.3**（2026-11-06）：附录 A 三餐占比改 `0.30 / 0.40 / 0.30`（和 = 1.0）；附录 B 钠罚明确 `(Na−1600)×0.05`，超 1900 再加 `(Na−1900)×0.10`；「补小荤」不得新增菜品、不得改变 §2.3 件数。对前端渲染无影响（组合仍是 3 件、汤可选）。本地 root `npm run check` 的 server 58 用例 + smoke 12/12 全过。
+2. **价格字段全链路删除**（2026-11-13 产品决策）：`shared/Dish` 无 `price_yuan`；SQLite 用 `ALTER TABLE DROP COLUMN`；种子、`check-data`、smoke 反向断言、`DishCard`、`display.ts` 均已清。FE-A 推荐页不展示价格，`feaFlow.test.ts` 断言页面无 `￥`。**G2 自此作废（不是延期）。**
+3. **契约文档仍有两处价格残留（归 BE-A，按附录 C 处理）**：§2.1 示例 `"price_yuan": 1.0` 已由 PD 在 PROGRESS §2.2 BE-A #5 派单（11-15 截止）；复核时另发现 **§0.4 单位行「价格元（number，保留 1 位小数）」也未删**，与 11-13 决策、`shared/types.ts` 已删字段、smoke 反向断言互相矛盾。FE-A 未改契约；请 BE-A 同步时把这两处一起处理，否则下一个照文档写页面的同学会再引入该字段。
+4. **PR #18 已合并**（`ff1206a`）：`server/scripts/smoke.ts` 与 `seed` 进主干；e2e 已在 **PROGRESS §2.2 PD #4** 立项（截止 11-20），C4 / F3 的「e2e 无人认领」至此关闭。
+5. **菜单 v3 数据就绪但未上线**：`server/data/menu-seed.v3.json` 已存在，需 `SEED_PATH=...` 才试跑；默认仍是 55 道原型种子（`check:data` 输出 55 道全过）。推荐页按「1~3 套都能渲染」实现，不假设恒 3 套。
+6. **Mock 统计窗口口径**：`getInsightsSummary` 的 Mock 实现按 `[今天 − days + 1, 今天]` 过滤（`isoDate(days-1)` → `isoDate()`），与真实服务端一致；2026-11-14 PROGRESS 备注所担心的「Mock 不过滤」实测不成立。本轮只把 `closureEndpoints.test.ts` 的固化日期改为「今天」，并新增窗口断言（昨天计入、30 天前不计入），README 所指时间炸弹关闭。
+7. **W1 交付**：`ProfileView` / `GoalView` / `RecommendView` + 路由（`/` → `/profile`）与底部导航；web lint / build 全绿，单测 **10 文件 / 67 用例**；浏览器实测「建档 → 目标 → 推荐（3 套）→ 采纳 → 回填预填 3 项」链路通过。

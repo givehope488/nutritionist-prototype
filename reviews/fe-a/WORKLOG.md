@@ -763,3 +763,56 @@ s11/s12/s13 tags=["pork","gluten","meat"]
 breakfast_total=14  bf_staple=7 bf_protein=5 bf_veg=0 bf_fruit=2 bf_soup=0
 git ls-tree -r origin/main:web | wc -l → 69
 ```
+
+## 18. 2026-11-15：远端复核 + W1 三页交付（分支 `feat/fe-a-w1-pages`）
+
+### 18.1 开工前远端事实
+
+```
+origin/main        → 344b253（#41 种子与体检清零价格）
+未合并 PR          → 无
+API.md             → v1.2.3（2026-11-06）
+web 文件数          → 69（`git ls-tree -r origin/main:web | wc -l`）
+```
+
+W1 待办仍是 PROGRESS §2.2 的 ②建档+目标 ③推荐；README 第 52 行只剩「`closureEndpoints.test.ts` 固化日期」这一件 FE-A 事项。
+
+### 18.2 交付内容
+
+- `web/src/views/profile/ProfileView.vue`：体征 / 活动量 / 默认餐次；区间提示取 `PROFILE_BOUNDS`；预填走 `GET /profiles/me`（404 = 空白表单）；保存后进目标页；服务端 `fields` 映射回字段。
+- `web/src/views/goal/GoalView.vue`：目标单选 + 忌口多选（选项全部来自 `GET /menu`）；未成年减脂本地禁用并显示原因；保存后展示服务端 `bmi / bmi_tag / day_kcal / warnings`；服务端改写 goal 时以前端收到的值为准。
+- `web/src/views/recommend/RecommendView.vue`：默认餐次取档案 `default_meal`，支持 query 覆盖；1~3 套 `ComboCard`；「换一批」= 重新 `POST /recommendations`（无 refill 字段）；无解用服务端 `notice`；采纳跳 `/log?meal=&combo=` 并写 24h 缓存；页面无价格、无营养算术。
+- 路由：`/` → `/profile`，新增 `profile / goal / recommend` 实名路由，404 落 `/profile`；底部导航加「建档 / 推荐」。
+- `web/src/tests/unit/feaFlow.test.ts`：6 个用例（区间拦截、忌口落库、未成年禁用、换一批二次请求、notice 空态、未建档入口）。
+- `closureEndpoints.test.ts`：固化日期 `2026-11-04` → 今天；新增窗口断言（昨天计入 / 30 天前不计入）。
+
+### 18.3 实测（本机 Node v26.13.0）
+
+```
+web : lint → exit 0
+web : build（含 typecheck）→ exit 0
+web : test → 10 files / 67 tests passed
+root: npm run check → lint / typecheck / test / smoke / check:data / check:progress 全过
+      server 5 files / 58 tests；smoke 12/12；check:data 55 道全过
+```
+
+浏览器实测（`vite --port 5179`，Mock 模式）：
+
+```
+/profile 填 172cm / 65kg / 20 岁 → /goal 显示「BMI 21.97（正常）· 日目标 2282 kcal」
+→ 保存并推荐 → 午餐 3 套（目标 913 kcal / 蛋白 31 g / 钠 1600 mg）
+→ 采纳搭配一 → /log?meal=lunch&combo=23ee6879，「已按推荐搭配预填 3 项」
+```
+
+### 18.4 契约侧发现（未改契约）
+
+`docs/API.md` 仍有两处价格残留：§0.4 单位行与 §2.1 示例 `"price_yuan": 1.0`（后者 PD 已在 PROGRESS §2.2 BE-A #5 派单，前者本轮复核时补记）。与 11-13 产品决策、`shared` 已删字段、smoke 反向断言矛盾。按防线 1 未改，记入 `API-REVIEW.md` §7 请 BE-A 走附录 C。
+
+### 18.5 口径记录
+
+`getInsightsSummary` 的 Mock 实现确实按 `[今天 − days + 1, 今天]` 过滤（`isoDate(days-1)` → `isoDate()`），与真实服务端一致；此前「Mock 不过滤」的担心不成立。本轮只改测试日期，不改 Mock。
+
+### 18.6 PR
+
+`#42`（`feat/fe-a-w1-pages` → `main`）已创建，reviewer：`wyf-111`（FE-B）、`givehope488`（PD，文档目录）。功能提交 `f4d5997` 上 CI 三 job（lint / typecheck / test）全 success。
+
