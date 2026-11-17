@@ -4,16 +4,17 @@
 // 用接口直接铺好档案与组合，避免每条都重走一遍表单。
 import { flushPromises, mount } from '@vue/test-utils';
 import { createMemoryHistory, createRouter } from 'vue-router';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { ProfileInput } from '@canteen/shared';
 import { createRecommendation, saveProfile } from '@/api/endpoints';
+import * as api from '@/api/endpoints';
 import FeedbackView from '@/views/feedback/FeedbackView.vue';
 import HistoryView from '@/views/history/HistoryView.vue';
 import LogView from '@/views/log/LogView.vue';
 import ProfileView from '@/views/profile/ProfileView.vue';
 import RecommendView from '@/views/recommend/RecommendView.vue';
 import { routes } from '@/router';
-import { saveRecommendationResponse } from '@/composables/useRecommendationCache';
+import { saveRecommendationResponse, findCachedCombo } from '@/composables/useRecommendationCache';
 import { sessionId } from '@/composables/useSession';
 
 const profile: ProfileInput = {
@@ -104,8 +105,22 @@ describe('回填 → 反馈 → 历史', () => {
     expect(submit).toBeDefined();
     expect(submit?.attributes('disabled')).toBeUndefined();
 
+    // 采纳率口径（PD 2026-11-17）：随 adopted_combo_id 一并提交推荐快照
+    const comboId = router.currentRoute.value.query.combo as string;
+    const spy = vi.spyOn(api, 'createMealLog');
     await submit?.trigger('click');
     await settle();
+
+    const payload = spy.mock.calls.at(-1)?.[0];
+    expect(payload?.adopted_combo_id).toBe(comboId);
+    expect(payload?.adopted_combo).toEqual({
+      id: comboId,
+      items: findCachedCombo(comboId, sessionId, 'lunch')?.dishes.map((dish) => ({
+        dish_id: dish.id,
+        servings: dish.servings,
+      })),
+    });
+    spy.mockRestore();
 
     // 契约里反馈页的数据来自 MealLogResponse 响应，跳转时带上记录 id
     expect(router.currentRoute.value.name).toBe('feedback');
@@ -146,8 +161,13 @@ describe('回填 → 反馈 → 历史', () => {
     await settle();
     expect(wrapper.text()).toContain('1 项已选');
 
+    const spy = vi.spyOn(api, 'createMealLog');
     await submit?.trigger('click');
     await settle();
+    const payload = spy.mock.calls.at(-1)?.[0];
+    expect(payload?.adopted_combo_id).toBeNull();
+    expect(payload && 'adopted_combo' in payload).toBe(false);
+    spy.mockRestore();
     expect(router.currentRoute.value.name).toBe('feedback');
     const feedback = mount(FeedbackView, { global: { plugins: [router] } });
     await settle();

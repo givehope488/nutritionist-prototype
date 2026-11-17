@@ -16,7 +16,7 @@ import AppSegmented from '@/components/base/AppSegmented.vue';
 import AppTabs from '@/components/base/AppTabs.vue';
 import DishCard from '@/components/business/DishCard.vue';
 import { cacheMealLog } from '@/composables/useMealLogLookup';
-import { findCachedCombo } from '@/composables/useRecommendationCache';
+import { findCachedCombo, buildAdoptedSnapshot } from '@/composables/useRecommendationCache';
 import { useLogDraft } from '@/composables/useLogDraft';
 import { sessionId } from '@/composables/useSession';
 import { formatDateLabel, toDateStr } from '@/utils/display';
@@ -129,13 +129,19 @@ async function submit(): Promise<void> {
   if (submitting.value || draft.selectedCount.value === 0) return;
   submitting.value = true;
   submitError.value = null;
+  // 采纳快照取自预填用的推荐缓存（零额外请求）；缓存过期或丢失时按自选提交，
+  // 避免带上 id 却没有快照被服务端 400（API.md v1.2.5）。
+  const combo = draft.adoptedComboId.value
+    ? findCachedCombo(draft.adoptedComboId.value, sessionId, meal.value)
+    : null;
   const result = await createMealLog({
     id: draft.logId.value,
     session_id: sessionId,
     date: date.value,
     meal: meal.value,
     items: draft.buildItems(),
-    adopted_combo_id: draft.adoptedComboId.value,
+    adopted_combo_id: combo ? combo.id : null,
+    ...(combo ? { adopted_combo: buildAdoptedSnapshot(combo) } : {}),
   });
   submitting.value = false;
   if (!result.ok) {

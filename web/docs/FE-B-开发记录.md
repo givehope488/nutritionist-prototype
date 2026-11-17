@@ -435,3 +435,22 @@ AssertionError: expected +0 to be 2   (test/user-endpoints.test.ts:334)
 未覆盖：称重菜文案（等 shared 的 `ComboDish.pricing_mode` / `Combo.has_weighed_dish`，归 BE-B 11-18）与推荐质量人工抽检（W3 归 PD）。
 
 复跑：lint / typecheck / 69 用例 / build 全绿；后端与前端开发进程已在冒烟后停掉。
+
+---
+
+## 19. 回填提交带采纳快照（PD 采纳率口径，2026-11-17）
+
+背景：PD 于 2026-11-17 拍板采纳率口径——按「实际吃了哪套」逐菜比对。`POST /meal-logs` 在有 `adopted_combo_id` 时必须同时提交 `adopted_combo: { id, items: [{ dish_id, servings }] }` 快照，缺快照服务端会 400（契约文本为 API.md v1.2.5，BE-A 第 8 项）。派单要求「数据在预填用的推荐缓存里现成，零额外请求」。
+
+实现：
+- **提交时现取缓存**：回填页 `submit()` 按 `draft.adoptedComboId` 调 `findCachedCombo(..., meal)` 取回推荐组合，同时生成 `adopted_combo_id` 与 `adopted_combo`。没有新增状态，也不会和预填数据脱节。
+- **快照份数取推荐当时份数**（`combo.dishes[].servings`），不是用户回填调整后的实际份数——两者不同，服务端才能判定「按推荐吃」还是「改了份量」。构造函数 `buildAdoptedSnapshot` 放在 `useRecommendationCache.ts`。
+- **降级**：缓存 24h 过期或丢失时（例如页面开了很久），按自选提交——不带 id、不带快照，避免被 400。
+- **类型**：`shared` 尚未落该字段，按 v1.2.5 形状在 `web/src/api/endpoints.ts` 本地扩展 `AdoptedComboSnapshot` / `MealLogPayload`，未改 `shared/`；shared 更新后删本地类型改 import。
+- **Mock 后端**：`postMealLog` 用 `sameSet` 判定 adopted，多余字段自然忽略，无需改动。
+
+测试：
+- 新增 `web/src/tests/unit/adoptedComboSnapshot.test.ts`：快照按推荐份数生成，与回填实际份数无关。
+- 闭环 e2e：采纳路径 spy `createMealLog`，断言载荷含 `adopted_combo_id` 与逐菜快照；自选路径断言 `adopted_combo_id: null` 且不带 `adopted_combo` 键。
+
+复跑：lint / typecheck / **70 用例** / build 全绿；分支已并入 origin/main `8e56866`（采纳率裁决）。

@@ -2,7 +2,8 @@
 // 契约里没有 GET /recommendations/:combo_id，combo.id 只做关联提交的标识，
 // 因此组合明细只能由前端在推荐响应里自取（API.md §2.3「有效期 24 小时」按本地缓存实现）。
 // 调用约定：FE-A 推荐页在拿到响应后调用 saveRecommendationResponse(response, meal)。
-import type { Meal, RecommendationResponse } from '@canteen/shared';
+import type { Combo, Meal, RecommendationResponse } from '@canteen/shared';
+import type { AdoptedComboSnapshot } from '@/api/endpoints';
 
 const STORAGE_KEY = 'cn.last_recommendation';
 const TTL_MS = 24 * 60 * 60 * 1000;
@@ -53,4 +54,15 @@ export function findCachedCombo(comboId: string, sessionId: string, meal?: Meal)
 
 export function clearRecommendationCache(): void {
   localStorage.removeItem(STORAGE_KEY);
+}
+
+/**
+ * 采纳快照：份数取推荐当时的份数，不是用户回填时调整后的实际份数——
+ * 两者不同，服务端才能判定「按推荐吃」还是「改了份量」（PD 2026-11-17 采纳率口径）。
+ */
+export function buildAdoptedSnapshot(combo: Combo): AdoptedComboSnapshot {
+  return {
+    id: combo.id,
+    items: combo.dishes.map((dish) => ({ dish_id: dish.id, servings: dish.servings })),
+  };
 }
