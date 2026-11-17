@@ -95,6 +95,9 @@ describe('回填 → 反馈 → 历史', () => {
     // 推荐页写入的缓存让回填页自动预填，预填份数 = 组合内菜品数
     expect(wrapper.text()).toContain('已按推荐搭配预填');
     expect(wrapper.text()).toContain(`${dishCount} 项已选`);
+    // B6：日志页整页不出现价格
+    expect(wrapper.text()).not.toContain('¥');
+    expect(wrapper.text()).not.toMatch(/\d+\s*元/);
 
     // 提交按钮可用（有选中项）
     const submit = wrapper.findAll('button').find((node) => node.text().includes('生成反馈'));
@@ -111,6 +114,8 @@ describe('回填 → 反馈 → 历史', () => {
     expect(feedback.text()).toContain('这一餐');
     expect(feedback.text()).toContain('目标');
     expect(['达标', '需调整']).toContain(feedback.text().includes('达标') ? '达标' : '需调整');
+    expect(feedback.text()).not.toContain('¥');
+    expect(feedback.text()).not.toMatch(/\d+\s*元/);
 
     // 历史页应能查到这条记录
     const history = mount(HistoryView, { global: { plugins: [router] } });
@@ -118,6 +123,8 @@ describe('回填 → 反馈 → 历史', () => {
     expect(history.text()).toContain('近 7 天');
     expect(history.text()).toContain('已回填');
     expect(history.text()).toMatch(/1 餐/);
+    expect(history.text()).not.toContain('¥');
+    expect(history.text()).not.toMatch(/\d+\s*元/);
   });
 
   it('自选回填（无 combo 参数）：adopted 为 false，反馈页提示自选搭配', async () => {

@@ -407,6 +407,7 @@ AssertionError: expected +0 to be 2   (test/user-endpoints.test.ts:334)
   3. 挂载 `LogView`，断言「已按推荐搭配预填」且预填项数等于该套组合的菜品数（从 `.combo__dishes` 数出来，不读缓存，避免用被测函数自证）；
   4. 之后仍是提交 → 反馈 → 历史的原断言。
 - 其余三条用例只关心 FE-B 三页，保留接口铺数据的 `seedProfileAndCombo()`，避免每条都重走表单、拖慢单测。
-- 结果：`closureFlow.test.ts` 4 条全过（首条 552ms），web 用例总数不变（68）。
+- B6 顺带补页面级回归：`ComboCard` 断言无 `¥` / 「元」（推荐卡片此前没有自动化）；首条 e2e 在回填 / 反馈 / 历史三页各加一次整页文本断言，防止价格从别的组件漏回来。
+- 结果：`closureFlow.test.ts` 4 条全过（首条 567ms），web 用例 68 → **69**。
 
-复跑：lint / typecheck / 68 用例 / build 全绿。
+复跑：lint / typecheck / 69 用例 / build 全绿。
