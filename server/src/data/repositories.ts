@@ -97,6 +97,27 @@ export const profileRepository = {
     };
     return row.c;
   },
+
+  /**
+   * 合规删除入口（API.md §2.2，v1.2.4）：删除档案并连带删除该 session 的全部 meal-logs。
+   * 两条 DELETE 放在一个事务里，避免「档案删了、记录还在」这种清不干净的中间态。
+   * 返回 false 表示档案不存在（路由据此回 404）。
+   */
+  deleteBySession(sessionId: string): boolean {
+    const db = getDb();
+    const exists = db.prepare('SELECT 1 FROM profiles WHERE session_id = ?').get(sessionId);
+    if (exists === undefined) return false;
+    db.exec('BEGIN');
+    try {
+      db.prepare('DELETE FROM meal_logs WHERE session_id = ?').run(sessionId);
+      db.prepare('DELETE FROM profiles WHERE session_id = ?').run(sessionId);
+      db.exec('COMMIT');
+    } catch (err) {
+      db.exec('ROLLBACK');
+      throw err;
+    }
+    return true;
+  },
 };
 
 interface MealLogRow {

@@ -105,3 +105,17 @@ profilesRouter.get('/me', (req, res) => {
   }
   res.json(profile);
 });
+
+/**
+ * DELETE /api/v1/profiles/me?session_id=... （API.md §2.2，v1.2.4 合规删除入口）
+ * 删除成功 204（无响应体）；档案不存在 404。
+ * 仓储层事务内连带删除该 session 的全部 meal-logs——只删档案不算清干净个人数据。
+ */
+profilesRouter.delete('/me', (req, res) => {
+  const sessionId = queryString(req.query, 'session_id');
+  const deleted = profileRepository.deleteBySession(sessionId);
+  if (!deleted) {
+    throw new HttpError('NOT_FOUND', '档案不存在');
+  }
+  res.status(204).end();
+});
