@@ -12,6 +12,11 @@ import type {
 import { createApp } from '../src/app';
 import { resetDatabase } from '../src/data/db';
 import { seedDishes } from '../src/data/seed';
+
+// 2026-11-17 PD：v3 上线后默认种子已切到 menu-seed.v3.json。本文件的断言写死在 55 道原型
+// 夹具上（s01 等菜品 id 与份量形态），故显式固定 SEED_PATH，不被默认种子变更牵连；
+// v3 的行为已由 server/scripts/e2e-flow.ts 与引擎合成夹具覆盖。@BE-B 请复核此固定方式。
+process.env.SEED_PATH = 'server/data/menu-seed.json';
 import { windowStartDate } from '../src/routes/insights';
 
 /**

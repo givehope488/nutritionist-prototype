@@ -13,7 +13,8 @@
  */
 import { readFileSync } from 'node:fs';
 
-const SEED = 'server/data/menu-seed.json';
+/** 2026-11-17 起，主干种子默认为实测菜单 v3（384 道），体检随之对准 v3；55 道原型已按决策抛弃 */
+const SEED = 'server/data/menu-seed.v3.json';
 
 const CATEGORIES = ['staple', 'protein', 'veg', 'soup', 'fruit'];
 const MEALS = ['breakfast', 'lunch', 'dinner'];
