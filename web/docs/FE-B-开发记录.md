@@ -411,3 +411,27 @@ AssertionError: expected +0 to be 2   (test/user-endpoints.test.ts:334)
 - 结果：`closureFlow.test.ts` 4 条全过（首条 567ms），web 用例 68 → **69**。
 
 复跑：lint / typecheck / 69 用例 / build 全绿。
+
+---
+
+## 18. v3 上线后的真机冒烟（2026-11-17）
+
+背景：11-17 PD 切 v3（384 道）为默认种子、合并引擎四路分流与契约 v1.2.4；TEAM.md 的中途集成点在 11-18，提前一天跑。分支先并入最新 main（`e8fcb7a`）。
+
+环境：根 `npm run seed`（384 道，幂等）→ `npm run start`（8787）→ web `VITE_API_BASE= npm run dev`（5173，走 `/api` dev 代理）。浏览器清 `localStorage` / `sessionStorage` 后从建档开始。
+
+| 场景 | 结果 |
+|---|---|
+| `/menu?meal=lunch` | 356 道（384 − 28 道仅早餐）；无 `price_yuan` |
+| 字段分布 | `serving_mode` single 255 / combo 25 / component 76；`pricing_mode` fixed 284 / weigh 72；`recommendable=false` 78 道 |
+| 建档 172 / 65 / 20 | BMI 21.97、日目标 2282 kcal 由服务端返回 |
+| 午餐推荐 | 3 套；首套 白米饭 + 炸猪排/炸鸡排 + 炒粉丝/炒面，912 kcal vs 目标 912.8；另含单菜组合（酱香小炒鸡 340 kcal） |
+| 采纳 → 回填 | 「已按推荐搭配预填 3 项」，份数可调 |
+| 反馈 | 912 vs 912.8，判「吃得挺准」，标「按推荐搭配」 |
+| 历史 | 近 7 天 1 餐、采纳率 100%、均热 912 kcal、均蛋白 32.4 g |
+| 早餐推荐 | 3 套，目标 684.6 kcal（plate 25 道不进 `combos`，符合分流规则） |
+| B6 无价格 | 推荐 / 回填 / 反馈 / 历史逐页 `document.body.innerText` 检查：无 `¥`、无「数字 + 元」 |
+
+未覆盖：称重菜文案（等 shared 的 `ComboDish.pricing_mode` / `Combo.has_weighed_dish`，归 BE-B 11-18）与推荐质量人工抽检（W3 归 PD）。
+
+复跑：lint / typecheck / 69 用例 / build 全绿；后端与前端开发进程已在冒烟后停掉。
