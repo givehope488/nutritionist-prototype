@@ -102,21 +102,25 @@ export const profileRepository = {
    * 合规删除入口（API.md §2.2，v1.2.4）：删除档案并连带删除该 session 的全部 meal-logs。
    * 两条 DELETE 放在一个事务里，避免「档案删了、记录还在」这种清不干净的中间态。
    * 返回 false 表示档案不存在（路由据此回 404）。
+   *
+   * 复核要点（2026-11-17 BE-B，W2 #12）：
+   * - **不再在事务外 `SELECT 1` 预检**：检查与删除之间存在 TOCTOU（并发下两个请求都通过预检，
+   *   第二个会返回「删除成功」但其实什么都没删）。改为事务内以 profiles 的**影响行数**判定。
+   * - **用 `BEGIN IMMEDIATE`**：SQLite 的「先读后写」需要在事务中途升级锁，并发时可能直接
+   *   `SQLITE_BUSY`；IMMEDIATE 在事务开始就拿写锁，失败立刻抛错而不是半途卡住。
    */
   deleteBySession(sessionId: string): boolean {
     const db = getDb();
-    const exists = db.prepare('SELECT 1 FROM profiles WHERE session_id = ?').get(sessionId);
-    if (exists === undefined) return false;
-    db.exec('BEGIN');
+    db.exec('BEGIN IMMEDIATE');
     try {
       db.prepare('DELETE FROM meal_logs WHERE session_id = ?').run(sessionId);
-      db.prepare('DELETE FROM profiles WHERE session_id = ?').run(sessionId);
+      const result = db.prepare('DELETE FROM profiles WHERE session_id = ?').run(sessionId);
       db.exec('COMMIT');
+      return Number(result.changes) > 0;
     } catch (err) {
       db.exec('ROLLBACK');
       throw err;
     }
-    return true;
   },
 };
 

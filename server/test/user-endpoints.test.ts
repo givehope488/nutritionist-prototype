@@ -186,6 +186,34 @@ describe('DELETE /api/v1/profiles/me（API.md §2.2 v1.2.4 合规删除入口）
     const b = (await get('/api/v1/meal-logs?session_id=sess-b')).json as MealLogListResponse;
     expect(b.total).toBe(1);
   });
+
+  it('重复删除：第二次 404，不做静默成功', async () => {
+    await post('/api/v1/profiles', validProfile);
+    expect(await del('/api/v1/profiles/me?session_id=sess-a')).toBe(204);
+    expect(await del('/api/v1/profiles/me?session_id=sess-a')).toBe(404);
+  });
+
+  it('删除后 insights 统计归零（被删用户的数据不出现在任何统计里）', async () => {
+    await post('/api/v1/profiles', validProfile);
+    await post('/api/v1/meal-logs', {
+      id: 'del-log-c',
+      session_id: 'sess-a',
+      date: daysAgo(0),
+      meal: 'lunch',
+      items: [{ dish_id: 's01', servings: 1 }],
+    });
+    const before = (await get('/api/v1/insights/summary?session_id=sess-a&days=7'))
+      .json as InsightsSummaryResponse;
+    expect(before.logged_meals).toBeGreaterThan(0);
+
+    expect(await del('/api/v1/profiles/me?session_id=sess-a')).toBe(204);
+
+    const after = (await get('/api/v1/insights/summary?session_id=sess-a&days=7'))
+      .json as InsightsSummaryResponse;
+    expect(after.logged_meals).toBe(0);
+    expect(after.adoption_rate).toBe(0);
+    expect(after.avg_kcal).toBe(0);
+  });
 });
 
 describe('POST /api/v1/recommendations', () => {
