@@ -12,6 +12,11 @@ import type {
 import { createApp } from '../src/app';
 import { resetDatabase } from '../src/data/db';
 import { seedDishes } from '../src/data/seed';
+
+// 2026-11-17 PD：v3 上线后默认种子已切到 menu-seed.v3.json。本文件的断言写死在 55 道原型
+// 夹具上（s01 等菜品 id 与份量形态），故显式固定 SEED_PATH，不被默认种子变更牵连；
+// v3 的行为已由 server/scripts/e2e-flow.ts 与引擎合成夹具覆盖。@BE-B 请复核此固定方式。
+process.env.SEED_PATH = 'server/data/menu-seed.json';
 import { windowStartDate } from '../src/routes/insights';
 
 /**
@@ -85,6 +90,12 @@ async function get(path: string): Promise<{ status: number; json: unknown }> {
   return { status: res.status, json: (await res.json()) as unknown };
 }
 
+/** DELETE 204 无响应体，不能调 res.json()——只取状态码 */
+async function del(path: string): Promise<number> {
+  const res = await fetch(`${baseUrl}${path}`, { method: 'DELETE' });
+  return res.status;
+}
+
 describe('POST /api/v1/profiles', () => {
   it('建档返回服务端派生值，且不含包装层', async () => {
     const res = await post('/api/v1/profiles', validProfile);
@@ -138,6 +149,42 @@ describe('POST /api/v1/profiles', () => {
     const res = await get('/api/v1/profiles/me?session_id=nobody');
     expect(res.status).toBe(404);
     expect((res.json as { error: ApiError }).error.code).toBe('NOT_FOUND');
+  });
+});
+
+describe('DELETE /api/v1/profiles/me（API.md §2.2 v1.2.4 合规删除入口）', () => {
+  it('删除成功返回 204，随后 GET /me 变 404', async () => {
+    await post('/api/v1/profiles', validProfile);
+    const status = await del('/api/v1/profiles/me?session_id=sess-a');
+    expect(status).toBe(204);
+    expect((await get('/api/v1/profiles/me?session_id=sess-a')).status).toBe(404);
+  });
+
+  it('档案不存在 → 404', async () => {
+    const status = await del('/api/v1/profiles/me?session_id=nobody');
+    expect(status).toBe(404);
+  });
+
+  it('连带删除该 session 的全部 meal-logs，但不碰其他 session', async () => {
+    await post('/api/v1/profiles', validProfile);
+    await post('/api/v1/meal-logs', {
+      id: 'del-log-a', session_id: 'sess-a', date: daysAgo(1), meal: 'lunch',
+      items: [{ dish_id: 's01', servings: 1 }],
+    });
+    // 另一个 session 的记录：删除 sess-a 时不应受影响
+    await post('/api/v1/meal-logs', {
+      id: 'del-log-b', session_id: 'sess-b', date: daysAgo(1), meal: 'lunch',
+      items: [{ dish_id: 's01', servings: 1 }],
+    });
+    expect((await get('/api/v1/meal-logs?session_id=sess-a')).json as MealLogListResponse).toMatchObject({ total: 1 });
+
+    const status = await del('/api/v1/profiles/me?session_id=sess-a');
+    expect(status).toBe(204);
+
+    const a = (await get('/api/v1/meal-logs?session_id=sess-a')).json as MealLogListResponse;
+    expect(a.total).toBe(0);
+    const b = (await get('/api/v1/meal-logs?session_id=sess-b')).json as MealLogListResponse;
+    expect(b.total).toBe(1);
   });
 });
 
