@@ -1,6 +1,7 @@
 // 用户端接口封装（docs/API.md §2）。字段名与 API.md 一字不改。
 import type {
   InsightsSummaryResponse,
+  MealLogItemInput,
   MealLogResponse,
   MealLogRequest,
   MealLogListResponse,
@@ -35,7 +36,20 @@ export function createRecommendation(input: RecommendationRequest) {
   return request<RecommendationResponse>('POST', '/recommendations', { body: input });
 }
 
-export function createMealLog(input: MealLogRequest) {
+/**
+ * 采纳快照（API.md v1.2.5，BE-A 第 8 项）：服务端据此逐菜比对。
+ * shared 尚未落字段，先在 web 侧本地扩展；shared 更新后删掉本类型改用它。
+ */
+export interface AdoptedComboSnapshot {
+  id: string;
+  items: MealLogItemInput[];
+}
+
+export type MealLogPayload = MealLogRequest & {
+  adopted_combo?: AdoptedComboSnapshot;
+};
+
+export function createMealLog(input: MealLogPayload) {
   return request<MealLogResponse>('POST', '/meal-logs', { body: input });
 }
 
