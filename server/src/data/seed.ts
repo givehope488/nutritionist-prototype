@@ -11,14 +11,16 @@ import { getDb } from './db';
  * 少一半代码，重跑结果完全一致（验收要求：重跑幂等）。
  * 注意：管理端上线后不能用这招（会抹掉运营改过的数据），届时改成 upsert + 软删除。
  *
- * 种子文件默认是 55 道原型数据（`menu-seed.json`）。菜单 v3 的 384 道数据层已就绪，
- * 但引擎还没适配四种份量形态，所以**上线前不切换默认值**；需要试跑 v3 时用：
+ * 种子文件默认是实测菜单 v3（`menu-seed.v3.json`，384 道）——2026-11-17 PD 切换上线
+ * （引擎四路分流 #65 已合入，`serving_mode` 四态引擎可读，切换条件满足）。
+ * 原型 55 道保留在 `menu-seed.json`（仅作回滚对照，已按决策整体抛弃，不要再切回去）；
+ * 基线存档在 `menu-seed.baseline-55.json`。需要临时灌别的种子时仍用：
  *
  * ```bash
- * SEED_PATH=server/data/menu-seed.v3.json npm run seed
+ * SEED_PATH=server/data/menu-seed.json npm run seed
  * ```
  */
-const DEFAULT_SEED_PATH = fileURLToPath(new URL('../../data/menu-seed.json', import.meta.url));
+const DEFAULT_SEED_PATH = fileURLToPath(new URL('../../data/menu-seed.v3.json', import.meta.url));
 
 function resolveSeedPath(): string {
   const override = process.env.SEED_PATH;

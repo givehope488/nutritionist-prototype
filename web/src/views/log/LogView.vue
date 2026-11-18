@@ -16,7 +16,7 @@ import AppSegmented from '@/components/base/AppSegmented.vue';
 import AppTabs from '@/components/base/AppTabs.vue';
 import DishCard from '@/components/business/DishCard.vue';
 import { cacheMealLog } from '@/composables/useMealLogLookup';
-import { findCachedCombo } from '@/composables/useRecommendationCache';
+import { findCachedCombo, buildAdoptedSnapshot } from '@/composables/useRecommendationCache';
 import { useLogDraft } from '@/composables/useLogDraft';
 import { sessionId } from '@/composables/useSession';
 import { formatDateLabel, toDateStr } from '@/utils/display';
@@ -30,6 +30,11 @@ const date = ref<string>(
 );
 
 const draft = useLogDraft(sessionId, date, meal);
+
+// 推荐组合只对「带来它的那次餐次 + 日期」有效：切餐次或补填昨天都视为自选，
+// 否则会把午餐组合预填进晚餐、并按 adopted 计入采纳率。
+const comboMeal = meal.value;
+const comboDate = date.value;
 
 const dishes = ref<Dish[]>([]);
 const menuLoading = ref(false);
@@ -107,7 +112,8 @@ async function loadMenu(): Promise<void> {
 function applyPrefillFromCombo(): void {
   const comboId = typeof route.query.combo === 'string' ? route.query.combo : '';
   if (!comboId) return;
-  const combo = findCachedCombo(comboId, sessionId);
+  if (meal.value !== comboMeal || date.value !== comboDate) return;
+  const combo = findCachedCombo(comboId, sessionId, meal.value);
   if (!combo) {
     prefillNotice.value = '推荐组合已超过 24 小时，请自选这餐吃了什么';
     return;
@@ -123,13 +129,19 @@ async function submit(): Promise<void> {
   if (submitting.value || draft.selectedCount.value === 0) return;
   submitting.value = true;
   submitError.value = null;
+  // 采纳快照取自预填用的推荐缓存（零额外请求）；缓存过期或丢失时按自选提交，
+  // 避免带上 id 却没有快照被服务端 400（API.md v1.2.5）。
+  const combo = draft.adoptedComboId.value
+    ? findCachedCombo(draft.adoptedComboId.value, sessionId, meal.value)
+    : null;
   const result = await createMealLog({
     id: draft.logId.value,
     session_id: sessionId,
     date: date.value,
     meal: meal.value,
     items: draft.buildItems(),
-    adopted_combo_id: draft.adoptedComboId.value,
+    adopted_combo_id: combo ? combo.id : null,
+    ...(combo ? { adopted_combo: buildAdoptedSnapshot(combo) } : {}),
   });
   submitting.value = false;
   if (!result.ok) {

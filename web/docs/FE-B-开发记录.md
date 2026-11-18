@@ -106,7 +106,7 @@ FE-B 名下目录（CODEOWNERS 口径）：`web/src/views/log|feedback|history/`
 | Q3 | 缺 `GET /api/v1/meal-logs/:id` | `composables/useMealLogLookup.ts` 头注释 | 反馈页刷新/换设备后要拉整页列表才能定位一条 | sessionStorage 缓存 + 列表过滤兜底 |
 | Q4 | §2.4 `MealLog.target` 只有 `kcal` 与 `protein_g` | `views/FeedbackView.vue:31` 注释 | 反馈页脂肪/碳水/钠三条对比条只能显示「暂无目标」 | `MacroBar` 无目标时不画目标线、文案「暂无目标」（不显示「目标 0」） |
 | Q5 | 「忌口过滤后无解」的判据未定义 | `tests/unit/closureEndpoints.test.ts:67` | 55 道菜 + 现有组合结构下，实测任何忌口组合都还有解，`notice` 分支在真实数据上不可达 | 断言改为「返回合法 combos」；`NoSolutionNotice` 组件与其单测保留，等 BE-A 给出无解判据 |
-| Q6 | e2e 里建档/推荐两步是接口模拟 | `tests/e2e/closureFlow.test.ts` 头注释 | FE-A 页面合并前，e2e 不覆盖真实建档交互 | FE-A 合并后把两步替换成真实页面跳转（需 FE-A 提供可测的 DOM 锚点） |
+| Q6 | e2e 里建档/推荐两步是接口模拟 | `tests/e2e/closureFlow.test.ts` 头注释 | FE-A 页面合并前，e2e 不覆盖真实建档交互 | ✅ 已解决 2026-11-15：FE-A 建档 / 推荐页已进主干，首条用例改为驱动真实页面（填表单 → 保存 → 推荐页采纳 → 跳回填），见 §17 |
 | Q7 | 传输层失败（断网/超时/取消）没有契约错误码 | `api/client.ts:48` 注释 | 前端只能借用 `INTERNAL`，与"服务端异常"混在同一文案桶 | 借 `INTERNAL` + 可操作文案；请评审是否补 `CLIENT_NETWORK_ERROR` |
 | Q8 | 根配置缺 `.nvmrc`，Node 版本未锁 | COLLAB.md 防线 3 要求；CODEOWNERS 已预留 `/.nvmrc` | 成员 Node 版本不一致时 CI 结果不可复现（本机 v22.23.4，文档示例 v24） | ✅ 已解决：根 `.nvmrc` = `22`，CI 用 `node-version-file` 读取 |
 | Q9 | CODEOWNERS 未覆盖 `web/src/composables/`、`web/src/utils/`、`web/src/dev/` | `.github/CODEOWNERS`（`1275782` 引入）只列了 views 子目录、`components/`、`api/` | 这三个目录的 PR 会被兜底规则派给 @be-b，FE-B 成了非所有者，Review 链条绕人 | ✅ 已解决：现覆盖 `/web/` 兜底 + `composables/` `utils/` `tests/` `dev/`（@Aredjdhd @wyf-111） |
@@ -188,10 +188,10 @@ npm run build     → ✓ 118 modules transformed / built in 373ms
 
 ## 9. 下一步（我这边欠的）
 
-1. 与 FE-A 合并建档/推荐页：把路由 `/`、`/profile`、`/recommend` 的临时重定向改回，并按议题 Q6 重写 e2e 前两步。
-2. 议题余下 Q1/Q3–Q7 提交评审（Q2/Q8–Q11 已结案）；通过后删掉对应兜底代码（`__mock__` 目录整体删除是最大一块）。
+1. ~~与 FE-A 合并建档/推荐页~~ ✅ 2026-11-15：FE-A 三页已进主干（#42），路由早由 FE-A 统一；Q6 的 e2e 前两步已改为真实页面，见 §17。
+2. 议题余下 Q1/Q3–Q5/Q7 提交评审（Q2/Q6/Q8–Q11 已结案）；通过后删掉对应兜底代码（`__mock__` 目录整体删除是最大一块）。
 3. ~~W3 剩余边界（TEAM v1.2）~~ ✅ 2026-11-06 已补测：限流 429、菜品下架后回填旧记录、跨天回填（凌晨填昨晚），见 §14。
-4. 真机冒烟：后端 6 个用户端端点已进主干（#18/#23/#26），可择期把 `VITE_API_BASE` 切到真实后端跑同一套 e2e；端到端用例归 PD（11-20）。
+4. ~~真机冒烟~~ ✅ 2026-11-15：回填 / 反馈 / 历史三页已切真后端在浏览器里跑通（W2 第 8 项，见 §16）；PD 的根 `e2e/` 用例归 PD（#50）。
 5. 视觉回归：目前靠肉眼过故事页，等 CI 有基线后补截图对比。
 6. ~~集成收尾~~ ✅ Q10 由 main #12 结案；PR #6 已合并（`163a661`）。
 7. ~~P0 删价格（展示侧）~~ ✅ 2026-11-14 完成，见 §15。
@@ -362,3 +362,95 @@ AssertionError: expected +0 to be 2   (test/user-endpoints.test.ts:334)
 - `server/src/routes/insights.ts` 的窗口是「今天 − days」：2026-11-14 算出 `sinceDate=2026-11-07`，`2026-11-06` 被过滤，`logged_meals` 变 0。
 - `origin/main` 同文件同代码，11-13 的 CI 还是绿的 ⇒ 跨日期触发的时间炸弹，与本分支无关。
 - 处理：已在 PR #36 评论并 @yangelect（`server/test/` 的 CODEOWNERS），同时在 `docs/PROGRESS.md` §6 登记；未改 `server/` 避免越界。web 侧 lint / typecheck / 60 用例 / build 全绿。
+
+---
+
+## 16. W2 联调：回填 / 反馈 / 历史切真接口（2026-11-15）
+
+环境：根目录 `npm ci`（装 `shared` / `server`）→ `npm run seed` → `npm run start`（8787）；web 用 `VITE_API_BASE=` 空值启动，请求走同源 `/api` 的 dev 代理（#59 的口径）。**不要写 `web/.env.local`**——vitest 也会读它，Mock 用例会改走真网络而全红；联调时用行内环境变量启动即可。
+
+真实接口实测（Chromium，全程无 Mock）：
+
+| 场景 | 结果 |
+|---|---|
+| 建档 172cm / 65kg / 20 岁 / 男 / 每周几次 | BMI 21.97、日目标 2282 kcal 由服务端返回 |
+| 推荐午餐 | 3 套；采纳第一套跳回填 |
+| 回填预填 | 「已按推荐搭配预填 4 项」，带 combo id 提交 |
+| 反馈 | 872 kcal vs 本餐目标 912.8，判「吃得挺准」，标「按推荐搭配」 |
+| 历史 | 近 7 天：1 餐、采纳率 100%、均热 872 kcal |
+| 分页 | 追加 12 条记录后首屏 10 条，「加载更多（共 14 条）」点后全部展开 |
+| `combo.id` 过期 | 提示「推荐组合已超过 24 小时」，不报错；自选 1 项提交后反馈「这次是自选搭配」（`adopted: false`） |
+| 反馈页回落 | 清 `sessionStorage`（保留 `localStorage` 的 session）后刷新，仍能按 id 从 `/meal-logs` 列表找到并渲染 |
+| B6 无价格 | 回填 / 推荐 / 反馈页文本均无 `¥`、无「元」 |
+
+### 16.1 修掉的问题：切餐次/切日期仍套用上一餐的推荐组合
+
+- 现象：从午餐推荐进入回填（`?meal=lunch&combo=…`）后切到晚餐，仍预填午餐的 4 道菜，并把晚餐当成「按推荐」计入采纳率。
+- 根因：`findCachedCombo` 只按 combo id 查缓存，不校验缓存所属餐段；回填页 watch 每次餐次/日期变化都会重跑预填。
+- 修法：
+  - `useRecommendationCache.findCachedCombo(comboId, sessionId, meal?)` 增可选 `meal`，校验 `cached.meal`。
+  - `LogView` 记住带来组合的餐段与日期，只有两者都没变时才预填；切到其他餐次或「昨天」按自选处理。
+- 回归：`tests/e2e/closureFlow.test.ts` 新增「切到其他餐次时不再套用上一餐的推荐组合」。
+
+遗留项核对：②`NoSolutionNotice.vue` 已无「早饭无解」兜底文案（组件只渲染服务端 `notice`），无需再删；③`feat/fe-b-web` 分支删除是远端共享动作，未执行，等确认。
+
+复跑：lint / typecheck / **68 用例** / build 全绿。
+
+---
+
+## 17. 闭环 e2e 改走真实页面（Q6 结项，2026-11-15）
+
+- 背景：`closureFlow.test.ts` 的建档 / 推荐两步一直是「直接调 `saveProfile` / `createRecommendation` + 手写推荐缓存」，只验证了 FE-B 三页，不覆盖「推荐页采纳 → 回填页预填」这条跨页交接。FE-A 三页已进主干（#42），Q6 的阻塞解除。
+- 改动：首条用例改为真实页面链路——
+  1. 挂载 `ProfileView`，填身高 / 体重 / 年龄三个 `.numfield__input`，点保存，断言路由到 `goal`；
+  2. 跳 `recommend` 并挂载 `RecommendView`，断言至少 1 套组合，点第一套「就去吃这组」，断言路由为 `log` 且带 `meal=lunch` 与 `combo`；
+  3. 挂载 `LogView`，断言「已按推荐搭配预填」且预填项数等于该套组合的菜品数（从 `.combo__dishes` 数出来，不读缓存，避免用被测函数自证）；
+  4. 之后仍是提交 → 反馈 → 历史的原断言。
+- 其余三条用例只关心 FE-B 三页，保留接口铺数据的 `seedProfileAndCombo()`，避免每条都重走表单、拖慢单测。
+- B6 顺带补页面级回归：`ComboCard` 断言无 `¥` / 「元」（推荐卡片此前没有自动化）；首条 e2e 在回填 / 反馈 / 历史三页各加一次整页文本断言，防止价格从别的组件漏回来。
+- 结果：`closureFlow.test.ts` 4 条全过（首条 567ms），web 用例 68 → **69**。
+
+复跑：lint / typecheck / 69 用例 / build 全绿。
+
+---
+
+## 18. v3 上线后的真机冒烟（2026-11-17）
+
+背景：11-17 PD 切 v3（384 道）为默认种子、合并引擎四路分流与契约 v1.2.4；TEAM.md 的中途集成点在 11-18，提前一天跑。分支先并入最新 main（`e8fcb7a`）。
+
+环境：根 `npm run seed`（384 道，幂等）→ `npm run start`（8787）→ web `VITE_API_BASE= npm run dev`（5173，走 `/api` dev 代理）。浏览器清 `localStorage` / `sessionStorage` 后从建档开始。
+
+| 场景 | 结果 |
+|---|---|
+| `/menu?meal=lunch` | 356 道（384 − 28 道仅早餐）；无 `price_yuan` |
+| 字段分布 | `serving_mode` single 255 / combo 25 / component 76；`pricing_mode` fixed 284 / weigh 72；`recommendable=false` 78 道 |
+| 建档 172 / 65 / 20 | BMI 21.97、日目标 2282 kcal 由服务端返回 |
+| 午餐推荐 | 3 套；首套 白米饭 + 炸猪排/炸鸡排 + 炒粉丝/炒面，912 kcal vs 目标 912.8；另含单菜组合（酱香小炒鸡 340 kcal） |
+| 采纳 → 回填 | 「已按推荐搭配预填 3 项」，份数可调 |
+| 反馈 | 912 vs 912.8，判「吃得挺准」，标「按推荐搭配」 |
+| 历史 | 近 7 天 1 餐、采纳率 100%、均热 912 kcal、均蛋白 32.4 g |
+| 早餐推荐 | 3 套，目标 684.6 kcal（plate 25 道不进 `combos`，符合分流规则） |
+| B6 无价格 | 推荐 / 回填 / 反馈 / 历史逐页 `document.body.innerText` 检查：无 `¥`、无「数字 + 元」 |
+
+未覆盖：称重菜文案（等 shared 的 `ComboDish.pricing_mode` / `Combo.has_weighed_dish`，归 BE-B 11-18）与推荐质量人工抽检（W3 归 PD）。
+
+复跑：lint / typecheck / 69 用例 / build 全绿；后端与前端开发进程已在冒烟后停掉。
+
+---
+
+## 19. 回填提交带采纳快照（PD 采纳率口径，2026-11-17）
+
+背景：PD 于 2026-11-17 拍板采纳率口径——按「实际吃了哪套」逐菜比对。`POST /meal-logs` 在有 `adopted_combo_id` 时必须同时提交 `adopted_combo: { id, items: [{ dish_id, servings }] }` 快照，缺快照服务端会 400（契约文本为 API.md v1.2.5，BE-A 第 8 项）。派单要求「数据在预填用的推荐缓存里现成，零额外请求」。
+
+实现：
+- **提交时现取缓存**：回填页 `submit()` 按 `draft.adoptedComboId` 调 `findCachedCombo(..., meal)` 取回推荐组合，同时生成 `adopted_combo_id` 与 `adopted_combo`。没有新增状态，也不会和预填数据脱节。
+- **快照份数取推荐当时份数**（`combo.dishes[].servings`），不是用户回填调整后的实际份数——两者不同，服务端才能判定「按推荐吃」还是「改了份量」。构造函数 `buildAdoptedSnapshot` 放在 `useRecommendationCache.ts`。
+- **降级**：缓存 24h 过期或丢失时（例如页面开了很久），按自选提交——不带 id、不带快照，避免被 400。
+- **类型**：`shared` 尚未落该字段，按 v1.2.5 形状在 `web/src/api/endpoints.ts` 本地扩展 `AdoptedComboSnapshot` / `MealLogPayload`，未改 `shared/`；shared 更新后删本地类型改 import。
+- **Mock 后端**：`postMealLog` 用 `sameSet` 判定 adopted，多余字段自然忽略，无需改动。
+
+测试：
+- 新增 `web/src/tests/unit/adoptedComboSnapshot.test.ts`：快照按推荐份数生成，与回填实际份数无关。
+- 闭环 e2e：采纳路径 spy `createMealLog`，断言载荷含 `adopted_combo_id` 与逐菜快照；自选路径断言 `adopted_combo_id: null` 且不带 `adopted_combo` 键。
+
+复跑：lint / typecheck / **70 用例** / build 全绿；分支已并入 origin/main `8e56866`（采纳率裁决）。

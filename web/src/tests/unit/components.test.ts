@@ -2,11 +2,18 @@ import { describe, expect, it } from 'vitest';
 import { mount } from '@vue/test-utils';
 import AppStepper from '@/components/base/AppStepper.vue';
 import AppTabs from '@/components/base/AppTabs.vue';
+import ComboCard from '@/components/business/ComboCard.vue';
 import DishCard from '@/components/business/DishCard.vue';
 import MacroBar from '@/components/business/MacroBar.vue';
 import NoSolutionNotice from '@/components/business/NoSolutionNotice.vue';
 import VerdictCard from '@/components/business/VerdictCard.vue';
-import { sampleDishA, sampleDishB, sampleMealLog } from '@/dev/fixtures';
+import {
+  sampleCombo,
+  sampleDishA,
+  sampleDishB,
+  sampleMealLog,
+  sampleTarget,
+} from '@/dev/fixtures';
 import { MAX_SERVINGS } from '@canteen/shared';
 
 describe('AppStepper 份数步进器', () => {
@@ -61,6 +68,17 @@ describe('DishCard 份量展示（D4：A / B 同一套 UI）', () => {
     const wrapper = mount(DishCard, { props: { dish: sampleDishA, modelValue: 1 } });
     expect(wrapper.text()).not.toContain('¥');
     expect(wrapper.text()).not.toMatch(/\d+\.\d\s*元/);
+  });
+});
+
+describe('ComboCard 推荐卡（B6：不展示价格）', () => {
+  it('推荐组合不出现 ¥ 或「元」', () => {
+    const wrapper = mount(ComboCard, {
+      props: { combo: sampleCombo, target: sampleTarget, index: 1 },
+    });
+    expect(wrapper.text()).toContain('搭配一');
+    expect(wrapper.text()).not.toContain('¥');
+    expect(wrapper.text()).not.toMatch(/\d+\s*元/);
   });
 });
 
