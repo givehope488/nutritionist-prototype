@@ -63,8 +63,10 @@ export function transportError(cause: unknown): ApiResult<never> {
   };
 }
 
+export type HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE';
+
 export async function request<T>(
-  method: 'GET' | 'POST' | 'PUT',
+  method: HttpMethod,
   path: string,
   options: RequestOptions = {},
 ): Promise<ApiResult<T>> {
@@ -89,12 +91,17 @@ export async function request<T>(
         signal: options.signal,
       });
       status = res.status;
-      try {
-        payload = await res.json();
-      } catch {
-        // 2xx 但不是 JSON：契约违约，不能把 null 当业务对象返回
-        payload = null;
-        parseFailed = true;
+      if (res.status === 204) {
+        // 204 No Content（API.md §2.2 删除档案）：成功响应按契约就没有响应体，不能当违约
+        payload = undefined;
+      } else {
+        try {
+          payload = await res.json();
+        } catch {
+          // 2xx 但不是 JSON：契约违约，不能把 null 当业务对象返回
+          payload = null;
+          parseFailed = true;
+        }
       }
     }
   } catch (cause) {

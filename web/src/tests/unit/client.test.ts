@@ -70,6 +70,20 @@ describe('client.ts 解包（API.md §0.8 §1）', () => {
     expect(result.error.message).toBe('响应格式不符合接口协定');
   });
 
+  it('204 无响应体：删除类接口按成功收尾，不判契约违约', async () => {
+    const json = vi.fn(async () => {
+      throw new SyntaxError('No content');
+    });
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () => ({ status: 204, json })),
+    );
+    const { request } = await loadClient({ VITE_API_BASE: 'http://api.test' });
+    const result = await request<void>('DELETE', '/profiles/me?session_id=x');
+    expect(result.ok).toBe(true);
+    expect(json).not.toHaveBeenCalled();
+  });
+
   it('网络异常：fetch 拒绝时返回 INTERNAL + 可操作文案', async () => {
     vi.stubGlobal(
       'fetch',

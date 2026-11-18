@@ -325,3 +325,10 @@ W1 三页（建档 / 目标与忌口 / 推荐）交付前的远端复核。以�
 3. **契约无删除档案端点（C6 / A3）**：§2.2 只有 `POST /profiles` 与 `GET /profiles/me`。前端不能自造接口删数据；需要 BE-A 定契约、PD 拍板是否进 W3。已登记 PROGRESS §6。
 4. **`VITE_API_BASE` 口径**：`.env.example` 原示例把 `/api/v1` 写进 BASE，与 `client.ts` 的 `API_PREFIX` 叠加导致 `/api/v1/api/v1/...`；已改为「BASE 只填源」，并加 dev 同源代理。绝对地址模式仍需服务端放行 CORS（部署时同源反代）。
 5. **B5 真实接口实测通过**：55 道种子 + 真实 HTTP 走通建档 → 目标（BMI 21.97、日目标 2282）→ 推荐（午餐 730.4、3 套）→ 采纳 → 回填预填 3 项 → 反馈（差 0.4 kcal，判定达标）→ 历史（采纳率 100%）；无 Mock 响应、无价格、控制台无报错。
+
+### 9. v1.2.4 删除端点落地（2026-11-18，`origin/main` @ `0f5e8b0`）
+
+1. **契约侧已就绪**：`docs/API.md` v1.2.4 §2.2 定义 `DELETE /api/v1/profiles/me?session_id=...`（204 / 404），删除语义为连带删除该 session 全部 meal-logs，并要求前端二次确认文案写明这一点。服务端 `server/src/routes/profiles.ts` 已实现，仓储层事务内先删 logs 再删 profile。
+2. **真实链路实测**：本机起 `@canteen/server`，`POST /profiles` 200 → `POST /meal-logs` 200 → `DELETE /profiles/me` 204 → `GET /profiles/me` 404 → `GET /meal-logs` `total: 0`，与契约一致。
+3. **前端已落地**：`client.ts` 支持 DELETE 且 204 空响应体按成功处理；档案页危险区二次确认 + 本机缓存清理；Mock 后端同步实现，默认 `mock://local` 下也能演示。
+4. **A6 仍未解**：`shared/src/types.ts` 有 `Dish.pricing_mode?`，但 `ComboDish.pricing_mode?` 与 `Combo.has_weighed_dish?` 尚未加入；推荐页称重文案继续等 BE-B 补类型 + BE-A 补输出，不提前自造字段。
