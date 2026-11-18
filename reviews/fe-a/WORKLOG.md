@@ -923,3 +923,9 @@ GET meal-logs → {"total":0,"page":1,"logs":[]}
 
 - 删除后 `session_id` 保持不变（不轮换），旧 session 在本机已无残留缓存，服务端也已无该 session 数据；若要彻底换身份需改 `useSession`（FE-B 范围），本轮未做。
 - A6 称重文案继续等 `shared` 补字段，落地后推荐页只需一行 `combo.has_weighed_dish` 判断。
+
+### 20.5 远端推送与 PR
+
+- 首次 push 被拒：远端 `feat/fe-a-w1-pages` 多出 `084b89e`（Merge remote-tracking branch 'origin/main'，即 GitHub「Update branch」）。按「不 force-push」合并，PROGRESS 采用本地（较新）版本——**远端那次冲突解决取了旧版，缺 11-18 #63 行**，本次合并已恢复；`check:progress` 通过。
+- 推送 `084b89e..9ac8a97` 成功；PR **#70** 已创建：<https://github.com/givehope488/nutritionist-prototype/pull/70>，reviewers `givehope488` / `wyf-111`。
+- CI（head `9ac8a97`）：`lint` / `test` / `typecheck` 三绿。按防线 7 不自审自合，等评审。
