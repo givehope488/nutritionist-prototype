@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { MAX_SERVINGS, SERVING_STEP } from '@canteen/shared';
 import type {
+  AdoptedComboSnapshot,
   Meal,
   MealLogItem,
   MealLogItemInput,
@@ -13,6 +14,7 @@ import { getAllDishes } from '../data/dishes';
 import { profileRepository } from '../data/repositories';
 import { mealLogRepository } from '../data/repositories';
 import { calcTargets } from '../engines/nutrition';
+import { judgeAdoption, judgeVerdict } from '../services/meallog';
 import {
   bodyObject,
   invalid,
@@ -57,6 +59,41 @@ function round1(value: number): number {
   return Math.round(value * 10) / 10;
 }
 
+/**
+ * 解析「被采纳组合的快照」（API v1.2.5，PD 2026-11-17 裁决策略 B）。
+ *
+ * 约束：**带 `adopted_combo_id` 必带快照**（否则 400）——不允许「只带 id 不带证据」，
+ * 否则服务端无法判断用户是不是真的照那套吃的。反之，没有 id 却带快照也是调用方写错，
+ * 一并 400，避免留下没人认领的数据。
+ */
+function parseAdoptedCombo(
+  body: Record<string, unknown>,
+  adoptedComboId: string | null,
+): AdoptedComboSnapshot | null {
+  const raw = body.adopted_combo;
+  const hasSnapshot = raw !== undefined && raw !== null;
+
+  if (adoptedComboId === null) {
+    if (hasSnapshot) {
+      invalid([{ path: 'adopted_combo', issue: '没有 adopted_combo_id 时不应携带快照' }]);
+    }
+    return null;
+  }
+  if (!hasSnapshot) {
+    invalid([{ path: 'adopted_combo', issue: '带 adopted_combo_id 时必须携带组合快照' }]);
+  }
+  if (typeof raw !== 'object' || Array.isArray(raw)) {
+    invalid([{ path: 'adopted_combo', issue: '必须是对象' }]);
+  }
+
+  const record = raw as Record<string, unknown>;
+  const snapshotId = requireString(record, 'id', 'adopted_combo.id', 64);
+  if (snapshotId !== adoptedComboId) {
+    invalid([{ path: 'adopted_combo.id', issue: '必须与 adopted_combo_id 一致' }]);
+  }
+  return { id: snapshotId, items: parseItems(record.items) };
+}
+
 export const mealLogsRouter: Router = Router();
 
 /**
@@ -79,6 +116,7 @@ mealLogsRouter.post('/', (req, res) => {
     body.adopted_combo_id === undefined || body.adopted_combo_id === null
       ? null
       : requireString(body, 'adopted_combo_id', 'adopted_combo_id', 64);
+  const adoptedCombo = parseAdoptedCombo(body, adoptedComboId);
 
   const existing = mealLogRepository.find(id);
   if (existing !== undefined) {
@@ -143,15 +181,21 @@ mealLogsRouter.post('/', (req, res) => {
   const mealTarget = calcTargets(targetInput).mealTargets[meal];
 
   /**
-   * TODO(W2 反馈服务)：判定阈值（差 10% 以内算准）还属于 services/meallog 的活，
-   * 但**目标值本身已经是引擎算出来的**，不再有写死的 730。
-   *
-   * gap 必须 round1：引擎给出的本餐目标是小数（如 937.6），
-   * 直接相减会算出 107.60000000000002 这种浮点尾巴，而它会被原样拼进
-   * `verdict.body` 由前端 `{{ verdict.body }}` 直出给用户看。
+   * 判定规则已收敛到 `services/meallog.ts`（W2 #4）：
+   * - `judgeVerdict`：达标阈值 10% + 判语文案（gap 必须 round1，见该函数注释）
+   * - `judgeAdoption`：PD 2026-11-17 裁决策略 B「快照逐菜比对」
    */
-  const gap = round1(Math.abs(totals.kcal - mealTarget.kcal));
-  const isOnTarget = mealTarget.kcal > 0 && gap / mealTarget.kcal <= 0.1;
+  const target: MealLogResponse['target'] = {
+    kcal: mealTarget.kcal,
+    protein_g: mealTarget.protein_g,
+  };
+  const verdict = judgeVerdict(totals, target);
+  const judgement = judgeAdoption({
+    snapshot: adoptedCombo,
+    actualItems: resolvedItems,
+    // 缺省 fixed：与 `Dish.pricing_mode` 的可选语义一致（老种子没有这个键）
+    pricingModeOf: (dishId) => dishesById.get(dishId)?.pricing_mode ?? 'fixed',
+  });
 
   const log: MealLogResponse = {
     id,
@@ -160,23 +204,12 @@ mealLogsRouter.post('/', (req, res) => {
     meal,
     items: resolvedItems,
     totals,
-    target: { kcal: mealTarget.kcal, protein_g: mealTarget.protein_g },
-    verdict: isOnTarget
-      ? {
-          level: 'ok',
-          title: '吃得挺准',
-          body: `这一餐 ${totals.kcal} kcal，和本餐目标 ${mealTarget.kcal} kcal 相差 ${gap} kcal。`,
-        }
-      : {
-          level: 'warn',
-          title: '偏离目标较多',
-          body: `这一餐 ${totals.kcal} kcal，目标 ${mealTarget.kcal} kcal，相差 ${gap} kcal，下一餐可以调整一下。`,
-        },
-    // TODO(W2)：combo.id 有效期 24 小时，过期后 adopted 如何判定契约未定义（PROGRESS §6 待决）
-    adopted: adoptedComboId !== null,
+    target,
+    verdict,
+    adopted: judgement.adopted,
   };
 
-  mealLogRepository.save(sessionId, log);
+  mealLogRepository.save(sessionId, log, adoptedCombo);
   res.json(log);
 });
 

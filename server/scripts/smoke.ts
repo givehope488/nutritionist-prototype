@@ -183,11 +183,20 @@ check('POST /api/v1/meal-logs → 200 + totals/verdict', async () => {
       { dish_id: protein.id, servings: 1.5 },
     ],
     adopted_combo_id: 'c9f31a02',
+    // API v1.2.5：带 id 必带快照；这里的快照与 items 完全一致，所以判定为采纳
+    adopted_combo: {
+      id: 'c9f31a02',
+      items: [
+        { dish_id: staple.id, servings: 1 },
+        { dish_id: protein.id, servings: 1.5 },
+      ],
+    },
   });
   assert.equal(res.status, 200);
   assertNoEnvelope(res.json, 'POST /meal-logs');
   const log = res.json as MealLogResponse;
   assert.equal(log.duplicate, false);
+  assert.equal(log.adopted, true, '快照与 items 一致时应判为采纳');
   assert.ok(log.totals.kcal > 0, 'totals 未计算');
   assert.ok(['ok', 'warn'].includes(log.verdict.level));
   assert.equal(typeof log.verdict.title, 'string');

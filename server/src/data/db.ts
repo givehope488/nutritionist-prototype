@@ -99,6 +99,7 @@ function migrate(db: DatabaseSync): void {
       target     TEXT NOT NULL,
       verdict    TEXT NOT NULL,
       adopted    INTEGER NOT NULL,
+      adopted_combo TEXT,
       created_at TEXT NOT NULL DEFAULT (datetime('now'))
     );
 
@@ -120,6 +121,7 @@ function migrate(db: DatabaseSync): void {
   `);
 
   upgradeDishesSchema(db);
+  upgradeMealLogsSchema(db);
 }
 
 /**
@@ -163,4 +165,22 @@ function upgradeDishesSchema(db: DatabaseSync): void {
 export function resetDatabase(): void {
   const db = getDb();
   db.exec('DELETE FROM meal_logs; DELETE FROM profiles;');
+}
+
+/**
+ * meal_logs 表的增量升级（幂等）。
+ *
+ * API v1.2.5 起记录**被采纳组合的快照**（PD 2026-11-17 裁决策略 B），
+ * 老库没有这一列，这里按 PRAGMA 判断后补上；**老记录保持 NULL，
+ * dopted 维持写入时的原值、不重算**（历史没有快照，重算没有依据）。
+ */
+function upgradeMealLogsSchema(db: DatabaseSync): void {
+  const columns = new Set(
+    (db.prepare('PRAGMA table_info(meal_logs)').all() as unknown as Array<{ name: string }>).map(
+      (row) => row.name,
+    ),
+  );
+  if (!columns.has('adopted_combo')) {
+    db.exec('ALTER TABLE meal_logs ADD COLUMN adopted_combo TEXT');
+  }
 }

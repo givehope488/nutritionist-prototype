@@ -346,6 +346,61 @@ describe('POST /api/v1/meal-logs', () => {
     expect(res.status).toBe(400);
     expect((res.json as { error: ApiError }).error.fields?.[0]?.path).toBe('items[0].dish_id');
   });
+
+  it('带 adopted_combo_id 但不带快照 → 400（v1.2.5 策略 B）', async () => {
+    const res = await post('/api/v1/meal-logs', {
+      ...payload,
+      id: 'log-no-snapshot',
+      adopted_combo_id: 'combo-x',
+    });
+    expect(res.status).toBe(400);
+    expect((res.json as { error: ApiError }).error.fields?.[0]?.path).toBe('adopted_combo');
+  });
+
+  it('快照 id 与 adopted_combo_id 不一致 → 400', async () => {
+    const res = await post('/api/v1/meal-logs', {
+      ...payload,
+      id: 'log-mismatch',
+      adopted_combo_id: 'combo-x',
+      adopted_combo: { id: 'combo-y', items: [{ dish_id: 's01', servings: 1 }] },
+    });
+    expect(res.status).toBe(400);
+    expect((res.json as { error: ApiError }).error.fields?.[0]?.path).toBe('adopted_combo.id');
+  });
+
+  it('没有 adopted_combo_id 却带快照 → 400', async () => {
+    const res = await post('/api/v1/meal-logs', {
+      ...payload,
+      id: 'log-orphan-snapshot',
+      adopted_combo: { id: 'combo-x', items: [{ dish_id: 's01', servings: 1 }] },
+    });
+    expect(res.status).toBe(400);
+  });
+
+  it('预填后换了一道菜 → adopted 为 false（不再只看有没有带 id）', async () => {
+    const res = await post('/api/v1/meal-logs', {
+      ...payload,
+      id: 'log-changed-dish',
+      items: [{ dish_id: 's02', servings: 1 }],
+      adopted_combo_id: 'combo-x',
+      adopted_combo: { id: 'combo-x', items: [{ dish_id: 's01', servings: 1 }] },
+    });
+    expect(res.status).toBe(200);
+    expect((res.json as MealLogResponse).adopted).toBe(false);
+  });
+
+  it('照推荐吃（菜集合一致）→ adopted 为 true', async () => {
+    const res = await post('/api/v1/meal-logs', {
+      ...payload,
+      id: 'log-followed',
+      items: [{ dish_id: 's01', servings: 2 }],
+      adopted_combo_id: 'combo-x',
+      adopted_combo: { id: 'combo-x', items: [{ dish_id: 's01', servings: 1 }] },
+    });
+    expect(res.status).toBe(200);
+    // s01 是 fixed 菜：份量不同不影响，菜集合一致即采纳
+    expect((res.json as MealLogResponse).adopted).toBe(true);
+  });
 });
 
 describe('GET /api/v1/meal-logs 与 insights', () => {
@@ -382,6 +437,8 @@ describe('GET /api/v1/meal-logs 与 insights', () => {
       meal: 'lunch',
       items: [{ dish_id: 's01', servings: 1 }],
       adopted_combo_id: 'c9f31a02',
+      // API v1.2.5：带 id 必带快照，否则 400（PD 2026-11-17 裁决策略 B）
+      adopted_combo: { id: 'c9f31a02', items: [{ dish_id: 's01', servings: 1 }] },
     });
     await post('/api/v1/meal-logs', {
       id: 'log-self',
