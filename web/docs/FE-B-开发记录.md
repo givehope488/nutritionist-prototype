@@ -454,3 +454,19 @@ AssertionError: expected +0 to be 2   (test/user-endpoints.test.ts:334)
 - 闭环 e2e：采纳路径 spy `createMealLog`，断言载荷含 `adopted_combo_id` 与逐菜快照；自选路径断言 `adopted_combo_id: null` 且不带 `adopted_combo` 键。
 
 复跑：lint / typecheck / **70 用例** / build 全绿；分支已并入 origin/main `8e56866`（采纳率裁决）。
+
+---
+
+## 20. 遗留三件结项（2026-11-18）
+
+PD 在 11-18 合入 #63 时把三件非阻塞遗留挂到 FE-B，要求「下次动到时顺手结项」。逐条核实：
+
+1. **cwd 依赖**：`avoidOptionsContract.test.ts` 已不依赖运行目录——#36（`f05f0eb`）把读 `docs/API.md` 的方式改成 Vite `?raw` 导入，文件里已无 `process.cwd()`。无需改动。
+2. **早饭「无解」兜底文案**：`NoSolutionNotice.vue` 当前只渲染服务端下发的 `notice` 与通用按钮，不含任何早饭特判文案。无需改动。
+3. **旧分支**：`feat/fe-b-web`（#6，`163a661`）为 squash 合入，GitHub 不会自动关联删除；删前用 REST 复核 PR `merged: true`，随后删除远端分支。
+
+顺带核对：`feat/fe-b-w2-integration`（#63 已合入）仍在远端，未在派单内，保留待 PD 指示；`feat/fe-b-remove-price`（#36 已合入）同理保留。
+
+基线：新分支 `feat/fe-b-cleanup` 基于 main `0f5e8b0`，web lint / typecheck / **70 用例** 全绿。
+
+待办不变：等 BE-B 在 `shared` 加 `ComboDish.pricing_mode` / `Combo.has_weighed_dish` 后，同步 web `__mock__` 字段并补相应断言。
