@@ -192,6 +192,14 @@ export interface ComboDish {
   fat_g: number;
   carbs_g: number;
   sodium_mg: number;
+
+  /**
+   * 该道菜的结算方式（API.md v1.2.4 §2.3，**可选**）。
+   *
+   * 与 `Dish.pricing_mode` 同义，只为让前端能定位「具体是哪一道称重」；
+   * **缺省按 `fixed` 处理**。老种子（原型 55 道）没有该字段，服务端不下发这个键。
+   */
+  pricing_mode?: PricingMode;
 }
 
 export interface Combo {
@@ -201,6 +209,15 @@ export interface Combo {
   totals: NutritionTotals;
   reason: string;
   engine: TextEngine;
+
+  /**
+   * 本套里是否含称重菜（API.md v1.2.4 §2.3，**可选**）。
+   *
+   * 由服务端算好（任一道 `pricing_mode === 'weigh'` 即 true），前端一行判断即可决定
+   * 是否显示「份量以现场称重为准」，不必自己遍历组合。
+   * 老种子没有 `pricing_mode` 时为 `false`（或不下发），前端按缺失/false 处理。
+   */
+  has_weighed_dish?: boolean;
 }
 
 export interface RecommendationResponse {
