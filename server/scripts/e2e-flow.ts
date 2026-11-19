@@ -99,7 +99,7 @@ async function run(): Promise<void> {
   assert.equal(rec.status, 200, `推荐应 200，实得 ${rec.status}`);
   const r = rec.json as {
     target?: Record<string, unknown>;
-    combos?: Array<{ id?: string; dishes?: Array<{ id?: string; name?: string }>; totals?: { kcal?: number } }>;
+    combos?: Array<{ id?: string; dishes?: Array<{ id?: string; name?: string; servings?: number }>; totals?: { kcal?: number } }>;
     notice?: string | null;
   };
   assert.ok(r.target, '推荐响应缺 target');
@@ -129,7 +129,8 @@ async function run(): Promise<void> {
   step('推荐↔菜单', `${menuIds.size} 道菜，推荐引用的 id 全部存在`);
 
   // ------------------------------------------------------------ 3) 回填
-  const items = (picked.dishes ?? []).map((d) => ({ dish_id: d.id, servings: 1 }));
+  // 份量取推荐里的 servings：回填要「照推荐吃」，快照与 items 才会一致（API v1.2.5 采纳判定）
+  const items = (picked.dishes ?? []).map((d) => ({ dish_id: d.id, servings: d.servings }));
   const logId = 'e2e-log-' + Date.now();
   const log = await req('POST', '/api/v1/meal-logs', {
     id: logId,
@@ -138,6 +139,7 @@ async function run(): Promise<void> {
     meal: 'lunch',
     items,
     adopted_combo_id: picked.id ?? null,
+    adopted_combo: { id: picked.id, items },
   });
   assert.equal(log.status, 200, `回填应 200，实得 ${log.status}`);
   const l = log.json as {
@@ -171,6 +173,7 @@ async function run(): Promise<void> {
     meal: 'lunch',
     items,
     adopted_combo_id: picked.id ?? null,
+    adopted_combo: { id: picked.id, items },
   });
   assert.equal(dup.status, 200, '重复回填应 200');
   assert.equal((dup.json as { duplicate?: boolean }).duplicate, true, '重复回填应标记 duplicate');

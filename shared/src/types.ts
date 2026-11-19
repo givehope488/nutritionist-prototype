@@ -244,6 +244,28 @@ export interface MealLogRequest {
   meal: Meal;
   items: MealLogItemInput[];
   adopted_combo_id?: string | null;
+
+  /**
+   * 被采纳组合的**快照**（API v1.2.5，PD 2026-11-17 裁决策略 B）。
+   *
+   * 服务端的 `combo.id` 是无状态短哈希（不落库、24h 过期），光有 id 无法判断
+   * 「用户到底是不是照那套吃的」。所以由前端把预填时的组合缓存随请求一起发来，
+   * 服务端拿它跟实际 `items` 逐菜比对：
+   *
+   * - `fixed` 菜：**集合级**比对（dish_id 集合一致即算，不比份量——没换菜就是吃了那套）
+   * - `weigh` 菜：实际份量须在推荐份量 **±15%** 以内
+   * - 无 `adopted_combo_id`：自选，`adopted = false`
+   *
+   * **带 dopted_combo_id 必须带快照，否则 400**（不允许「只带 id 不带证据」）。
+ull 同省略。
+   */
+  adopted_combo?: AdoptedComboSnapshot;
+}
+
+export interface AdoptedComboSnapshot {
+  /** 必须与 `adopted_combo_id` 一致 */
+  id: string;
+  items: MealLogItemInput[];
 }
 
 export interface MealLogItem {

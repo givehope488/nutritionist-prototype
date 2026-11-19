@@ -107,7 +107,8 @@ dish_revisions  id*, dish_id, changed_fields{}, operator, reason, created_at   #
 profiles      session_id*, sex, height_cm, weight_kg, age, activity,
               goal, avoid[], default_meal, created_at, updated_at
 meal_logs     id*(uuid，客户端生成，幂等), session_id, date, meal,
-              items[{dish_id, servings}], adopted_combo(可空), totals{},
+              items[{dish_id, servings}], totals{},
+              adopted_combo(可空，API v1.2.5 的采纳快照 {id, items[]}，逐菜比对用),
               created_at
 rec_logs      id*, session_id, request_hash, engine, degraded(bool),
               latency_ms, created_at                             # LLM 观测

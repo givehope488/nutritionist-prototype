@@ -1,4 +1,4 @@
-import type { MealLogResponse, Profile } from '@canteen/shared';
+import type { AdoptedComboSnapshot, MealLogResponse, Profile } from '@canteen/shared';
 import { getDb } from './db';
 
 /**
@@ -134,6 +134,7 @@ interface MealLogRow {
   target: string;
   verdict: string;
   adopted: number;
+  adopted_combo: string | null;
 }
 
 function toMealLog(row: MealLogRow): MealLogResponse {
@@ -164,11 +165,16 @@ export const mealLogRepository = {
     return row === undefined ? undefined : toMealLog(row);
   },
 
-  save(sessionId: string, log: MealLogResponse): MealLogResponse {
+  save(
+    sessionId: string,
+    log: MealLogResponse,
+    adoptedCombo: AdoptedComboSnapshot | null = null,
+  ): MealLogResponse {
     getDb()
       .prepare(
-        `INSERT INTO meal_logs (id, session_id, date, meal, items, totals, target, verdict, adopted)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        `INSERT INTO meal_logs
+           (id, session_id, date, meal, items, totals, target, verdict, adopted, adopted_combo)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       )
       .run(
         log.id,
@@ -180,6 +186,7 @@ export const mealLogRepository = {
         JSON.stringify(log.target),
         JSON.stringify(log.verdict),
         log.adopted ? 1 : 0,
+        adoptedCombo === null ? null : JSON.stringify(adoptedCombo),
       );
     return log;
   },
