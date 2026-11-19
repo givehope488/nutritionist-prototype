@@ -954,3 +954,9 @@ web: npm run build       → dist/assets/index-8jOqnNmc.js 177.00 kB │ gzip 60
 ```
 
 - 浏览器/真实接口不再复测：本机 `server` 的 `toCombo` 尚无两字段，页面按预期不显示该文案这一「向后兼容」路径已由单测覆盖；等 BE-A 第 7 项合入后再做真机确认。
+
+### 21.4 推送与 PR
+
+- 分支 `feat/fe-a-weigh-marker`（从 `origin/main` @ `6c4a321` 拉出），提交 `be317dd`。
+- PR **#74**：<https://github.com/givehope488/nutritionist-prototype/pull/74>，reviewers `givehope488` / `wyf-111`。
+- CI（head `be317dd`）：`lint` / `test` / `typecheck` 三绿。按防线 7 不自审自合，等评审。
