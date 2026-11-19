@@ -6,7 +6,7 @@ import { computed, onMounted, reactive, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { MINOR_AGE, PROFILE_BOUNDS } from '@canteen/shared';
 import type { Activity, ApiError, Goal, Meal, Profile, ProfileInput, Sex } from '@canteen/shared';
-import { getProfile, saveProfile } from '@/api/endpoints';
+import { deleteProfile, getProfile, saveProfile } from '@/api/endpoints';
 import AppButton from '@/components/base/AppButton.vue';
 import AppCard from '@/components/base/AppCard.vue';
 import AppErrorBanner from '@/components/base/AppErrorBanner.vue';
@@ -19,6 +19,7 @@ import AppSegmented from '@/components/base/AppSegmented.vue';
 import AppStepBar from '@/components/base/AppStepBar.vue';
 import type { RadioOption } from '@/components/types';
 import { sessionId } from '@/composables/useSession';
+import { clearRecommendationCache } from '@/composables/useRecommendationCache';
 import { MEAL_OPTIONS } from '@/utils/labels';
 
 const router = useRouter();
@@ -28,6 +29,11 @@ const saving = ref(false);
 const error = ref<ApiError | null>(null);
 const fieldErrors = reactive<Record<string, string>>({});
 const serverProfile = ref<Profile | null>(null);
+// 合规删除入口（API.md v1.2.4 §2.2）：必须二次确认，且文案写明连带删除全部用餐记录
+const confirmingDelete = ref(false);
+const deleting = ref(false);
+const deleteError = ref<ApiError | null>(null);
+const deleted = ref(false);
 
 const form = reactive({
   sex: 'male' as Sex,
@@ -155,7 +161,58 @@ async function submit(): Promise<void> {
     return;
   }
   serverProfile.value = result.data;
+  deleted.value = false;
   await router.push({ name: 'goal' });
+}
+
+function resetForm(): void {
+  form.sex = 'male';
+  form.height = '';
+  form.weight = '';
+  form.age = '';
+  form.activity = 'mid';
+  form.defaultMeal = 'lunch';
+  form.goal = 'health';
+  form.avoid = [];
+  clearErrors();
+}
+
+/**
+ * 删除成功后清掉本机残留（数据最小化）：推荐缓存（含 combo.id 预填）、
+ * 回填草稿与单条记录缓存（键前缀见 useLogDraft / useMealLogLookup）。
+ */
+function clearLocalResidue(): void {
+  clearRecommendationCache();
+  const prefixes = ['cn.draft.', 'cn.last_log.'];
+  const stale: string[] = [];
+  for (let index = 0; index < sessionStorage.length; index += 1) {
+    const key = sessionStorage.key(index);
+    if (key && prefixes.some((prefix) => key.startsWith(prefix))) stale.push(key);
+  }
+  for (const key of stale) sessionStorage.removeItem(key);
+}
+
+function startDelete(): void {
+  deleteError.value = null;
+  confirmingDelete.value = true;
+}
+
+async function confirmDelete(): Promise<void> {
+  if (deleting.value) return;
+  deleting.value = true;
+  deleteError.value = null;
+  const result = await deleteProfile(sessionId);
+  deleting.value = false;
+  // 404 = 档案已不存在（可能此前删过），与 204 一样按「已删除」收尾；其他错误留在确认区可重试
+  if (!result.ok && result.error.code !== 'NOT_FOUND') {
+    deleteError.value = result.error;
+    return;
+  }
+  clearLocalResidue();
+  serverProfile.value = null;
+  confirmingDelete.value = false;
+  deleted.value = true;
+  resetForm();
 }
 
 onMounted(async () => {
@@ -187,6 +244,10 @@ onMounted(async () => {
       <AppLoading v-if="loading" :rows="4" label="读取已有档案…" />
 
       <template v-else>
+        <AppCard v-if="deleted" padding="tight" class="deleted">
+          <p class="deleted__line">档案与全部用餐记录已删除，表单已清空，可以重新建档。</p>
+        </AppCard>
+
         <AppCard v-if="summary" padding="tight" class="summary">
           <p class="summary__line">
             服务端当前档案：BMI <strong>{{ summary.bmi }}</strong>（{{ summary.tag }}） ·
@@ -261,6 +322,31 @@ onMounted(async () => {
         <p class="hint">下一步设置目标和忌口；BMI 与日目标都由服务端计算后展示。</p>
 
         <AppButton block :loading="saving" @click="submit">保存，下一步设置目标</AppButton>
+
+        <AppCard v-if="serverProfile" padding="tight" class="danger">
+          <template v-if="!confirmingDelete">
+            <p class="danger__title">删除档案</p>
+            <p class="danger__text">
+              不再使用时可删除本档案；服务端会同步清理该档案下的全部用餐记录。
+            </p>
+            <AppButton size="sm" variant="secondary" @click="startDelete">删除档案…</AppButton>
+          </template>
+          <template v-else>
+            <p class="danger__title">确认删除？</p>
+            <p class="danger__text">
+              将删除档案与全部用餐记录，删除后无法恢复，历史统计会一并归零。
+            </p>
+            <AppErrorBanner v-if="deleteError" :error="deleteError" />
+            <div class="danger__actions">
+              <AppButton size="sm" variant="secondary" :disabled="deleting" @click="confirmingDelete = false">
+                取消
+              </AppButton>
+              <AppButton size="sm" variant="danger" :loading="deleting" @click="confirmDelete">
+                确认删除
+              </AppButton>
+            </div>
+          </template>
+        </AppCard>
       </template>
     </div>
   </div>
@@ -299,5 +385,32 @@ onMounted(async () => {
   margin: 0;
   color: var(--color-text-tertiary);
   font-size: var(--font-size-sm);
+}
+.deleted {
+  background: var(--color-info-bg);
+}
+.deleted__line {
+  margin: 0;
+  color: var(--color-info);
+  font-size: var(--font-size-md);
+}
+.danger {
+  border-color: var(--color-danger);
+}
+.danger__title {
+  margin: 0 0 var(--space-1);
+  color: var(--color-danger);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+}
+.danger__text {
+  margin: 0 0 var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+}
+.danger__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
 }
 </style>

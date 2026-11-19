@@ -85,6 +85,22 @@ export function upsertProfile(profile: Profile): Profile {
   return profile;
 }
 
+/**
+ * 删除档案并连带删除该 session 的全部用餐记录（API.md v1.2.4 §2.2 删除语义）。
+ * 返回 false 表示档案本就不存在（调用方据此回 404）。
+ */
+export function deleteProfile(sessionId: string): boolean {
+  const all = read<Record<string, Profile>>(KEYS.profiles, {});
+  if (!(sessionId in all)) return false;
+  delete all[sessionId];
+  write(KEYS.profiles, all);
+  write(
+    KEYS.logs,
+    read<StoredLog[]>(KEYS.logs, []).filter((log) => log.session_id !== sessionId),
+  );
+  return true;
+}
+
 /** 幂等键为请求体 id（API.md §0.7） */
 export function findLog(id: string): StoredLog | undefined {
   return read<StoredLog[]>(KEYS.logs, []).find((log) => log.id === id);

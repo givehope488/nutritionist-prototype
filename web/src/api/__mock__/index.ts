@@ -21,6 +21,7 @@ import {
   dishById,
   allDishes,
   activeDishes,
+  deleteProfile,
   findCombo,
   findLog,
   getProfile,
@@ -149,6 +150,14 @@ function getProfileMe(query: URLSearchParams): MockResponse {
   const profile = getProfile(sessionId);
   if (!profile) return fail(404, 'NOT_FOUND', '档案不存在，请先建档');
   return { status: 200, body: profile };
+}
+
+/** API.md v1.2.4 §2.2：204 无响应体；档案不存在回 404，语义与 GET /profiles/me 一致 */
+function deleteProfileMe(query: URLSearchParams): MockResponse {
+  const sessionId = query.get('session_id');
+  if (!sessionId) return invalid([{ path: 'session_id', issue: '不能为空' }]);
+  if (!deleteProfile(sessionId)) return fail(404, 'NOT_FOUND', '档案不存在，请先建档');
+  return { status: 204, body: undefined };
 }
 
 // ---------------------------------------------------------------------------
@@ -335,7 +344,7 @@ function getInsightsSummary(query: URLSearchParams): MockResponse {
 // 入口
 // ---------------------------------------------------------------------------
 export async function handleMockRequest(
-  method: 'GET' | 'POST' | 'PUT',
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
   url: string,
   body: unknown,
 ): Promise<MockResponse> {
@@ -347,6 +356,7 @@ export async function handleMockRequest(
   if (method === 'GET' && path === '/menu') return getMenu(query);
   if (method === 'POST' && path === '/profiles') return postProfile(body as Partial<ProfileInput>);
   if (method === 'GET' && path === '/profiles/me') return getProfileMe(query);
+  if (method === 'DELETE' && path === '/profiles/me') return deleteProfileMe(query);
   if (method === 'POST' && path === '/recommendations') {
     return postRecommendation(body as Partial<RecommendationRequest>);
   }

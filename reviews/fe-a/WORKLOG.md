@@ -882,3 +882,50 @@ blocked by CORS policy: No 'Access-Control-Allow-Origin' header
 
 - C6/A3「删除档案入口」：契约 §2.2 没有删除端点，前端不自造。
 - A6「称重菜参考值」：推荐响应的 `ComboDish` 没有 `pricing_mode`/称重标记，前端无法识别，故无法加「份量以现场称重为准」文案。
+
+## 20. 2026-11-18：合规删除入口（C6/A3）落地
+
+### 20.1 远端事实与派单
+
+- `git ls-remote origin refs/heads/main` → `0f5e8b0c21566d561e2aa389a4bbe1166a4405f8`（本地已同步，PROGRESS §6 我方行保留）。
+- PD 给 FE-A 的剩余两项：① 删除入口「可立即开工」（API.md v1.2.4 §2.2 已定：204 / 404，连带删该 session 全部 meal-logs，确认文案须写明）；② 称重标记「等 BE-B 加 shared 字段 + BE-A 补输出」。
+- 复核 `shared/src/types.ts`：`Dish.pricing_mode?` 已有（v3 菜单字段），但 **`ComboDish.pricing_mode?` / `Combo.has_weighed_dish?` 仍不存在** → ② 继续阻塞，本轮不动推荐页。
+
+### 20.2 改动清单（全部在 FE-A 可动范围）
+
+- `web/src/api/client.ts`：`HttpMethod` 增加 `'DELETE'`；`fetch` 分支遇 `204` 不再尝试 `res.json()`，直接返回 `ok: true, data: undefined`（否则空响应体会被当成「契约违约」）。
+- `web/src/api/endpoints.ts`：新增 `deleteProfile(sessionId)` → `DELETE /profiles/me?session_id=...`，类型 `request<void>`。
+- `web/src/api/__mock__/db.ts` + `__mock__/index.ts`：Mock 后端实现 `DELETE /profiles/me`，事务语义用「删档案 + 过滤该 session 的全部 logs」模拟；204 无 body、404 与 GET 一致。
+- `web/src/views/profile/ProfileView.vue`：档案存在时展示「删除档案」危险区 → 二次确认（标题「确认删除？」，正文「将删除档案与全部用餐记录，删除后无法恢复，历史统计会一并归零。」）→ 取消可退回；确认后 204 与 404 均按已删除收尾（其他错误留在确认区可重试），清理 `cn.last_recommendation`、`cn.draft.*`、`cn.last_log.*` 并复位表单，顶部展示「档案与全部用餐记录已删除」。
+- 单测：新增 `web/src/tests/unit/profileDelete.test.ts` 4 例（DELETE 204→404 与记录连带、未建档无入口、确认文案与取消、确认后清理+复位）；`client.test.ts` 增 204 空响应体 1 例。
+
+### 20.3 验证记录
+
+```
+web: npm run lint        → 无输出（通过）
+web: npm run typecheck   → 无输出（通过）
+web: npm run test        → Test Files 12 passed | Tests 75 passed
+web: npm run build       → dist/assets/index-B7QSx2fp.js 176.86 kB │ gzip 60.44 kB
+root: npm run check      → smoke 13/13；check:data 384 道全过；check:progress ✓
+```
+
+真实服务链路（`npm run start -w @canteen/server`，本机 8787）：
+
+```
+POST profile: 200
+POST log: 200
+DELETE profile: 204
+GET profile: 404
+GET meal-logs → {"total":0,"page":1,"logs":[]}
+```
+
+### 20.4 已知边界（不在本轮改）
+
+- 删除后 `session_id` 保持不变（不轮换），旧 session 在本机已无残留缓存，服务端也已无该 session 数据；若要彻底换身份需改 `useSession`（FE-B 范围），本轮未做。
+- A6 称重文案继续等 `shared` 补字段，落地后推荐页只需一行 `combo.has_weighed_dish` 判断。
+
+### 20.5 远端推送与 PR
+
+- 首次 push 被拒：远端 `feat/fe-a-w1-pages` 多出 `084b89e`（Merge remote-tracking branch 'origin/main'，即 GitHub「Update branch」）。按「不 force-push」合并，PROGRESS 采用本地（较新）版本——**远端那次冲突解决取了旧版，缺 11-18 #63 行**，本次合并已恢复；`check:progress` 通过。
+- 推送 `084b89e..9ac8a97` 成功；PR **#70** 已创建：<https://github.com/givehope488/nutritionist-prototype/pull/70>，reviewers `givehope488` / `wyf-111`。
+- CI（head `9ac8a97`）：`lint` / `test` / `typecheck` 三绿。按防线 7 不自审自合，等评审。

@@ -32,6 +32,15 @@ export function getProfile(sessionId: string) {
   return request<Profile>('GET', `/profiles/me${buildQuery({ session_id: sessionId })}`);
 }
 
+/**
+ * 删除档案（API.md v1.2.4 §2.2 合规删除入口）：204 成功、无响应体；
+ * 404 = 档案本就不存在。服务端会连带删除该 session 名下的全部 meal-logs，
+ * 调用方在确认文案里必须写明这一点。
+ */
+export function deleteProfile(sessionId: string) {
+  return request<void>('DELETE', `/profiles/me${buildQuery({ session_id: sessionId })}`);
+}
+
 export function createRecommendation(input: RecommendationRequest) {
   return request<RecommendationResponse>('POST', '/recommendations', { body: input });
 }
