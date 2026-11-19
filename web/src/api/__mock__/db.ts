@@ -42,6 +42,8 @@ function write(key: string, value: unknown): void {
 
 /** 种子里的 portion_grams / ingredients / source 是数据治理字段，API 一律不下发（API.md §2.1 v1.2.1） */
 function toContractDish(raw: (typeof rawSeed.dishes)[number]): Dish {
+  // v3 五字段只在 v3 种子里存在；老种子（原型 55 道）不下发这些键，而不是写 null
+  const v3 = raw as typeof raw & Pick<Dish, 'floor' | 'stall' | 'serving_mode' | 'pricing_mode' | 'recommendable'>;
   return {
     id: raw.id,
     name: raw.name,
@@ -57,6 +59,11 @@ function toContractDish(raw: (typeof rawSeed.dishes)[number]): Dish {
     drink: raw.drink,
     reliability: raw.reliability,
     status: raw.status,
+    ...(v3.floor === undefined ? {} : { floor: v3.floor }),
+    ...(v3.stall === undefined ? {} : { stall: v3.stall }),
+    ...(v3.serving_mode === undefined ? {} : { serving_mode: v3.serving_mode }),
+    ...(v3.pricing_mode === undefined ? {} : { pricing_mode: v3.pricing_mode }),
+    ...(v3.recommendable === undefined ? {} : { recommendable: v3.recommendable }),
   } as Dish;
 }
 

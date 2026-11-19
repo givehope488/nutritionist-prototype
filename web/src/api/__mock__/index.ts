@@ -200,6 +200,7 @@ function postRecommendation(body: Partial<RecommendationRequest>): MockResponse 
         fat_g: scaled.fat_g,
         carbs_g: scaled.carbs_g,
         sodium_mg: scaled.sodium_mg,
+        ...(dish.pricing_mode === undefined ? {} : { pricing_mode: dish.pricing_mode }),
       };
     });
     return {
@@ -208,6 +209,7 @@ function postRecommendation(body: Partial<RecommendationRequest>): MockResponse 
       totals: combo.totals,
       reason: reasonTemplate(combo, target, combo.dish_ids.map((id) => names.get(id) ?? ''), meal),
       engine: 'template',
+      has_weighed_dish: dishes.some((dish) => dish.pricing_mode === 'weigh'),
     };
   });
   saveCombos(body.session_id, meal, combos.map((combo) => combo.dish_ids));

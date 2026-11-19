@@ -1,6 +1,7 @@
 // 闭环三端点（推荐 / 回填 / 统计）的契约断言：字段名与取值范围逐条对齐 API.md §2.3~§2.5。
 import { describe, expect, it } from 'vitest';
-import type { MealLogRequest, Meal, ProfileInput } from '@canteen/shared';
+import rawSeed from '@menu-seed';
+import type { MealLogRequest, Meal, PricingMode, ProfileInput } from '@canteen/shared';
 import { createMealLog, createRecommendation, getInsightsSummary, listMealLogs, saveProfile } from '@/api/endpoints';
 import { toDateStr } from '@/utils/display';
 
@@ -59,6 +60,36 @@ describe('推荐（§2.3）', () => {
       expect(combo.reason.length).toBeGreaterThan(10);
       expect(['template', 'llm']).toContain(combo.engine);
       expect(combo.id).toMatch(/^[0-9a-f]{8}$/);
+    }
+  });
+
+  it('称重标记按 v1.2.4 §2.3 对齐：老种子不下发 pricing_mode，has_weighed_dish 为 false', async () => {
+    await seed();
+    const data = await recommend('lunch');
+    for (const combo of data.combos) {
+      expect(combo.has_weighed_dish).toBe(false);
+      for (const dish of combo.dishes) expect(dish).not.toHaveProperty('pricing_mode');
+    }
+  });
+
+  it('含称重菜时 ComboDish.pricing_mode=weigh 且 Combo.has_weighed_dish=true', async () => {
+    await seed();
+    type MutableSeedDish = (typeof rawSeed.dishes)[number] & { pricing_mode?: PricingMode };
+    const seedDishes = rawSeed.dishes as MutableSeedDish[];
+    const saved = seedDishes.map((dish) => dish.pricing_mode);
+    try {
+      for (const dish of seedDishes) dish.pricing_mode = 'weigh';
+      const data = await recommend('lunch');
+      expect(data.combos.length).toBeGreaterThan(0);
+      for (const combo of data.combos) {
+        expect(combo.has_weighed_dish).toBe(true);
+        for (const dish of combo.dishes) expect(dish.pricing_mode).toBe('weigh');
+      }
+    } finally {
+      seedDishes.forEach((dish, index) => {
+        if (saved[index] === undefined) delete dish.pricing_mode;
+        else dish.pricing_mode = saved[index];
+      });
     }
   });
 
