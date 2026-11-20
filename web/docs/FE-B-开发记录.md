@@ -470,3 +470,20 @@ PD 在 11-18 合入 #63 时把三件非阻塞遗留挂到 FE-B，要求「下次
 基线：新分支 `feat/fe-b-cleanup` 基于 main `0f5e8b0`，web lint / typecheck / **70 用例** 全绿。
 
 待办不变：等 BE-B 在 `shared` 加 `ComboDish.pricing_mode` / `Combo.has_weighed_dish` 后，同步 web `__mock__` 字段并补相应断言。
+
+## 21. web Mock 同步称重标记（2026-11-19）
+
+背景：BE-B 的 #67 已把 `ComboDish.pricing_mode?` / `Combo.has_weighed_dish?` 加进 `shared`（main `8ff42a7`），派单注明「web 的 `__mock__` 是否同步加字段归 FE-B」。FE-A 的 A6 文案（份量以现场称重为准）依赖这两个字段。
+
+实现：
+- `__mock__/db.ts` 的 `toContractDish` 透传 v3 五可选字段。老种子（原型 55 道，web mock 当前仍用 `menu-seed.json`）没有这些键，继续按契约「不下发」而不是写 null。
+- `__mock__/index.ts` 的组合构造：`ComboDish` 有 `pricing_mode` 才带上；`Combo.has_weighed_dish` 由 `dishes.some(d => d.pricing_mode === 'weigh')` 算出，老种子恒 false。
+
+测试（`closureEndpoints.test.ts`）：
+1. 老种子：每套组合 `has_weighed_dish === false`，`ComboDish` 不含 `pricing_mode` 键。
+2. 临时把种子全部标 `weigh`：逐菜透传 `pricing_mode: 'weigh'`、组合级为 true；`finally` 还原种子，避免污染其他用例（与 `w3Edges` 改 `dish.status` 的写法一致）。
+
+说明：web mock 的 `@menu-seed` 仍指原型 55 道（PD 11-17 明确「mock 与真实菜单无关不必动」），因此开发态 mock 里不会出现称重组合；A6 的真机验证对真实 v3 后端（100 道 weigh 菜）。shared 字段到位后，web 侧无需再保留任何称重临时类型（实际也不存在）。
+
+复跑：lint / typecheck / **72 用例** / build 全绿。
+

@@ -240,8 +240,10 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 
 ## 5. 变更记录
 
+- 2026-11-19 wyf-111 | 变更 | **web Mock 同步契约 v1.2.4 称重标记**（BE-B 第 11 项里「web 的 `__mock__` 同步加字段归 FE-B」部分）：①`__mock__/db.ts` 的菜单投影透传 v3 五可选字段（`floor` / `stall` / `serving_mode` / `pricing_mode` / `recommendable`），老种子仍「不下发键」而不是写 null；②推荐组合按 §2.3 透传 `ComboDish.pricing_mode`，并算出 `Combo.has_weighed_dish`（任一菜 `weigh` 即 true，老种子为 false）。测试补两条：老种子下无 `pricing_mode` 键且 `has_weighed_dish=false`；临时把种子全部标 `weigh` 后逐菜透传且组合级为 true（用例结束还原种子）。web lint / typecheck / **72 用例** / build 全绿 | FE-A：A6「份量以现场称重为准」的数据侧就绪（真实 v3 后端有 100 道称重菜；mock 仍是原型种子，恒 false）；BE-A：按 shared 新字段补推荐输出即可与 mock 对齐；BE-B：服务端采纳率实现不受影响
 - 2026-11-19 Aredjdhd | 变更 | **推荐页称重文案前端侧就绪（A6/I5）**：shared 两字段（#67）进主干后，推荐页对每套组合做一行 `combo.has_weighed_dish` 判断，命中时展示「含称重菜：份量以现场称重为准，热量为参考值」；标记为 false 或缺失（老种子 / 引擎尚未输出）时不显示，兼容老响应。新增 2 个用例（true 显示、false/缺失不显示），web 77 用例、lint / typecheck / build 全绿。**真实接口暂不出现该文案**：BE-A 第 7 项尚未在 `toCombo` 输出两字段，他一合入即自动生效，前端无需再改 | BE-A：第 7 项合入后 A6 即闭环；PD：A6 验收可等 BE-A 后勾；FE-B：#73 的 mock 称重标记与本改动互补
 - 2026-11-19 PD | 变更 | **合并四连 + PR 收口（本次提交）**：①#72 采纳率服务端（`2436388`）——BE-B 第 4 项完成，**W2 验收 D1 解锁**；②#71 契约 v1.2.5（`a8587fa`）——BE-A 第 8 项完成，契约-实现-前端三方对齐；③#70 档案删除入口（`e1d7b7a`）——FE-A 完成，C6/A3 可勾；④#69 FE-B 结项（`bd03340`）。合并后组合实测：server 106 + web 75 用例全过、v3 e2e 10 断言全过、体检 384 道。PR 收口：#63 已关闭（API）；#67/#68 关闭调用被安全策略拦截，**待 PD 手动关闭**。**当前全队仅剩的活**：BE-A 第 7 项（toCombo 输出两字段，A6 最后一环）、BE-B 第 13 项（行尾三 PR）、FE-B mock-weigh 开 PR。W2 验收关键路径已全部打通 | 今天目标：BE-A 交第 7 项、BE-B 收 #64、FE-B 开 mock-weigh，全员周三集成冒烟
+
 
 - 2026-11-19 PD | 变更 | **合并 BE-B 的两个 PR（#67 / #68），并手动关闭 #65 / #66**（本次提交）：①#67 shared 两字段（`ComboDish.pricing_mode` + `Combo.has_weighed_dish`）合入为 `8ff42a7`——FE-B 的 web 临时类型可删、BE-A 第 7 项输出解锁；②#68 DELETE 事务加固（去 TOCTOU + `BEGIN IMMEDIATE`，补重复删除 404 与 insights 归零两条用例）合入为 `21be420`；③#65/#66 经 API 手动关闭（此前删分支未触发自动关闭）。合并后组合实测：server 89 + web 70 用例全过、数据体检 384 道、vue-tsc 干净 | BE-B：**第 4 项（采纳率服务端）是现在唯一卡 D1 的事**——契约 v1.2.5 文本已在 BE-A 分支落笔、前端 #63 已就位，请今天开工；第 13 项（关 #60/#62、合 #64）仍悬着。BE-A：契约分支 PD 已预审（与 §6 裁决逐字一致），**开 PR 即合**；第 7 项字段已就位可动手。FE-A：删除入口已在分支完成但 PR 未开，请开出
 
