@@ -180,6 +180,10 @@ onMounted(async () => {
                 @adopt="adopt(combo.id)"
                 @replay="refresh"
               />
+              <!-- A6/I5：服务端算好的组合级标记（API.md v1.2.4 §2.3），本页只做一行判断 -->
+              <p v-if="combo.has_weighed_dish" class="weigh-note">
+                含称重菜：份量以现场称重为准，热量为参考值。
+              </p>
             </li>
           </ul>
 
@@ -282,6 +286,11 @@ onMounted(async () => {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+.weigh-note {
+  margin: calc(-1 * var(--space-2)) var(--space-2) 0;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
 }
 .foot {
   margin: 0;

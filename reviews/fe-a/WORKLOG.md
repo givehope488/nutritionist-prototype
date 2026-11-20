@@ -929,3 +929,34 @@ GET meal-logs → {"total":0,"page":1,"logs":[]}
 - 首次 push 被拒：远端 `feat/fe-a-w1-pages` 多出 `084b89e`（Merge remote-tracking branch 'origin/main'，即 GitHub「Update branch」）。按「不 force-push」合并，PROGRESS 采用本地（较新）版本——**远端那次冲突解决取了旧版，缺 11-18 #63 行**，本次合并已恢复；`check:progress` 通过。
 - 推送 `084b89e..9ac8a97` 成功；PR **#70** 已创建：<https://github.com/givehope488/nutritionist-prototype/pull/70>，reviewers `givehope488` / `wyf-111`。
 - CI（head `9ac8a97`）：`lint` / `test` / `typecheck` 三绿。按防线 7 不自审自合，等评审。
+
+## 21. 2026-11-19：推荐页称重文案（A6/I5）前端侧就绪
+
+### 21.1 远端事实
+
+- `origin/main` = `6c4a321`（四连合并后的派单更新）。#70 的内容已由 PD squash 合入为 `e1d7b7a`；**PR #70 页面仍是 open（`merged: false`）**，按 PD 处理 #65/#66 的先例，squash 合并后需手动关闭，未代 PD 操作。
+- `shared/src/types.ts` 已有 `ComboDish.pricing_mode?`（#67，`8ff42a7`）与 `Combo.has_weighed_dish?`，类型侧解锁 A6。
+- **引擎侧仍未输出**：`git show origin/main:server/src/engines/recommend.ts` 的 `toCombo`（第 157~179 行）只内部计算 `hasWeighed` 用于评分与 reason，没有把 `pricing_mode` / `has_weighed_dish` 写进响应——即 PROGRESS 所说「BE-A 第 7 项」仍空缺。故本次只做前端判断与用例，真实接口文档暂不显示，BE-A 合入后自动生效。
+- 远端另有 FE-B 的 #73（mock 补称重标记）在开，本分支不碰 Mock，避免与其冲突。
+
+### 21.2 改动
+
+- `web/src/views/recommend/RecommendView.vue`：每套组合卡片下方按 `combo.has_weighed_dish` 展示「含称重菜：份量以现场称重为准，热量为参考值。」；false / 缺失不渲染（老种子与服务端未输出时保持原样）。
+- 新增 `web/src/tests/unit/recommendWeigh.test.ts` 2 例：true 显示、false 与缺失不显示（对 `createRecommendation` 用一次性 mock 注入响应，其余接口仍走 Mock 后端）。
+
+### 21.3 验证
+
+```
+web: npm run lint        → 无输出（通过）
+web: npm run typecheck   → 无输出（通过）
+web: npm run test        → Test Files 13 passed | Tests 77 passed
+web: npm run build       → dist/assets/index-8jOqnNmc.js 177.00 kB │ gzip 60.51 kB
+```
+
+- 浏览器/真实接口不再复测：本机 `server` 的 `toCombo` 尚无两字段，页面按预期不显示该文案这一「向后兼容」路径已由单测覆盖；等 BE-A 第 7 项合入后再做真机确认。
+
+### 21.4 推送与 PR
+
+- 分支 `feat/fe-a-weigh-marker`（从 `origin/main` @ `6c4a321` 拉出），提交 `be317dd`。
+- PR **#74**：<https://github.com/givehope488/nutritionist-prototype/pull/74>，reviewers `givehope488` / `wyf-111`。
+- CI（head `be317dd`）：`lint` / `test` / `typecheck` 三绿。按防线 7 不自审自合，等评审。

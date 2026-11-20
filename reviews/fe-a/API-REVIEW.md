@@ -332,3 +332,10 @@ W1 三页（建档 / 目标与忌口 / 推荐）交付前的远端复核。以�
 2. **真实链路实测**：本机起 `@canteen/server`，`POST /profiles` 200 → `POST /meal-logs` 200 → `DELETE /profiles/me` 204 → `GET /profiles/me` 404 → `GET /meal-logs` `total: 0`，与契约一致。
 3. **前端已落地**：`client.ts` 支持 DELETE 且 204 空响应体按成功处理；档案页危险区二次确认 + 本机缓存清理；Mock 后端同步实现，默认 `mock://local` 下也能演示。
 4. **A6 仍未解**：`shared/src/types.ts` 有 `Dish.pricing_mode?`，但 `ComboDish.pricing_mode?` 与 `Combo.has_weighed_dish?` 尚未加入；推荐页称重文案继续等 BE-B 补类型 + BE-A 补输出，不提前自造字段。
+
+### 10. A6 称重标记前端侧就绪（2026-11-19，`origin/main` @ `6c4a321`）
+
+1. **字段已由 #67 进主干**：`ComboDish.pricing_mode?` + `Combo.has_weighed_dish?` 与 API.md v1.2.4 §2.3 语义一致（组合级由服务端算好，缺省按 `fixed`）。上一节第 4 条所述的「等 BE-B 补类型」已完成。
+2. **引擎输出仍缺**：`server/src/engines/recommend.ts` 的 `toCombo` 只内部使用 `hasWeighed` 参与评分与 reason，响应未写 `pricing_mode` / `has_weighed_dish`（BE-A 第 7 项）。因此**真实接口当前不会触发前端文案**，这不是前端未实现，而是上游未输出。
+3. **前端已实现向后兼容判断**：推荐页按 `combo.has_weighed_dish` 展示「含称重菜：份量以现场称重为准，热量为参考值。」；false 或键缺失时不渲染。2 个用例覆盖 true / false / 缺失。BE-A 合入后无需再改前端。
+4. **未使用 `ComboDish.pricing_mode`**：I5 只要求组合级提示；逐道标记留给后续「定位到具体哪道菜」的展示需求，避免当前多做无验收依据的 UI。
