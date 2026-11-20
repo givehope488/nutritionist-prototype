@@ -394,6 +394,57 @@ describe('称重菜评分放宽 + 文案提示（MENU-V3 §2.4⑤ / I5）', () =
   });
 });
 
+describe('称重标记输出（PROGRESS §2.2 #7 / API.md v1.2.4 §2.3）', () => {
+  it('含称重菜的组合 has_weighed_dish=true，且对应 dish 带 pricing_mode:"weigh"', () => {
+    const pool: Dish[] = [
+      mk('ws1', '称重主食', 'staple', ['lunch'], [], 300, { pricing_mode: 'weigh' }),
+      mk('wp1', '称重主菜', 'protein', ['lunch'], [], 400, { pricing_mode: 'weigh' }),
+      mk('wv1', '称重素菜', 'veg', ['lunch'], [], 100, { pricing_mode: 'weigh' }),
+      mk('fs1', '固定主食', 'staple', ['lunch'], [], 300),
+      mk('fp1', '固定主菜', 'protein', ['lunch'], [], 400),
+      mk('fv1', '固定素菜', 'veg', ['lunch'], [], 100),
+    ];
+    let checked = 0;
+    for (let i = 0; i < 30; i++) {
+      const { combos } = recommendCombos(pool, {
+        meal: 'lunch', goal: 'health', avoidTags: [], target: lunchTarget(),
+      });
+      for (const c of combos) {
+        if (!c.has_weighed_dish) continue;
+        checked++;
+        expect(c.has_weighed_dish).toBe(true);
+        // 组合级标记为真 ⇔ 至少有一道菜透传了 pricing_mode:'weigh'
+        expect(c.dishes.some((d) => d.pricing_mode === 'weigh')).toBe(true);
+      }
+    }
+    expect(checked).toBeGreaterThan(0);
+  });
+
+  it('老种子（无 pricing_mode 字段）的组合不下发 pricing_mode 键、has_weighed_dish=false', () => {
+    // mk() 不传 extra 即无 pricing_mode 键——等价于 55 道原型种子的菜
+    const pool: Dish[] = [
+      mk('fs1', '固定主食', 'staple', ['lunch'], [], 300),
+      mk('fp1', '固定主菜', 'protein', ['lunch'], [], 400),
+      mk('fv1', '固定素菜', 'veg', ['lunch'], [], 100),
+      mk('fs2', '固定主食2', 'staple', ['lunch'], [], 320),
+      mk('fp2', '固定主菜2', 'protein', ['lunch'], [], 380),
+      mk('fv2', '固定素菜2', 'veg', ['lunch'], [], 120),
+    ];
+    expect(pool.some((d) => 'pricing_mode' in d)).toBe(false);
+
+    const { combos } = recommendCombos(pool, {
+      meal: 'lunch', goal: 'health', avoidTags: [], target: lunchTarget(),
+    });
+    expect(combos.length).toBeGreaterThan(0);
+    for (const c of combos) {
+      expect(c.has_weighed_dish).toBe(false);
+      for (const d of c.dishes) {
+        expect('pricing_mode' in d).toBe(false);
+      }
+    }
+  });
+});
+
 describe('E6/E7 四路混合下的套数与贴合度仍成立', () => {
   it('四路混合池 30 次抽样恒 3 套，且至少一套非称重偏离 ≤10%', () => {
     const target = lunchTarget('health');

@@ -170,6 +170,9 @@ function toCombo(dishes: Dish[], target: MealTarget): Combo {
     fat_g: round1(d.fat_g),
     carbs_g: round1(d.carbs_g),
     sodium_mg: Math.round(d.sodium_mg),
+    // 称重标记（API.md v1.2.4 §2.3，PROGRESS §2.2 #7）：与 Dish 同规则——
+    // 老种子没有 pricing_mode 键时不下发，只有 v3 菜才带这个键。
+    ...(d.pricing_mode !== undefined ? { pricing_mode: d.pricing_mode } : {}),
   }));
 
   return {
@@ -177,6 +180,8 @@ function toCombo(dishes: Dish[], target: MealTarget): Combo {
     dishes: comboDishes,
     totals,
     reason: buildReason(totals, target, hasPlant, hasWeighed),
+    // 组合级称重标记：服务端算好，前端一行判断即可显示「份量以现场称重为准」
+    has_weighed_dish: hasWeighed,
     engine: 'template' as TextEngine,
   };
 }
