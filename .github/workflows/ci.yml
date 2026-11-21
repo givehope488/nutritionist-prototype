@@ -88,3 +88,15 @@ jobs:
         if: hashFiles('web/package.json') != ''
         working-directory: web
         run: npm run test
+
+  deploy-config:
+    name: deploy-config
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      # 只校验 compose 文件本身（YAML + 变量插值）：真正的镜像构建放在发布机上做，
+      # 避免每次 PR 都花几分钟拉基础镜像。
+      - name: 校验 compose 配置
+        env:
+          ADMIN_TOKEN: ci-dummy-token-not-real
+        run: docker compose config > /dev/null
