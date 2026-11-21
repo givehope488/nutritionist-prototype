@@ -30,6 +30,7 @@ import AppStepper from '@/components/base/AppStepper.vue';
 import AppTabs from '@/components/base/AppTabs.vue';
 import ComboCard from '@/components/business/ComboCard.vue';
 import DishCard from '@/components/business/DishCard.vue';
+import DishFeedbackCard from '@/components/business/DishFeedbackCard.vue';
 import NutritionSummary from '@/components/business/NutritionSummary.vue';
 import VerdictCard from '@/components/business/VerdictCard.vue';
 
@@ -182,6 +183,10 @@ const avoidOptions = ['不吃辣', '不吃猪肉', '不吃海鲜', '素食', '�
 
       <AppCard title="推荐组合卡 ComboCard（FE-A 推荐页消费）">
         <ComboCard :combo="sampleCombo" :target="sampleTarget" :index="1" />
+      </AppCard>
+
+      <AppCard title="菜品反馈入口 DishFeedbackCard（反馈页，W3-C5）">
+        <DishFeedbackCard :items="sampleMealLog.items" :date="sampleMealLog.date" meal-label="午餐" />
       </AppCard>
 
       <AppCard title="状态组件 徽标 / 空态 / 加载 / 错误">
