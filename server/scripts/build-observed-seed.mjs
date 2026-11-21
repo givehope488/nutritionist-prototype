@@ -69,9 +69,29 @@ const TAG_RULES = [
   ['spicy', /辣|麻辣|红油|辣子|香辣|椒麻|藤椒|剁椒|酸辣|泡椒/],
   ['vegprotein', /豆腐|豆干|豆皮|腐竹|千张|豆泡|油豆腐|素肉|豆芽/],
 ];
-function inferTags(name, category) {
+/**
+ * 配料级标签规则（2026-11-21 PD 补）：菜名规则对「红烧肉」「鸡胸肉丝」这类**字面不含
+ * 猪/牛/鸡**的菜完全失效——188 道荤菜因此裸奔，导致素食/不吃猪牛肉/海鲜的忌口过滤
+ * 在数据层就失效（W3 抽检发现）。配料已全量入库，按配料名补判最可靠。
+ * 注意：`牛` 需排除 牛奶/牛乳/牛油果；`里脊` 是通用词（牛里脊），故不入 pork 规则。
+ */
+const INGREDIENT_TAG_RULES = [
+  ['pork', /猪|五花|排骨|培根|火腿|香肠|腊肉|叉烧|猪油|肉末|肉片|肉丝|肉丁|肉馅|肉丸|午餐肉/],
+  ['beef', /牛(?!奶|乳|油果|角|丸)|肥牛|牛柳|牛腩|牛腱|毛肚|千层肚|黄喉|牛肚/],
+  ['seafood', /虾|蟹|鱼|鱿鱼|贝|蛤|蛏|海带|紫菜|海米/],
+  ['egg', /蛋/],
+  ['milk', /奶|芝士|黄油|炼乳/],
+  ['peanut', /花生/],
+  ['spicy', /辣椒|豆瓣酱|花椒|小米辣|辣椒油|老干妈/],
+  ['vegprotein', /面筋|腐竹|豆干|豆腐|千张/],
+];
+const POULTRY = /鸡|鸭|鹅|羊/;
+
+function inferTags(name, category, ingredientText = '') {
   const tags = [];
   for (const [tag, re] of TAG_RULES) if (re.test(name)) tags.push(tag);
+  for (const [tag, re] of INGREDIENT_TAG_RULES) if (re.test(ingredientText)) tags.push(tag);
+  if (POULTRY.test(ingredientText)) tags.push('meat');
   // 麻辣烫的辣度由**汤底**表达（番茄/金汤不辣、微辣辣），配菜本身不标 spicy。
   // 早前版本给配菜一律补 spicy，导致「不吃辣」的档案连番茄汤底的麻辣烫都推不出来。
   // 引擎的忌口过滤作用于组合前的整个候选池（engines/recommend.ts 的 allDishes.filter），
@@ -216,7 +236,7 @@ for (const o of obs) {
     meals: st.meals,
     kcal,
     protein_g: t[1], fat_g: t[2], carbs_g: t[3], sodium_mg: t[4],
-    tags: inferTags(o.name, category),
+    tags: inferTags(o.name, category, (ing.ingredients ?? []).map((i) => i.name).join(' ')),
     drink: /奶|豆浆|可乐|雪碧|美年达|果汁/.test(o.name),
     reliability: 'B',
     status: 'active',
