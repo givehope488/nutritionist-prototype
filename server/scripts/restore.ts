@@ -15,7 +15,7 @@ import { DatabaseSync } from 'node:sqlite';
  *   npm run restore -- server/data/backups/app-2026-11-21T13-00-00-000Z.db
  *   npm run restore -- <备份文件> <目标库路径>
  */
-const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
+const REPO_ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const DEFAULT_DB = join(REPO_ROOT, 'server', 'data', 'runtime', 'app.db');
 
 const backupPath = process.argv[2];

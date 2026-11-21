@@ -16,7 +16,7 @@ import { DatabaseSync } from 'node:sqlite';
  *
  * 备份文件是 `*.db`，已被 .gitignore 忽略，不会入库（§6 约束）。
  */
-const REPO_ROOT = fileURLToPath(new URL('../../../', import.meta.url));
+const REPO_ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const DEFAULT_DB = join(REPO_ROOT, 'server', 'data', 'runtime', 'app.db');
 
 const dbPath = process.env.DATABASE_URL ?? DEFAULT_DB;
