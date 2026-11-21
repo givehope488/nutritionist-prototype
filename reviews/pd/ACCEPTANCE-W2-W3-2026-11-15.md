@@ -54,7 +54,7 @@ W2 的主题是「联调」。**验收的基准是「一条真机端到端流程
 | ✅ | D2 管理端接口 + CLI | ✅ 11-21 PD 验收：#49/#58 管理端 CLI + HTTP 六端点 | 菜品可上下架、改份量、改营养值；管理端 CLI 一条命令可查 | BE-B |
 | ✅ | D3 七端点 smoke | ✅ 11-21 PD 验收：smoke 13/13（v3 下实跑） | `npm run smoke` 12/12 通过 | BE-B |
 | ✅ | D4 日期窗口走本地日期 | ✅ 11-21 PD 验收：insights.ts windowStartDate 本地时区实现（L24），明确注释禁用 toISOString | 「今天 ± N 天」的计算用 `windowStartDate(days, now)`（本地日期），**不是 `toISOString()`** | BE-B |
-| ☐ | D5 备份 | 数据库有备份脚本与一次恢复演练记录 | BE-B |
+| ✅ | D5 备份 | ✅ 11-21 PD 验收：11-21 #77 落地：backup/restore 脚本 + BACKUP.md 演练记录；PD 修 REPO_ROOT 层级 bug（2bf11cf）后复跑：备份 12ms/恢复 9ms/integrity=ok | 数据库有备份脚本与一次恢复演练记录 | BE-B |
 
 ## E. 文档一致
 

@@ -207,12 +207,12 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 
 | 归属 | 任务 | 说明 | 时点 |
 |---|---|---|---|
-| BE-B | **W2-D5 备份**（W2 唯一遗留技术项） | 数据库备份脚本 + **一次真实恢复演练**并记录耗时；`*.db` 不得入库（§6 约束） | **11-23** |
-| BE-B | **W3-C1 部署三件套** | docker compose + 反代 + 备份，脚本可重跑；提前到周末动手，C2 上线检查清单（回滚/降级/监控）随做随记 | 11-23~24 |
-| BE-B | ci.yml 升级（小事） | `actions/checkout@v4` / `setup-node@v4` → v5，消掉 CI 的 Node 20 弃用警告 | 顺手 |
+| BE-B | ~~W2-D5 备份~~ **✅ 11-21 完成（#77 合入 `1a0eb15`）** | backup/restore 脚本 + docs/BACKUP.md 演练记录；**PD 发现并修掉 REPO_ROOT 层级 bug（`2bf11cf`），本地复跑备份 12ms/恢复 9ms/integrity=ok** | 完成 |
+| BE-B | ~~W3-C1 部署三件套~~ **✅ 11-21 完成（#78 合入 `cfd9c20`）** | compose + Dockerfile×2 + nginx 反代 + docs/DEPLOY.md；ADMIN_TOKEN 必填 fail-fast、无明文密钥、CI 加 deploy-config 校验 | 完成 |
+| BE-B | ~~ci.yml 升级~~ **✅ 11-21 完成（随 #77/#78）** | 六处 v4 → v5，Node 20 弃用警告消除 | 完成 |
 | FE-A | **W3-A6 数据可信度披露** | 核查推荐卡 / 菜单卡是否展示克重（A/B 级**不展示克重**），口径统一「营养值为估算」；发现即改 | **11-23** |
 | FE-A | 周一站会：A1 免责声明确认 | `AppDisclaimer.vue` 已全局挂载，需全员过目确认文案 | 11-23 |
-| FE-B | **W3-C5 反馈收集入口评估** | 「员工报菜名 → observed-menu 更新」链路是否满足「固定入口与收集渠道」；不足则最小实现（优先复用反馈页，不新开页面） | **11-23** |
+| FE-B | ~~W3-C5 反馈收集入口~~ **✅ 11-21 完成（#76 合入 `01651b4`）** | DishFeedbackCard 组件 + 单测（web 82 用例），反馈页接入，未新开页面 | 完成 |
 | BE-A | 抽检评审支持 | PD 开始 20 条人工抽检（W3-B1）后按菜归属答疑；无前置活，随叫随到 | 11-23 起 |
 | PD | ①20 条人工抽检（W3-B1/B4）②E3 OBSERVED-MENU 核对 ③手动 Close #69~#75 ④界面视觉走查 | 抽检含边界场景（无解/极低热量/素食/称重菜）；视觉走查补功能证据外的界面确认（B1/B2/B3 已按功能测试勾选） | 周末~11-24 |
 ## 3. 时间线
@@ -255,6 +255,7 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 
 ## 5. 变更记录
 
+- 2026-11-21 PD | 变更 | **W3 提前派单三件即日交付：合 #77 备份 / #78 部署 / #76 反馈入口，并修掉备份脚本路径 bug**（本次提交）：①#77（`1a0eb15`）W2-D5——backup 用 VACUUM INTO、restore 带 pre-restore 退路；**PD 实测发现 REPO_ROOT 退三级到仓库外（npm run backup 必失败），修正为两级（`2bf11cf`）并完整演练：备份 12ms/116KB、恢复 9ms、完整性通过**，请 BE-B 复核 BACKUP.md 的演练数值并复跑；②#78（`cfd9c20`）W3-C1 部署三件套，无明文密钥、token 必填 fail-fast；③#76（`01651b4`）W3-C5 反馈入口。合并后组合实测：server 108 + web 82 用例、v3 e2e 10 断言、体检 384 道全绿。**W2 验收 28/28 全部可勾（D5 已完成），W3 已落地 A1/A2/A3/A4/C1/C5** | 剩余：E3 OBSERVED-MENU 核对（PD）、20 条抽检（PD）、C2/C3 发布演练、手动关 #76~#78 与 #64
 - 2026-11-21 BE-B | 变更 | **W3-C1 部署三件套落地**：①`deploy/Dockerfile.server`（Node 22 + tsx 直跑 TS，启动先幂等 seed 再起服务，内置 fetch 健康检查）；②`deploy/Dockerfile.web`（vite 构建 + nginx 运行）；③`deploy/nginx.conf`（静态站 + `/api/*` 反代到 `server:8787` + `/healthz` 透传 + SPA 回落 + gzip + 静态资源长缓存）；④`docker-compose.yml`（两服务、`depends_on: service_healthy`、运行时库与备份挂 volume、`ADMIN_TOKEN` 必填）；⑤`.dockerignore` / `.env.example`；⑥`docs/DEPLOY.md`（首次部署四条验收 + **C2 回滚/降级/监控清单** + 5 条已知限制）。**同源部署**：前端 `VITE_API_BASE` 留空 → 请求 `/api/v1/...` 由容器内 nginx 反代，不需要 CORS。CI 新增 `deploy-config` job（`docker compose config` 校验 YAML 与变量插值） | PD/PB：`cp .env.example .env` → `docker compose up -d --build` 即可；回滚有三级（代码/镜像/数据），数据回滚走 `docs/BACKUP.md` 的 `npm run restore`（实测 5 ms）
 - 2026-11-21 BE-B | 变更 | **W2-D5 备份 + 真实恢复演练完成**：新增 `server/scripts/backup.ts` / `restore.ts` 与 `npm run backup` / `npm run restore`。备份用 **`VACUUM INTO`**（直接拷 `.db` 在有写事务或 `-wal` 未 checkpoint 时会拿到半写状态的库），完成后自检 `integrity_check` 与四张表行数；恢复的安全默认是「先校验备份 → 覆盖前给现库留 `.pre-restore-*.db` 退路 → 恢复后复核行数」。**演练实测**（v3 384 道 + 1 档案 + 1 回填）：备份 **12 ms / 116 KB**，模拟事故（清业务数据 + 把 384 道菜 kcal 全改 0）后恢复 **5 ms**，恢复后 `dishes=384 profiles=1 meal_logs=1`、零热量菜 0、`integrity=ok`。操作手册与耗时记录见 `docs/BACKUP.md` | PD/PB：定时任务与保留策略已写进文档；`*.db` 仍在 `.gitignore` 内，备份不会入库
 - 2026-11-21 BE-B | 变更 | **CI 升到 `actions/checkout@v5` / `setup-node@v5`**：替换 6 处 v4 引用，消掉 CI 日志里「Node 20 is deprecated」的警告（v5 跑在 Node 24 上，与 `.nvmrc` 的 Node 24 一致） | 全队：CI 日志不再有弃用噪声，其他行为不变
