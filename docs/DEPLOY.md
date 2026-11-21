@@ -1,0 +1,116 @@
+# 部署与上线（W3-C1 / C2）
+
+> 面向：PB（运维）、PD（发布）。
+> 三件套 = **compose 编排 + nginx 反代 + 备份**。全部文件在 `deploy/` 与仓库根。
+
+## 1. 文件清单
+
+| 文件 | 作用 |
+|---|---|
+| `deploy/Dockerfile.server` | 服务端镜像（Node 22，tsx 直接跑 TS） |
+| `deploy/Dockerfile.web` | 前端构建 + nginx 运行（同时承担反代） |
+| `deploy/nginx.conf` | 静态站 + `/api/*` 反代 + SPA 回落 + gzip |
+| `docker-compose.yml` | 两个服务、卷、健康检查、依赖顺序 |
+| `.env.example` | `ADMIN_TOKEN` / `TEXT_ENGINE` / `WEB_PORT` |
+| `docs/BACKUP.md` | 备份与恢复（含演练记录） |
+
+**架构**（单机、同源）：
+
+```
+浏览器 ──> web 容器（nginx :80 → 宿主 8080）
+              ├─ /             → /usr/share/nginx/html（vite 产物，SPA 回落）
+              ├─ /assets/*     → 长缓存
+              ├─ /healthz      → 反代 server:8787/healthz
+              └─ /api/*        → 反代 server:8787/api/*
+                                    │
+                             server 容器（Node 22，:8787）
+                                    └─ SQLite 文件 → ./server/data/runtime（volume）
+```
+
+同源部署的好处：前端请求 `/api/v1/...` 与页面同源，**不需要 CORS**，也不会因为漏配 Origin 在某些浏览器上静默失败。
+
+## 2. 首次部署
+
+```bash
+cp .env.example .env
+# 生成并填入 ADMIN_TOKEN
+node -e "console.log(require('node:crypto').randomBytes(24).toString('hex'))"
+
+docker compose up -d --build
+docker compose ps            # web 与 server 都应为 healthy
+```
+
+**验收四条**（缺一不可）：
+
+```bash
+curl -s http://localhost:8080/healthz                     # {"status":"ok",...}
+curl -s http://localhost:8080/api/v1/menu | head -c 120    # 菜品 JSON（服务端已在启动时 seed）
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8080/api/v1/admin/dishes   # 401（没令牌）
+curl -s -H "X-Admin-Token: $ADMIN_TOKEN" http://localhost:8080/api/v1/admin/dishes   # 200 + 数组
+```
+
+浏览器打开 `http://<主机>:8080/` → 建档 → 目标 → 推荐 → 采纳 → 回填 → 历史，一条链走通即算上线成功。
+
+> 首次启动的种子：服务端容器 `CMD` 里会先跑 `npm run seed`（幂等）。已有数据时它会**先清空 dishes 再全量写入**，
+> 因此**不要**在已有运营修订的库上重启容器去触发 seed——见 `docs/BACKUP.md` 的恢复流程。
+
+## 3. C2 上线检查清单
+
+### 3.1 回滚
+
+| 级别 | 做法 | 耗时 |
+|---|---|---|
+| 代码回滚 | `git revert <commit>` → `docker compose up -d --build` | 1~2 分钟 |
+| 镜像回滚 | 发布前 `docker tag canteen-server:local canteen-server:prev`，出事 `docker tag canteen-server:prev canteen-server:local` + `up -d` | <1 分钟 |
+| 数据回滚 | 停服务 → `npm run restore -- backups/app-<时间戳>.db` → 起服务（`docs/BACKUP.md`） | 秒级（实测 5 ms @116 KB） |
+
+**发布前必做**：`npm run backup`，并把产物路径记进发布记录。
+
+### 3.2 降级
+
+| 场景 | 降级手段 |
+|---|---|
+| 推荐引擎异常（`/recommendations` 5xx） | 前端降级到「自选回填」：回填页不依赖推荐也能提交（`items` 手选），采纳率自然变 0 但不阻塞用户 |
+| 菜品数据有问题 | 管理端 `status <id> hidden` 下架单菜（`npm run admin -w @canteen/server -- status <id> hidden`），无需发版 |
+| LLM 层异常 | `TEXT_ENGINE=template`（默认值），判语走模板，全程不依赖外部服务 |
+| 数据库损坏 | 停服务 → 用最近一次备份恢复 → 起服务（`docs/BACKUP.md`） |
+
+### 3.3 监控
+
+| 指标 | 怎么查 | 告警阈值（建议） |
+|---|---|---|
+| 服务存活 | `docker compose ps` 的 healthy / `GET /healthz` | 非 200 连续 3 次 |
+| 接口错误率 | `docker compose logs server` 里 5xx 计数 | 5 分钟内 >10 条 |
+| 响应延迟 | nginx `access_log`（`proxy_read_timeout 30s` 是硬上限） | P95 > 2s |
+| 磁盘 | `df -h`（SQLite + 备份都在本地盘） | 使用率 > 80% |
+| 备份成功 | 宿主机 cron 跑 `npm run backup` 的退出码 | 连续 2 天失败 |
+| 数据量 | `sqlite3 app.db "select count(*) from meal_logs"` | 仅观察，无阈值 |
+
+建议（未强制，W3 时间允许再加）：把 `/healthz` 接到 Uptime Kuma 或云监控的 HTTP 探针；备份目录同步到另一块盘/对象存储。
+
+## 4. 已知限制（写清楚，别让人以为漏了）
+
+1. **镜像带 devDependencies**：运行时用 `tsx` 跑 TypeScript（与本地一致），因此 `npm ci` 不能加 `--omit=dev`。
+   若将来要瘦身，改成 `tsc` 构建 + `node dist/index.js`，同时把 `tsx` 换成可选依赖。
+2. **没有 HTTPS**：单机内网演示够用。对外发布需要在外层（云 LB / 另一台 nginx）终止 TLS，
+   本仓库的 nginx 只监听 80。
+3. **SQLite 单写者**：只能单实例部署，不能水平扩展；这是 W2 的技术选型（`ARCHITECTURE.md` §5），不是遗漏。
+4. **备份在宿主机执行**：容器内没有 cron，`docker compose exec` 跑备份也可以，但推荐宿主机跑（见 `docs/BACKUP.md`）。
+5. **无鉴权体系**：用户端靠 `session_id`（前端生成），管理端靠 `X-Admin-Token`；这是 3 周计划的既定范围。
+
+## 5. 常用运维命令
+
+```bash
+docker compose logs -f server          # 看后端日志
+docker compose restart server          # 只重启后端
+docker compose down                    # 停止（不动 volume）
+docker compose down -v                 # ⚠️ 连 volume 一起删，数据会没
+
+# 宿主机上做备份（推荐 cron 每天 03:00）
+BACKUP_DIR=./backups npm run backup
+
+# 恢复（先停服务）
+docker compose stop server
+npm run restore -- ./backups/app-2026-11-21T13-05-02-817Z.db
+docker compose start server
+```

@@ -1,0 +1,58 @@
+# 食堂营养师 —— 部署三件套（W3-C1）
+#
+# 用法：
+#   cp .env.example .env        # 填 ADMIN_TOKEN（必填），按需改端口
+#   docker compose up -d --build
+#   docker compose ps          # web / server 都应是 healthy
+#
+# 备份与恢复见 docs/BACKUP.md；容器里的库落在 ./server/data/runtime（volume），备份落 ./backups。
+
+services:
+  server:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.server
+    image: canteen-server:local
+    restart: unless-stopped
+    environment:
+      PORT: 8787
+      DATABASE_URL: /app/server/data/runtime/app.db
+      # 未设置时管理端接口一律 401（安全默认）；compose 里强制要求显式提供
+      ADMIN_TOKEN: ${ADMIN_TOKEN:?请在 .env 里设置 ADMIN_TOKEN}
+      TEXT_ENGINE: ${TEXT_ENGINE:-template}
+    volumes:
+      # 运行时库：容器重建不丢数据；这个目录已在 .gitignore 里，不会入库
+      - ./server/data/runtime:/app/server/data/runtime
+      # 备份目录：宿主机上执行 npm run backup 时写这里，容器也能读到（恢复时用）
+      - ./backups:/app/backups
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8787/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 20s
+
+  web:
+    build:
+      context: .
+      dockerfile: deploy/Dockerfile.web
+      args:
+        # 同源部署：BASE 留空，前端请求 /api/v1/...，由容器内 nginx 反代到 server
+        VITE_API_BASE: ""
+    image: canteen-web:local
+    restart: unless-stopped
+    depends_on:
+      server:
+        condition: service_healthy
+    ports:
+      - "${WEB_PORT:-8080}:80"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 10s

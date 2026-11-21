@@ -1,0 +1,35 @@
+# syntax=docker/dockerfile:1
+#
+# 前端镜像 + 反向代理（W3-C1）。
+#
+# 构建上下文同样是**仓库根**：vite 的 alias 直接引 `../shared/src` 与 `../server/data/menu-seed.json`。
+#   docker build -f deploy/Dockerfile.web -t canteen-web .
+#
+# 产物是静态文件 + nginx：同一个容器既做静态站，也做 /api 的反向代理（省一个容器、少一跳）。
+
+# ---------- 构建阶段 ----------
+FROM node:22-slim AS build
+WORKDIR /repo
+
+# web/ 是独立项目（自带 lock），依赖装在 web/ 下
+COPY web/package.json web/package-lock.json ./web/
+RUN cd web && npm ci --no-audit --no-fund
+
+# vite alias 要用的三处：shared 源码、web 源码、菜品种子
+COPY shared ./shared
+COPY server/data/menu-seed.json ./server/data/menu-seed.json
+COPY server/data/menu-seed.v3.json ./server/data/menu-seed.v3.json
+COPY web ./web
+
+# 同源部署：BASE 留空 → 前端请求 /api/v1/...，由下面的 nginx 反代到 server
+ARG VITE_API_BASE=""
+ENV VITE_API_BASE=$VITE_API_BASE
+RUN cd web && npm run build
+
+# ---------- 运行阶段 ----------
+FROM nginx:1.27-alpine
+COPY deploy/nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /repo/web/dist /usr/share/nginx/html
+EXPOSE 80
+HEALTHCHECK --interval=15s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget -qO- http://127.0.0.1/ >/dev/null 2>&1 || exit 1

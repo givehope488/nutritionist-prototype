@@ -255,6 +255,8 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 
 ## 5. 变更记录
 
+- 2026-11-21 BE-B | 变更 | **W3-C1 部署三件套落地**：①`deploy/Dockerfile.server`（Node 22 + tsx 直跑 TS，启动先幂等 seed 再起服务，内置 fetch 健康检查）；②`deploy/Dockerfile.web`（vite 构建 + nginx 运行）；③`deploy/nginx.conf`（静态站 + `/api/*` 反代到 `server:8787` + `/healthz` 透传 + SPA 回落 + gzip + 静态资源长缓存）；④`docker-compose.yml`（两服务、`depends_on: service_healthy`、运行时库与备份挂 volume、`ADMIN_TOKEN` 必填）；⑤`.dockerignore` / `.env.example`；⑥`docs/DEPLOY.md`（首次部署四条验收 + **C2 回滚/降级/监控清单** + 5 条已知限制）。**同源部署**：前端 `VITE_API_BASE` 留空 → 请求 `/api/v1/...` 由容器内 nginx 反代，不需要 CORS。CI 新增 `deploy-config` job（`docker compose config` 校验 YAML 与变量插值） | PD/PB：`cp .env.example .env` → `docker compose up -d --build` 即可；回滚有三级（代码/镜像/数据），数据回滚走 `docs/BACKUP.md` 的 `npm run restore`（实测 5 ms）
+
 - 2026-11-21 PD | 变更 | **W2 验收 30 项凭硬证据勾选 + W3 派单提前下发**（本次提交）：①验收清单勾 26 项 W2（A1~A7/B1~B6/C1~C6/D1~D4/E1/E2/E4）+ 4 项 W3（A1 免责挂载、A2/A3 与 W2 重复项、A4 违禁词检索干净），每项附验收依据；**未勾 2 项**：W2-D5 备份（派 BE-B 11-23）、W2-E3 OBSERVED-MENU 核对（派 PD）；②B1/B2/B3 按功能测试证据勾选，界面视觉走查仍建议 PD 周末过一遍（已列入 §2.4 PD 项）；③W3 派单提前下发（§2.4 新增）：BE-B 部署三件套周末开工、FE-A 可信度披露、FE-B 反馈入口评估，周一（11-23）站会对齐 | 派单见 §2.4，验收记录见清单文件
 - 2026-11-20 PD | 变更 | **W2 收官盘面核对（晚）（无新变化，`799d25d` CI 绿）**：午后至 19:20 无人推新分支、无新 PR；主干 CI ci#176 成功（#175 为连续推送被取代的 cancelled，正常）。open PR 共 8 个——**#64（BE-B 行尾，唯一真待办）** + #69~#75 七个内容已入主干待手动关。**下一步（按序）**：①BE-B rebase 后合 #64，第 13 项结项；②全员拉 `799d25d` 做中途集成冒烟（FE-B 11-18 已带头做过一轮；重点验证真实接口下 A6 文案出现——称重组合卡「份量以现场称重为准」）；③PD 手动 Close #69~#75；④PD 周末把 W2 验收清单可勾项补齐（B4/B6、C6/A3、D1、I5 等均已解锁，人工项以实际界面验收为准）；⑤周一（11-23）W3 启动：A1 免责声明、部署发布、20 条人工抽检 | 今日若无阻塞，W2 按计划收官
 
