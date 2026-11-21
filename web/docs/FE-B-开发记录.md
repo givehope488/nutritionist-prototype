@@ -506,6 +506,6 @@ PD 在 11-18 合入 #63 时把三件非阻塞遗留挂到 FE-B，要求「下次
 - 边界：**不发任何请求**——上报仍走既有「群收集」渠道，PD 收到后按 `docs/OBSERVED-MENU.md` 的口径更新 `observed-menu.json` 并登记 §6；因此不涉及契约变更、不新增后端端点、不新开页面。
 - 设计系统故事页补了该卡片的展示块，方便视觉走查。
 
-**测试**：新增 `tests/unit/dishFeedbackCard.test.ts` 3 例（未填菜名禁用 / 复制文本含日期餐次菜名说明 / 剪贴板降级）；闭环 e2e 的反馈页断言加入口。web 用例 72 → **75**，lint / typecheck / build 全绿。
+**测试**：新增 `tests/unit/dishFeedbackCard.test.ts` 3 例（未填菜名禁用 / 复制文本含日期餐次菜名说明 / 剪贴板降级）；闭环 e2e 的反馈页断言加入口。分支基线下 web 用例 72 → **75**；落到主干（含 FE-A 称重用例）后全量 **82** 例，lint / typecheck / build 全绿。
 
 **建议给 PD**：把收集流程写进上线检查清单——「用户复制 → 反馈群 → 汇总进 `observed-menu.json`（source: user）→ 有问题同时登记 PROGRESS §6」。
