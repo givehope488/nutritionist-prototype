@@ -129,6 +129,9 @@ describe('回填 → 反馈 → 历史', () => {
     expect(feedback.text()).toContain('这一餐');
     expect(feedback.text()).toContain('目标');
     expect(['达标', '需调整']).toContain(feedback.text().includes('达标') ? '达标' : '需调整');
+    // W3-C5：反馈页有固定的菜品反馈入口
+    expect(feedback.text()).toContain('菜品有出入？');
+    expect(feedback.text()).toContain('复制反馈内容');
     expect(feedback.text()).not.toContain('¥');
     expect(feedback.text()).not.toMatch(/\d+\s*元/);
 

@@ -10,6 +10,7 @@ import AppCard from '@/components/base/AppCard.vue';
 import AppErrorBanner from '@/components/base/AppErrorBanner.vue';
 import AppLoading from '@/components/base/AppLoading.vue';
 import AppNavBar from '@/components/base/AppNavBar.vue';
+import DishFeedbackCard from '@/components/business/DishFeedbackCard.vue';
 import NutritionSummary from '@/components/business/NutritionSummary.vue';
 import VerdictCard from '@/components/business/VerdictCard.vue';
 import { findMealLog } from '@/composables/useMealLogLookup';
@@ -94,6 +95,8 @@ onMounted(load);
             {{ formatSodium(log.totals.sodium_mg) }}
           </p>
         </AppCard>
+
+        <DishFeedbackCard :items="log.items" :date="log.date" :meal-label="mealLabel" />
 
         <div class="page__actions">
           <AppButton variant="secondary" @click="router.push('/history')">看这周记录</AppButton>
