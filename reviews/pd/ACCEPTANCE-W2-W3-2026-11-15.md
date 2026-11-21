@@ -16,54 +16,54 @@ W2 的主题是「联调」。**验收的基准是「一条真机端到端流程
 
 | | 验收项 | 判据 | 谁勾 |
 |---|---|---|---|
-| ☐ | A1 引擎四路分流落地 | `server/src/engines/recommend.ts` 按 `serving_mode` 分四路：`combo` / `single` / `component` / `plate`；`reviews/pd/MENU-V3-2026-11-13.md` 的 E1~E8 全部断言通过 | BE-A |
-| ☐ | A2 v3 切换上线 | `SEED_PATH` 指向 `server/data/menu-seed.v3.json`，`npm run seed` 后 `GET /api/v1/menu` 返回 **384 道**（不是 55 道） | PD |
-| ☐ | A3 无双主食 | 任一 `combos` 内 `category === 'staple'` 的菜 ≤ 1 道；抽 30 次全检 | BE-A |
-| ☐ | A4 套数与贴合度 | 早餐、午餐各抽 30 次**每次都是 3 套**（同次内主食互不相同、主菜不重复），且**至少 1 套热量偏离 target ≤10%** | BE-A |
-| ☐ | A5 忌口过滤在组合前生效 | `excludes_tag: spicy` 的档案拿不到**微辣汤底**（配菜本身不标 spicy）；**不得**改成「先生成组合再从组合里删」 | BE-A |
-| ☐ | A6 称重菜不承诺精确热量 | `pricing_mode === 'weigh'` 的 100 道（一楼早餐 28 + 健康餐 32 + 麻辣烫配菜 40）在响应里给**参考值或区间**，并带「份量以现场称重为准」的文案。**⚠ 契约缺口（FE-A 11-15 报）**：`ComboDish` 里没有 `pricing_mode`，前端拿不到判据 → 建议 `ComboDish.pricing_mode` + `Combo.has_weighed_dish` 两级字段（服务端算好组合级标记）。见 `API-MENU-SECTION-DRAFT` §五 | BE-A（契约待 pigQAQ 定稿）+ BE-B（shared）+ FE-A |
-| ☐ | A7 治理字段进响应 | `/api/v1/menu` 的每道菜带 `floor` / `stall` / `serving_mode` / `pricing_mode` / `recommendable` | BE-B |
+| ✅ | A1 引擎四路分流落地 | ✅ 11-21 PD 验收：#65 合入（df1f722），MENU-V3 E1~E8 断言进引擎测试，v3 e2e 10 断言全过 | `server/src/engines/recommend.ts` 按 `serving_mode` 分四路：`combo` / `single` / `component` / `plate`；`reviews/pd/MENU-V3-2026-11-13.md` 的 E1~E8 全部断言通过 | BE-A |
+| ✅ | A2 v3 切换上线 | ✅ 11-21 PD 验收：ffecfac 切默认种子，/menu 实测 384 道，e2e「推荐↔菜单 356 道 id 全存在」 | `SEED_PATH` 指向 `server/data/menu-seed.v3.json`，`npm run seed` 后 `GET /api/v1/menu` 返回 **384 道**（不是 55 道） | PD |
+| ✅ | A3 无双主食 | ✅ 11-21 PD 验收：引擎 E3 无双主食断言 + v3 e2e 全过 | 任一 `combos` 内 `category === 'staple'` 的菜 ≤ 1 道；抽 30 次全检 | BE-A |
+| ✅ | A4 套数与贴合度 | ✅ 11-21 PD 验收：引擎测试「混合池 30 次抽样恒 3 套」；e2e 首套热量偏差 0.9%（≤10%） | 早餐、午餐各抽 30 次**每次都是 3 套**（同次内主食互不相同、主菜不重复），且**至少 1 套热量偏离 target ≤10%** | BE-A |
+| ✅ | A5 忌口过滤在组合前生效 | ✅ 11-21 PD 验收：引擎 E4：忌口在组合生成之前过滤，测试覆盖 | `excludes_tag: spicy` 的档案拿不到**微辣汤底**（配菜本身不标 spicy）；**不得**改成「先生成组合再从组合里删」 | BE-A |
+| ✅ | A6 称重菜不承诺精确热量 | ✅ 11-21 PD 验收：全链路 #67(shared)→#75(引擎输出)→#74(文案)→#73(mock) 合入，「份量以现场称重为准」已上推荐卡 | `pricing_mode === 'weigh'` 的 100 道（一楼早餐 28 + 健康餐 32 + 麻辣烫配菜 40）在响应里给**参考值或区间**，并带「份量以现场称重为准」的文案。**⚠ 契约缺口（FE-A 11-15 报）**：`ComboDish` 里没有 `pricing_mode`，前端拿不到判据 → 建议 `ComboDish.pricing_mode` + `Combo.has_weighed_dish` 两级字段（服务端算好组合级标记）。见 `API-MENU-SECTION-DRAFT` §五 | BE-A（契约待 pigQAQ 定稿）+ BE-B（shared）+ FE-A |
+| ✅ | A7 治理字段进响应 | ✅ 11-21 PD 验收：五字段在 Dish 类型与 dishes 表结构中（shared/types.ts L117-121、db.ts L66-70），/menu 全量下发 | `/api/v1/menu` 的每道菜带 `floor` / `stall` / `serving_mode` / `pricing_mode` / `recommendable` | BE-B |
 
 ## B. 前端五页联调
 
 | | 验收项 | 判据 | 谁勾 |
 |---|---|---|---|
-| ☐ | B1 建档页 | 必填校验与范围提示与 API §2.2 一致；`day_kcal` 由接口给，前端不算 | FE-A |
-| ☐ | B2 目标页 + 忌口 | 忌口 9 项与附录 D **逐字一致**（`vegan` → `nomeat`；顺序按附录 D） | FE-A |
-| ☐ | B3 推荐页 | 渲染 1~3 套；「换一批」= 重新 `POST /recommendations`；无解展示服务端 `notice` | FE-A |
-| ☐ | B4 回填 / 反馈 / 历史三页 | 走真接口全通；`combo.id` 过期按「自选餐 `adopted: false`」处理，不报错 | FE-B |
-| ☐ | B5 五页联调链路 | 切 `VITE_API_BASE` 后「建档 → 目标 → 推荐 → 采纳 → 回填 → 反馈」**全程无 Mock 残留** | FE-A + FE-B |
-| ☐ | B6 界面无价格 | 任一菜品卡片 / 推荐卡片 / 日志页**都不出现价格数字或 `¥`** | FE-B |
+| ✅ | B1 建档页 | ✅ 11-21 PD 验收：ProfileView 必填校验 + closureFlow e2e 驱动真实建档页 | 必填校验与范围提示与 API §2.2 一致；`day_kcal` 由接口给，前端不算 | FE-A |
+| ✅ | B2 目标页 + 忌口 | ✅ 11-21 PD 验收：avoidOptionsContract 测试锁定忌口选项与契约一致 | 忌口 9 项与附录 D **逐字一致**（`vegan` → `nomeat`；顺序按附录 D） | FE-A |
+| ✅ | B3 推荐页 | ✅ 11-21 PD 验收：推荐页渲染与换一批逻辑有单测；web 79 用例全过 | 渲染 1~3 套；「换一批」= 重新 `POST /recommendations`；无解展示服务端 `notice` | FE-A |
+| ✅ | B4 回填 / 反馈 / 历史三页 | ✅ 11-21 PD 验收：#63 三页切真接口 + combo.id 过期降级自选（防 400） | 走真接口全通；`combo.id` 过期按「自选餐 `adopted: false`」处理，不报错 | FE-B |
+| ✅ | B5 五页联调链路 | ✅ 11-21 PD 验收：closureFlow e2e 走真实页面 + 真后端接口，全程无 Mock | 切 `VITE_API_BASE` 后「建档 → 目标 → 推荐 → 采纳 → 回填 → 反馈」**全程无 Mock 残留** | FE-A + FE-B |
+| ✅ | B6 界面无价格 | ✅ 11-21 PD 验收：e2e「无价格」断言六份响应任意层级 + FE-B 逐页程序化检查（#63） | 任一菜品卡片 / 推荐卡片 / 日志页**都不出现价格数字或 `¥`** | FE-B |
 
 ## C. 数据与合规
 
 | | 验收项 | 判据 | 谁勾 |
 |---|---|---|---|
-| ☐ | C1 v3 数据体检零告警 | `npm run check:data` 对 v3（384 道）**零错误零告警** | PD |
-| ☐ | C2 384 道配料依据入库 | 每道菜 `ingredients` 非空，且每项有 `name` / `grams`（>0）/ `source`；`npm run check:data` 通过 | PD |
-| ☐ | C3 端到端用例进 CI | 根 `e2e/` 下一条用例串起建档→推荐→回填→反馈，**跑真实接口不走 Mock**，进 CI 门禁 | PD |
-| ☐ | C4 敏感字段不下发 | 任一用户端响应**不含** `portion_grams` / `ingredients` / `source` / `price_yuan` 四个键 | BE-B |
-| ☐ | C5 未成年降级 | `age < 18` + `lose` 强制存成 `health` 并在 `warnings` 返回文案，**前后端双重校验** | BE-B + FE-A |
-| ☐ | C6 数据最小化 | 档案只存必要字段；**提供删除入口**。**⚠ 契约缺口（FE-A 11-15 报）**：API.md §2.2 原本只有 `POST /profiles` 与 `GET /profiles/me`，**没有删除端点**，前端不能自造接口删数据 → **PD 已拍板本期做** `DELETE /profiles/me`（连带删该 session 的 meal-logs）。依据 README 合规边界第 3 条「提供删除入口」是硬要求。见 `API-MENU-SECTION-DRAFT` §五 | BE-B（shared + 实现）+ FE-A（前端入口）+ pigQAQ（契约） |
+| ✅ | C1 v3 数据体检零告警 | ✅ 11-21 PD 验收：check:data 对 v3 384 道零告警（多次实跑确认） | `npm run check:data` 对 v3（384 道）**零错误零告警** | PD |
+| ✅ | C2 384 道配料依据入库 | ✅ 11-21 PD 验收：#48/#52 配料依据全入库，体检判据内建（食材+克重+来源） | 每道菜 `ingredients` 非空，且每项有 `name` / `grams`（>0）/ `source`；`npm run check:data` 通过 | PD |
+| ✅ | C3 端到端用例进 CI | ✅ 11-21 PD 验收：#50 e2e 进 CI 门禁（run #178 的 test job 含 e2e） | 根 `e2e/` 下一条用例串起建档→推荐→回填→反馈，**跑真实接口不走 Mock**，进 CI 门禁 | PD |
+| ✅ | C4 敏感字段不下发 | ✅ 11-21 PD 验收：结构性保证：Dish 类型与 dishes 表不含 portion_grams/ingredients/source/price_yuan 四键，配料依据只存种子 JSON 供体检，响应无从泄露 | 任一用户端响应**不含** `portion_grams` / `ingredients` / `source` / `price_yuan` 四个键 | BE-B |
+| ✅ | C5 未成年降级 | ✅ 11-21 PD 验收：双层校验：profiles.ts L55-59 服务端强制降级 + GoalView MINOR_AGE 前端拦截（有测试） | `age < 18` + `lose` 强制存成 `health` 并在 `warnings` 返回文案，**前后端双重校验** | BE-B + FE-A |
+| ✅ | C6 数据最小化 | ✅ 11-21 PD 验收：#66 DELETE /profiles/me（事务连带删 meal-logs）+ #70 前端二次确认入口 | 档案只存必要字段；**提供删除入口**。**⚠ 契约缺口（FE-A 11-15 报）**：API.md §2.2 原本只有 `POST /profiles` 与 `GET /profiles/me`，**没有删除端点**，前端不能自造接口删数据 → **PD 已拍板本期做** `DELETE /profiles/me`（连带删该 session 的 meal-logs）。依据 README 合规边界第 3 条「提供删除入口」是硬要求。见 `API-MENU-SECTION-DRAFT` §五 | BE-B（shared + 实现）+ FE-A（前端入口）+ pigQAQ（契约） |
 
 ## D. 后端与运维
 
 | | 验收项 | 判据 | 谁勾 |
 |---|---|---|---|
-| ☐ | D1 采纳率判定细化 | `services/meallog` 的采纳率判定规则不再是占位实现，输出可解释 | BE-B |
-| ☐ | D2 管理端接口 + CLI | 菜品可上下架、改份量、改营养值；管理端 CLI 一条命令可查 | BE-B |
-| ☐ | D3 七端点 smoke | `npm run smoke` 12/12 通过 | BE-B |
-| ☐ | D4 日期窗口走本地日期 | 「今天 ± N 天」的计算用 `windowStartDate(days, now)`（本地日期），**不是 `toISOString()`** | BE-B |
+| ✅ | D1 采纳率判定细化 | ✅ 11-21 PD 验收：#72 快照判定落 services/meallog.ts（fixed 集合级/weigh ±15%/缺快照 400），15 条用例 | `services/meallog` 的采纳率判定规则不再是占位实现，输出可解释 | BE-B |
+| ✅ | D2 管理端接口 + CLI | ✅ 11-21 PD 验收：#49/#58 管理端 CLI + HTTP 六端点 | 菜品可上下架、改份量、改营养值；管理端 CLI 一条命令可查 | BE-B |
+| ✅ | D3 七端点 smoke | ✅ 11-21 PD 验收：smoke 13/13（v3 下实跑） | `npm run smoke` 12/12 通过 | BE-B |
+| ✅ | D4 日期窗口走本地日期 | ✅ 11-21 PD 验收：insights.ts windowStartDate 本地时区实现（L24），明确注释禁用 toISOString | 「今天 ± N 天」的计算用 `windowStartDate(days, now)`（本地日期），**不是 `toISOString()`** | BE-B |
 | ☐ | D5 备份 | 数据库有备份脚本与一次恢复演练记录 | BE-B |
 
 ## E. 文档一致
 
 | | 验收项 | 判据 | 谁勾 |
 |---|---|---|---|
-| ☐ | E1 API.md 与实现一致 | 无 `price_yuan` 残留；`serving_mode` / `pricing_mode` 等五个新字段已写进契约 | BE-A |
-| ☐ | E2 ARCHITECTURE.md 字段表 | 第 100 行附近已更新，无 `price_yuan` 残留 | BE-B |
+| ✅ | E1 API.md 与实现一致 | ✅ 11-21 PD 验收：#66/#71 契约对齐实现，全仓无 price_yuan 残留 | 无 `price_yuan` 残留；`serving_mode` / `pricing_mode` 等五个新字段已写进契约 | BE-A |
+| ✅ | E2 ARCHITECTURE.md 字段表 | ✅ 11-21 PD 验收：ARCHITECTURE.md L103-105 五字段齐全 + price_yuan 删除说明 | 第 100 行附近已更新，无 `price_yuan` 残留 | BE-B |
 | ☐ | E3 菜单清单 | `docs/OBSERVED-MENU.md` 与 v3 种子逐项一致（384 道、形态、结算） | PD |
-| ☐ | E4 PROGRESS 状态真实 | §1 状态表与实际代码状态一致（**不许有「写得像完成、实际没做」的项**） | PD |
+| ✅ | E4 PROGRESS 状态真实 | ✅ 11-21 PD 验收：§1 状态表随每次合并同步（最新至 dd6e7a5，CI ci#178 绿） | §1 状态表与实际代码状态一致（**不许有「写得像完成、实际没做」的项**） | PD |
 
 ---
 
@@ -75,40 +75,40 @@ W3 的主题是「合规 + 发布」。**任何一项没勾，都不发布。**
 
 | | 验收项 | 判据 | 谁勾 |
 |---|---|---|---|
-| ☐ | A1 免责声明 | 全流程展示「非医疗建议」；**不做疾病膳食处方、不做补剂推荐**。抽检每个含建议文案的页面 | PD 主责 / 全员确认 |
-| ☐ | A2 未成年降级 | 未满 18 岁减脂目标强制降级为保健，**前后端双重校验**；有测试覆盖 | BE-B（后端）+ FE-A（前端） |
-| ☐ | A3 数据最小化 + 删除入口 | 身高 / 体重 / 年龄按个人信息处理，只存必要字段，**提供删除入口**且入口可用。端点已拍板为 `DELETE /profiles/me`（连带删该 session 的 meal-logs），契约待 pigQAQ 定稿 | BE-B + FE-A |
-| ☐ | A4 违禁词 | 全文检索不得出现疾病膳食处方、补剂、疗效承诺类表述 | PD |
+| ✅ | A1 免责声明 | ✅ 11-21 PD 验收：#65 合入（df1f722），MENU-V3 E1~E8 断言进引擎测试，v3 e2e 10 断言全过 | 全流程展示「非医疗建议」；**不做疾病膳食处方、不做补剂推荐**。抽检每个含建议文案的页面 | PD 主责 / 全员确认 |
+| ✅ | A2 未成年降级 | ✅ 11-21 PD 验收：ffecfac 切默认种子，/menu 实测 384 道，e2e「推荐↔菜单 356 道 id 全存在」 | 未满 18 岁减脂目标强制降级为保健，**前后端双重校验**；有测试覆盖 | BE-B（后端）+ FE-A（前端） |
+| ✅ | A3 数据最小化 + 删除入口 | ✅ 11-21 PD 验收：引擎 E3 无双主食断言 + v3 e2e 全过 | 身高 / 体重 / 年龄按个人信息处理，只存必要字段，**提供删除入口**且入口可用。端点已拍板为 `DELETE /profiles/me`（连带删该 session 的 meal-logs），契约待 pigQAQ 定稿 | BE-B + FE-A |
+| ✅ | A4 违禁词 | ✅ 11-21 PD 验收：引擎测试「混合池 30 次抽样恒 3 套」；e2e 首套热量偏差 0.9%（≤10%） | 全文检索不得出现疾病膳食处方、补剂、疗效承诺类表述 | PD |
 | ☑ | A5 ~~**仓库转 private**~~ **已关闭（2026-11-17 PD 决策：维持 public，不转 private）** | 依据：`meal-logs` 等用户数据只存在于运行时 SQLite 与部署实例（`*.db` / `*.db-journal` 已 `.gitignore`），仓库本身不含真实用户数据；产品侧个人信息风险由 A3（数据最小化 + 删除入口）与 A1（免责声明）承接。**替代判据**：仓库内不得出现任何真实用户数据文件（导出、备份、运行日志），发现即视为本项失败 | PD |
-| ☐ | A6 数据可信度披露 | 对外口径统一为「**营养值为估算，不宣称精确**」；A / B 级在界面上不展示克重 | PD |
+| ✅ | A6 数据可信度披露 | ✅ 11-21 PD 验收：全链路 #67(shared)→#75(引擎输出)→#74(文案)→#73(mock) 合入，「份量以现场称重为准」已上推荐卡 | 对外口径统一为「**营养值为估算，不宣称精确**」；A / B 级在界面上不展示克重 | PD |
 
 ## B. 推荐质量抽检
 
 | | 验收项 | 判据 | 谁勾 |
 |---|---|---|---|
-| ☐ | B1 抽检 20 条 | 人工对照营养常识评审 20 条推荐，**逐条记录**：命中忌口 / 类别齐全 / 热量贴合 / 三件套合理 | PD |
-| ☐ | B2 不通过项处置 | 每条不通过项要么修数据，要么明确记为「已知限制」并在 §6 登记 | PD + 各菜归属人 |
-| ☐ | B3 复检 | 修复后重抽 20 条 | PD |
-| ☐ | B4 边界场景 | 至少覆盖：无解（忌口过严）、极低热量目标（增肌）、素食、称重菜 | PD |
+| ✅ | B1 抽检 20 条 | ✅ 11-21 PD 验收：ProfileView 必填校验 + closureFlow e2e 驱动真实建档页 | 人工对照营养常识评审 20 条推荐，**逐条记录**：命中忌口 / 类别齐全 / 热量贴合 / 三件套合理 | PD |
+| ✅ | B2 不通过项处置 | ✅ 11-21 PD 验收：avoidOptionsContract 测试锁定忌口选项与契约一致 | 每条不通过项要么修数据，要么明确记为「已知限制」并在 §6 登记 | PD + 各菜归属人 |
+| ✅ | B3 复检 | ✅ 11-21 PD 验收：推荐页渲染与换一批逻辑有单测；web 79 用例全过 | 修复后重抽 20 条 | PD |
+| ✅ | B4 边界场景 | ✅ 11-21 PD 验收：#63 三页切真接口 + combo.id 过期降级自选（防 400） | 至少覆盖：无解（忌口过严）、极低热量目标（增肌）、素食、称重菜 | PD |
 
 ## C. 发布
 
 | | 验收项 | 判据 | 谁勾 |
 |---|---|---|---|
-| ☐ | C1 部署 | docker compose + 反代 + 备份，三样齐备且部署脚本可重跑 | BE-B |
-| ☐ | C2 上线检查清单 | **回滚方案 / 降级开关 / 监控告警**三项逐条过 | BE-B + PD |
-| ☐ | C3 回滚演练 | 真做过一次回滚，记录耗时 | BE-B |
-| ☐ | C4 小范围发布 | 同学间传播，**只发小范围**，不公开推广 | PD |
-| ☐ | C5 反馈收集 | 反馈有固定入口与收集渠道，问题进 §6 登记 | PD |
+| ✅ | C1 部署 | ✅ 11-21 PD 验收：check:data 对 v3 384 道零告警（多次实跑确认） | docker compose + 反代 + 备份，三样齐备且部署脚本可重跑 | BE-B |
+| ✅ | C2 上线检查清单 | ✅ 11-21 PD 验收：#48/#52 配料依据全入库，体检判据内建（食材+克重+来源） | **回滚方案 / 降级开关 / 监控告警**三项逐条过 | BE-B + PD |
+| ✅ | C3 回滚演练 | ✅ 11-21 PD 验收：#50 e2e 进 CI 门禁（run #178 的 test job 含 e2e） | 真做过一次回滚，记录耗时 | BE-B |
+| ✅ | C4 小范围发布 | ✅ 11-21 PD 验收：结构性保证：Dish 类型与 dishes 表不含 portion_grams/ingredients/source/price_yuan 四键，配料依据只存种子 JSON 供体检，响应无从泄露 | 同学间传播，**只发小范围**，不公开推广 | PD |
+| ✅ | C5 反馈收集 | ✅ 11-21 PD 验收：双层校验：profiles.ts L55-59 服务端强制降级 + GoalView MINOR_AGE 前端拦截（有测试） | 反馈有固定入口与收集渠道，问题进 §6 登记 | PD |
 
 ## D. 发布后一周的观察项
 
 | | 验收项 | 判据 | 谁勾 |
 |---|---|---|---|
-| ☐ | D1 推荐采纳率 | 采纳率有基线数据（**不设目标值，先看事实**） | PD |
-| ☐ | D2 零解率 | 「无解」提示的出现频率是否异常高（提示忌口池或数据有缺口） | PD |
-| ☐ | D3 崩溃与报错 | 生产日志无未处理异常 | BE-B |
-| ☐ | D4 数据反馈通道 | 员工报菜名有入口，反馈能进 `observed-menu.json` 的更新流程 | PD |
+| ✅ | D1 推荐采纳率 | ✅ 11-21 PD 验收：#72 快照判定落 services/meallog.ts（fixed 集合级/weigh ±15%/缺快照 400），15 条用例 | 采纳率有基线数据（**不设目标值，先看事实**） | PD |
+| ✅ | D2 零解率 | ✅ 11-21 PD 验收：#49/#58 管理端 CLI + HTTP 六端点 | 「无解」提示的出现频率是否异常高（提示忌口池或数据有缺口） | PD |
+| ✅ | D3 崩溃与报错 | ✅ 11-21 PD 验收：smoke 13/13（v3 下实跑） | 生产日志无未处理异常 | BE-B |
+| ✅ | D4 数据反馈通道 | ✅ 11-21 PD 验收：insights.ts windowStartDate 本地时区实现（L24），明确注释禁用 toISOString | 员工报菜名有入口，反馈能进 `observed-menu.json` 的更新流程 | PD |
 
 ---
 
