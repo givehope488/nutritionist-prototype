@@ -988,3 +988,11 @@ web: npm run build       → dist/assets/index-BdL9KnKX.js 181.40 kB │ gzip 62
 
 - `/profile`：`.disclaimer` 可见，文本为「本产品输出为日常膳食参考，营养值为估算值，不宣称精确，不构成医疗或营养处方建议。未满 18 岁用户不提供热量缺口方案。」
 - `/recommend`：同上，全局 footer 正常渲染。
+
+### 22.4 交付
+
+- 分支 `feat/fe-a-a6-disclaimer`（从 `origin/main` @ `4b58ce0` 拉出），提交 `179eaa6`（4 files，+45/−1）。
+- PR **#79**：<https://github.com/givehope488/nutritionist-prototype/pull/79>，reviewers `givehope488` / `wyf-111`。
+- CI（head `179eaa6`）：`lint` / `test` / `typecheck` / `deploy-config` 全部 `completed / success`；PR `mergeable=true`、`mergeable_state=blocked`（等评审，符合预期）。
+- 按防线 7 不自审自合：**未合并、未关闭**，Merge 归 PD。
+- 口径说明：验收 A6 原文为「营养值为估算，不宣称精确」，§2.5 步 3 引文为「营养值为估算值，不宣称精确」；采用带「值」的版本，既包含验收要求的子串「营养值为估算」，也与 §2.5 引文逐字一致。
