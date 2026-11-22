@@ -83,13 +83,18 @@ const currentDishes = computed(
   () => grouped.value.find((group) => group.category === activeCategory.value)?.items ?? [],
 );
 
-const selectedLabels = computed(() =>
-  draft.buildItems()
-    .map((item) => {
-      const dish = dishes.value.find((candidate) => candidate.id === item.dish_id);
-      return dish ? dish.name : item.dish_id;
-    })
+// 只展示能对上菜名的项：菜单未就绪时宁可显示「加载中」，也不能把内部 dish_id 漏给用户
+// （PD 视觉走查 P2-3：预填进入瞬间摘要闪 s01、m10 这类 id）。
+const selectedNames = computed(() =>
+  draft
+    .buildItems()
+    .map((item) => dishes.value.find((candidate) => candidate.id === item.dish_id)?.name)
+    .filter((name): name is string => Boolean(name))
     .slice(0, 3),
+);
+
+const namesPending = computed(
+  () => menuLoading.value && draft.selectedCount.value > 0 && selectedNames.value.length === 0,
 );
 
 async function loadMenu(): Promise<void> {
@@ -248,8 +253,9 @@ onMounted(async () => {
       <div class="submitbar__row">
         <div class="submitbar__summary">
           <strong>{{ draft.selectedCount.value }}</strong> 项已选
-          <span v-if="selectedLabels.length" class="submitbar__names">
-            {{ selectedLabels.join('、') }}{{ draft.selectedCount.value > 3 ? '…' : '' }}
+          <span v-if="namesPending" class="submitbar__names">菜单加载中…</span>
+          <span v-else-if="selectedNames.length" class="submitbar__names">
+            {{ selectedNames.join('、') }}{{ draft.selectedCount.value > 3 ? '…' : '' }}
           </span>
           <p class="submitbar__hint">热量与蛋白对比在提交后由服务端计算</p>
         </div>

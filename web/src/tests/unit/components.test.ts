@@ -104,10 +104,12 @@ describe('MacroBar 对比条', () => {
     expect(wrapper.get('.macro__fill').attributes('style')).toContain('width: 0%');
   });
 
-  it('无目标时标注「暂无目标」，不显示「目标 0」', () => {
+  it('无目标时标注「仅供参考」，不显示「目标 0」（PD 走查 P2-2）', () => {
     const wrapper = mount(MacroBar, { props: { label: '钠', actual: 751, target: 0, unit: 'mg' } });
-    expect(wrapper.text()).toContain('暂无目标');
+    expect(wrapper.text()).toContain('仅供参考');
+    expect(wrapper.text()).not.toContain('暂无目标');
     expect(wrapper.text()).not.toContain('目标 0');
+    expect(wrapper.get('.macro__track').attributes('aria-label')).toBe('钠 751 mg，本餐无目标，数值仅供参考');
     expect(wrapper.attributes('data-state')).toBe('neutral');
   });
 });
