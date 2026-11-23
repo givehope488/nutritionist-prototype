@@ -95,7 +95,7 @@ W3 的主题是「合规 + 发布」。**任何一项没勾，都不发布。**
 
 | | 验收项 | 判据 | 谁勾 |
 |---|---|---|---|
-| ☐ | C1 部署 | docker compose + 反代 + 备份，三样齐备且部署脚本可重跑。**11-21 状态：脚本已就位（#78），但尚未实机 `docker compose up` 验证——够「齐备」，不够「可重跑」的证明**；BE-B 实机跑通后勾 | BE-B |
+| ✅ | C1 部署 | ✅ **11-23 PD 实机验收**（本机 Docker Desktop 29.7.2 / linux 引擎）：`docker compose up -d --build` 构建并启动成功，两容器 **healthy**（server 8787、web 8080→80 反代）；`GET /` 200、`GET /healthz` 200、`GET /api/v1/menu` 返回 384 道；端到端建档（bmi 21.97）→ 推荐 3 套（目标 912.8 kcal，首选 912 kcal）→ 回填 → `adoption_rate=1`；**二次 `up -d --build` 耗时 2.5s**（镜像层缓存命中、容器不重建），「部署脚本可重跑」成立；数据卷双向可见（容器 `/app/server/data/runtime/app.db` ↔ 宿主同路径）。过程中修掉两处不实跑就发现不了的构建缺陷：web 镜像缺根 `tsconfig.base.json`、server 镜像 `NODE_ENV=production` 前置导致 `tsx` 未安装（详见 §5 11-23 条目） | BE-B（PD 代跑） |
 | ✅ | C2 上线检查清单 | ✅ **11-23 PD 验收**（#83 合入，原 #80）：`docs/DEPLOY.md` §3.2~3.3 三项逐条闭合——①**回滚方案**＝已实测（见 C3）；②**降级开关**＝`TEXT_ENGINE=template` 为默认、未设 `ADMIN_TOKEN` 即全部 401、备份恢复为秒级；③**监控告警**＝容器 healthcheck + 日志。并入本项的「无解」真实链路也已实测：下架全部午餐候选后返回 `200 + combos: [] + notice`（非 404/500），前端无解文案链路可信 | BE-B + PD |
 | ✅ | C3 回滚演练 | ✅ **11-23 PD 验收**（#83，原 #80 的演练记录）：备份 15ms → 清空业务数据 + 50 道菜热量归零 → 恢复 3ms → 容器重启至 healthy，**停机窗口 2221ms**；恢复后 `dishes=384 / profiles=1 / logs=1`、零热量 0、`integrity=ok`。PD 独立复核运行时库：384 道全 active、午餐 356 道可荐、零热量 0，**演练后已复原、无脏数据残留** | BE-B |
 | ☐ | C4 小范围发布 | 同学间传播，**只发小范围**，不公开推广 | PD |

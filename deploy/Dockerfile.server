@@ -9,7 +9,9 @@
 # 多一层构建产物只会让「本地能跑、镜像不能跑」多一种可能。代价是镜像里要带 devDependencies。
 FROM node:22-slim AS base
 WORKDIR /app
-ENV NODE_ENV=production
+
+# 注意：NODE_ENV=production **不能**放在 npm ci 之前 —— 那会让 npm 跳过 devDependencies，
+# 而 tsx 在 devDeps 里，运行时 `tsx src/index.ts` 会以 127 退出。故设为 ci 之后再置（见下）。
 
 # 先只拷清单文件，利用层缓存：依赖没变时 `npm ci` 这层可以直接复用
 COPY package.json package-lock.json ./
@@ -17,7 +19,11 @@ COPY shared/package.json shared/
 COPY server/package.json server/
 RUN npm ci --no-audit --no-fund
 
+# 依赖装完再切生产模式
+ENV NODE_ENV=production
+
 # 再拷源码（shared 的 TS 源码会被 server 通过 workspace 直接引用）
+COPY tsconfig.base.json ./tsconfig.base.json
 COPY shared ./shared
 COPY server ./server
 

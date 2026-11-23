@@ -15,6 +15,10 @@ WORKDIR /repo
 COPY web/package.json web/package-lock.json ./web/
 RUN cd web && npm ci --no-audit --no-fund
 
+# 仓库根 tsconfig：web/tsconfig.json 的 include 带上了 ../shared/src，rolldown 为
+# 这些文件向上查找 tsconfig 时会命中根 tsconfig.base.json，缺了它 `npm run build` 直接失败
+COPY tsconfig.base.json ./tsconfig.base.json
+
 # vite alias 要用的三处：shared 源码、web 源码、菜品种子
 COPY shared ./shared
 COPY server/data/menu-seed.json ./server/data/menu-seed.json
