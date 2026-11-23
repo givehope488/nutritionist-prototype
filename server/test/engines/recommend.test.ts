@@ -445,6 +445,60 @@ describe('称重标记输出（PROGRESS §2.2 #7 / API.md v1.2.4 §2.3）', () =
   });
 });
 
+describe('P2-1 单菜补位质量（UI 走查 2026-11-22）', () => {
+  it('有正餐组合时，纯 single 单菜不被拉来凑第 2/3 套', () => {
+    const target = lunchTarget('lose');
+    const near = Math.round(target.kcal);
+    const pool: Dish[] = [
+      // 套餐路：3 个不同主食的三件套，贴合目标
+      mk('cs1', '米饭', 'staple', ['lunch'], [], Math.round(near * 0.4)),
+      mk('cp1', '鸡肉', 'protein', ['lunch'], [], Math.round(near * 0.4)),
+      mk('cv1', '青菜', 'veg', ['lunch'], [], near - Math.round(near * 0.4) * 2),
+      mk('cs2', '馒头', 'staple', ['lunch'], [], Math.round(near * 0.4)),
+      mk('cp2', '鱼肉', 'protein', ['lunch'], [], Math.round(near * 0.4)),
+      mk('cv2', '西兰花', 'veg', ['lunch'], [], near - Math.round(near * 0.4) * 2),
+      mk('cs3', '面条', 'staple', ['lunch'], [], Math.round(near * 0.4)),
+      mk('cp3', '虾仁', 'protein', ['lunch'], ['seafood'], Math.round(near * 0.4)),
+      mk('cv3', '菠菜', 'veg', ['lunch'], [], near - Math.round(near * 0.4) * 2),
+      // single 路：严重偏离目标（口水鸡 260 / 卤蛋 70 之类的补位菜）
+      mk('chick', '招牌口水鸡', 'protein', ['lunch'], ['meat'], 260, { serving_mode: 'single' }),
+      mk('egg', '卤蛋', 'protein', ['lunch'], [], 70, { serving_mode: 'single' }),
+    ];
+    for (let i = 0; i < 30; i++) {
+      const { combos, notice } = recommendCombos(pool, {
+        meal: 'lunch', goal: 'lose', avoidTags: [], target,
+      });
+      expect(combos.length).toBe(3);
+      // 3 套都必须来自套餐路（含主食），单菜补位不出现
+      for (const c of combos) {
+        expect(c.dishes.map((d) => d.id)).not.toContain('chick');
+        expect(c.dishes.map((d) => d.id)).not.toContain('egg');
+        expect(c.reason).not.toContain('单点/加餐参考');
+      }
+      expect(notice).toBeNull();
+    }
+  });
+
+  it('池子只剩严重偏离的单菜时，仍出组合但 reason + notice 标明「单点/加餐参考」', () => {
+    const target = lunchTarget('lose');
+    const pool: Dish[] = [
+      mk('chick', '招牌口水鸡', 'protein', ['lunch'], ['meat'], 260, { serving_mode: 'single' }),
+      mk('egg', '卤蛋', 'protein', ['lunch'], [], 70, { serving_mode: 'single' }),
+      mk('tofu', '豆腐脑', 'protein', ['lunch'], [], 180, { serving_mode: 'single' }),
+    ];
+    const { combos, notice } = recommendCombos(pool, {
+      meal: 'lunch', goal: 'lose', avoidTags: [], target,
+    });
+    expect(combos.length).toBe(3);
+    for (const c of combos) {
+      expect(c.dishes.length).toBe(1);
+      expect(c.reason).toContain('单点/加餐参考');
+    }
+    expect(notice).toContain('单菜补位');
+    expect(notice).toContain('单点/加餐参考');
+  });
+});
+
 describe('E6/E7 四路混合下的套数与贴合度仍成立', () => {
   it('四路混合池 30 次抽样恒 3 套，且至少一套非称重偏离 ≤10%', () => {
     const target = lunchTarget('health');
