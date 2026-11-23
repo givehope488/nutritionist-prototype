@@ -24,6 +24,18 @@ import type {
 
 const SODIUM_LINE_MG = 1600;
 
+/**
+ * P2-1（UI 走查 2026-11-22）：池子压缩时，single 路单菜可能被当作「一餐」补位，
+ * 出现 260/70 kcal 对 750 目标（-65%/-90%）的极端套餐。偏离超过该比例的单菜
+ * 只作「单点/加餐参考」，并优先让位于真正的组合（有正餐可选时不输出）。
+ */
+const LIGHT_FILL_DEV = 0.4;
+
+/** 套餐热量相对目标的绝对偏离比例（目标为 0 时按 0 处理，避免除零） */
+function kcalDeviation(t: NutritionTotals, target: MealTarget): number {
+  return target.kcal > 0 ? Math.abs(t.kcal - target.kcal) / target.kcal : 0;
+}
+
 export interface RecommendInput {
   meal: Meal;
   goal: Goal;
@@ -137,6 +149,7 @@ function buildReason(
   target: MealTarget,
   hasPlant: boolean,
   hasWeighed: boolean,
+  lightFill = false,
 ): string {
   const diff = round1(t.kcal - target.kcal);
   const kcalNote =
@@ -149,12 +162,16 @@ function buildReason(
   const saltNote = t.sodium_mg > 1900 ? '；钠偏高，建议控制盐分摄入' : '';
   // MENU-V3 §2.4⑤ / I5：称重菜热量只给参考值，文案不承诺精确 kcal
   const weighNote = hasWeighed ? '；含称重菜，份量以现场称重为准，热量仅供参考' : '';
+  // P2-1：单菜补位且严重偏离目标时，明确标成「单点/加餐参考」，不冒充完整一餐
+  const lightNote = lightFill
+    ? '；本套为单点/加餐参考，与目标热量差距较大，建议搭配其它菜品组成一餐'
+    : '';
   return `这一餐约 ${t.kcal}kcal（${kcalNote}）；蛋白质 ${t.protein_g}g（${proteinNote}）,${
     hasPlant ? '含蔬果' : '未配蔬果'
-  }，钠 ${t.sodium_mg}mg${saltNote}${weighNote}。`;
+  }，钠 ${t.sodium_mg}mg${saltNote}${weighNote}${lightNote}。`;
 }
 
-function toCombo(dishes: Dish[], target: MealTarget): Combo {
+function toCombo(dishes: Dish[], target: MealTarget, lightFill = false): Combo {
   const totals = totalsOf(dishes);
   const hasPlant = dishes.some((d) => d.category === 'veg' || d.category === 'fruit');
   const hasWeighed = dishes.some((d) => d.pricing_mode === 'weigh');
@@ -179,7 +196,7 @@ function toCombo(dishes: Dish[], target: MealTarget): Combo {
     id: shortId(dishes.map((d) => d.id)),
     dishes: comboDishes,
     totals,
-    reason: buildReason(totals, target, hasPlant, hasWeighed),
+    reason: buildReason(totals, target, hasPlant, hasWeighed, lightFill),
     // 组合级称重标记：服务端算好，前端一行判断即可显示「份量以现场称重为准」
     has_weighed_dish: hasWeighed,
     engine: 'template' as TextEngine,
@@ -302,6 +319,8 @@ export function recommendCombos(
         candidate: c,
         score: scoreCombo(t, target, goal, hasPlant, c.weighed),
         weighed: c.weighed,
+        // P2-1：单菜（single 路）且热量严重偏离目标 = 只配当「单点/加餐参考」
+        light: c.dishes.length === 1 && kcalDeviation(t, target) > LIGHT_FILL_DEV,
       };
     })
     .sort((a, b) => b.score - a.score);
@@ -321,8 +340,12 @@ export function recommendCombos(
     chosen.push(s);
   };
 
-  // 1) 贴合度最优兜底：非称重候选里的最高分；全都是称重菜时才退而取全局最高
-  const best = scored.find((s) => !s.weighed) ?? scored[0];
+  // 1) 贴合度最优兜底：非称重候选里的最高分；P2-1 再优先排除单菜补位（light），
+  //    有正餐组合时绝不拿单菜当第一套；只有全是单菜/称重才逐级退让。
+  const best =
+    scored.find((s) => !s.weighed && !s.light) ??
+    scored.find((s) => !s.weighed) ??
+    scored[0];
   take(best);
 
   // 2) 其余按 group 分组（排除已占用），组内按得分降序
@@ -336,14 +359,26 @@ export function recommendCombos(
   }
   for (const arr of byGroup.values()) arr.sort((a, b) => b.score - a.score);
 
-  // 3) 随机顺序遍历各组，组内取首个「次键（主菜）未占用」的最优，凑满 3 套
-  for (const g of shuffle([...byGroup.keys()])) {
+  // 3) 随机顺序遍历各组，组内取首个「次键（主菜）未占用」的最优，凑满 3 套。
+  // P2-1：正餐组（含非单菜候选）排在前面，纯单菜补位组排最后——组内仍随机以保留
+  // 「换一批」的变化，但只要还有正餐组就不会用单菜去凑第 2/3 套。
+  const groupKeys = shuffle([...byGroup.keys()]).sort((g1, g2) => {
+    const tier = (g: string) => (byGroup.get(g)!.some((x) => !x.light) ? 0 : 1);
+    return tier(g1) - tier(g2);
+  });
+  for (const g of groupKeys) {
     if (chosen.length >= 3) break;
     const group = byGroup.get(g)!;
-    const pick = group.find((x) => {
-      const sec = x.candidate.secondary;
-      return !sec || !usedSecondary.has(sec);
-    });
+    // P2-1：同组里优先取「正餐组合」（非单菜补位），单菜只在该组没有正餐时兜底
+    const pick =
+      group.find((x) => {
+        const sec = x.candidate.secondary;
+        return !x.light && (!sec || !usedSecondary.has(sec));
+      }) ??
+      group.find((x) => {
+        const sec = x.candidate.secondary;
+        return !sec || !usedSecondary.has(sec);
+      });
     if (!pick) continue;
     take(pick);
   }
@@ -361,10 +396,16 @@ export function recommendCombos(
     }
   }
 
-  const combos = chosen.map((c) => toCombo(c.candidate.dishes, target));
+  const combos = chosen.map((c) => toCombo(c.candidate.dishes, target, c.light));
   // E6：候选不足跨形态补齐时，在 notice 里说明（不是错误，HTTP 仍 200）
-  const notice = chosen.length < 3
-    ? '符合忌口与份量条件的组合较少，已从可用菜品中跨形态补齐'
-    : null;
+  // P2-1：若最终仍混入单菜补位，明确告知「单点/加餐参考」，不冒充完整一餐
+  const notices: string[] = [];
+  if (chosen.length < 3) {
+    notices.push('符合忌口与份量条件的组合较少，已从可用菜品中跨形态补齐');
+  }
+  if (chosen.some((c) => c.light)) {
+    notices.push('部分套餐为单菜补位，与目标热量差距较大，仅作单点/加餐参考');
+  }
+  const notice = notices.length > 0 ? notices.join('；') : null;
   return { combos, notice };
 }
