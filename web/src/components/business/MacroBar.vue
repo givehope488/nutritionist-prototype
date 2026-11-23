@@ -36,13 +36,13 @@ const state = computed(() => {
       <span class="macro__values">
         <strong class="tabular">{{ actual }}</strong>
         <span class="macro__unit">{{ unit }}</span>
-        <span class="macro__target">{{ hasTarget ? `/ 目标 ${target}` : '/ 暂无目标' }}</span>
+        <span class="macro__target">{{ hasTarget ? `/ 目标 ${target}` : '/ 仅供参考' }}</span>
       </span>
     </div>
     <div
       class="macro__track"
       role="img"
-      :aria-label="`${label} ${actual} ${unit}，${hasTarget ? `目标 ${target}` : '暂无本餐目标'}`"
+      :aria-label="`${label} ${actual} ${unit}，${hasTarget ? `目标 ${target}` : '本餐无目标，数值仅供参考'}`"
     >
       <i class="macro__fill" :style="{ width: `${fill}%`, background: color }" aria-hidden="true" />
     </div>

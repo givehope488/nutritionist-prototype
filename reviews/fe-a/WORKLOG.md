@@ -960,3 +960,39 @@ web: npm run build       → dist/assets/index-8jOqnNmc.js 177.00 kB │ gzip 60
 - 分支 `feat/fe-a-weigh-marker`（从 `origin/main` @ `6c4a321` 拉出），提交 `be317dd`。
 - PR **#74**：<https://github.com/givehope488/nutritionist-prototype/pull/74>，reviewers `givehope488` / `wyf-111`。
 - CI（head `be317dd`）：`lint` / `test` / `typecheck` 三绿。按防线 7 不自审自合，等评审。
+
+## 22. 2026-11-22：W3-A6 免责声明补「营养值为估算」
+
+### 22.1 远端事实
+
+- `origin/main` = `4b58ce0`（PD 视觉走查记录）。#75（引擎输出）/ #74（称重文案）/ #73（mock）已于 11-20 合入，A6/I5 前端链路闭环，PR #74 合并为 `ccd3b13`。
+- PD 切到 §2.5「冲刺模式、按依赖推进」，步 3 分给 FE-A：**`AppDisclaimer.vue` 默认 slot 补「营养值为估算值，不宣称精确」**，顺手核对免责文案与快照。A6 验收原文（`reviews/pd/ACCEPTANCE-W2-W3-2026-11-15.md`）：「对外口径统一为『营养值为估算，不宣称精确』；唯一缺口 = AppDisclaimer 缺这一句」。
+- 核对全仓：默认免责文案只在 `AppDisclaimer.vue` 一处，`App.vue`（全局 footer）与 `StoryView.vue` 共用；无重复硬编码。仓库内无截图快照资产，PD 走查文档中引用的仍是旧文案，属其记录，未代改。
+- 走查另报 P2-1（BE-A）、P2-2 / P2-3（FE-B）与「默认走 Mock 易误判」流程问题；均不在 FE-A 派单内，本轮未动。`web/.env.example` 是否要把「手动走查留空 BASE」写成醒目警告，等 PD 决定。
+
+### 22.2 改动
+
+- `web/src/components/base/AppDisclaimer.vue`：默认文案改为「本产品输出为日常膳食参考，**营养值为估算值，不宣称精确**，不构成医疗或营养处方建议。未满 18 岁用户不提供热量缺口方案。」
+- 新增 `web/src/tests/unit/disclaimer.test.ts`：锁定四段合规表述（日常膳食参考 / 营养值为估算值，不宣称精确 / 非处方建议 / 未成年不提供热量缺口）。
+
+### 22.3 验证
+
+```
+web: npm run lint        → 无输出（通过）
+web: npm run typecheck   → 无输出（通过）
+web: npm run test        → Test Files 15 passed | Tests 83 passed
+web: npm run build       → dist/assets/index-BdL9KnKX.js 181.40 kB │ gzip 62.07 kB
+```
+
+浏览器实测（vite dev @5173，Mock 后端；文案为静态内容，与后端无关）：
+
+- `/profile`：`.disclaimer` 可见，文本为「本产品输出为日常膳食参考，营养值为估算值，不宣称精确，不构成医疗或营养处方建议。未满 18 岁用户不提供热量缺口方案。」
+- `/recommend`：同上，全局 footer 正常渲染。
+
+### 22.4 交付
+
+- 分支 `feat/fe-a-a6-disclaimer`（从 `origin/main` @ `4b58ce0` 拉出），提交 `179eaa6`（4 files，+45/−1）。
+- PR **#79**：<https://github.com/givehope488/nutritionist-prototype/pull/79>，reviewers `givehope488` / `wyf-111`。
+- CI（head `179eaa6`）：`lint` / `test` / `typecheck` / `deploy-config` 全部 `completed / success`；PR `mergeable=true`、`mergeable_state=blocked`（等评审，符合预期）。
+- 按防线 7 不自审自合：**未合并、未关闭**，Merge 归 PD。
+- 口径说明：验收 A6 原文为「营养值为估算，不宣称精确」，§2.5 步 3 引文为「营养值为估算值，不宣称精确」；采用带「值」的版本，既包含验收要求的子串「营养值为估算」，也与 §2.5 引文逐字一致。
