@@ -31,7 +31,7 @@ const mealLabel = computed(() => {
 
 /**
  * MealLogResponse.target 按契约只含 kcal 与 protein_g（API.md §2.4），
- * 所以脂肪/碳水/钠三条只显示数值、标注「暂无目标」；补齐目标字段需走接口变更流程（待评审议题 Q4）。
+ * 所以脂肪/碳水/钠三条只显示数值、标注「仅供参考」；补齐目标字段需走接口变更流程（待评审议题 Q4）。
  */
 const comparisonTarget = computed(() => {
   const target = log.value?.target;

@@ -509,3 +509,21 @@ PD 在 11-18 合入 #63 时把三件非阻塞遗留挂到 FE-B，要求「下次
 **测试**：新增 `tests/unit/dishFeedbackCard.test.ts` 3 例（未填菜名禁用 / 复制文本含日期餐次菜名说明 / 剪贴板降级）；闭环 e2e 的反馈页断言加入口。分支基线下 web 用例 72 → **75**；落到主干（含 FE-A 称重用例）后全量 **82** 例，lint / typecheck / build 全绿。
 
 **建议给 PD**：把收集流程写进上线检查清单——「用户复制 → 反馈群 → 汇总进 `observed-menu.json`（source: user）→ 有问题同时登记 PROGRESS §6」。
+
+---
+
+## 23. 视觉走查 P2-2 / P2-3 修复与走查环境说明（2026-11-22）
+
+PD 11-22 用真后端走查五页（`reviews/pd/UI-WALKTHROUGH-2026-11-22.md`），主链路全过，给 FE-B 留了两个 P3 和一个流程问题。逐条处理：
+
+**P2-2 反馈页「暂无目标」**：`MealLogResponse.target` 按契约只有 `kcal` 与 `protein_g`（API.md §2.4），脂肪/碳水/钠三条原本标注「暂无目标」，读起来像系统缺数据。`MacroBar` 的缺目标文案统一改为「仅供参考」，`aria-label` 改为「本餐无目标，数值仅供参考」。组件被推荐页组合卡复用，那里同样受益，不新增 API 变更议题。
+
+**P2-3 回填页加载期摘要闪 id**：`selectedLabels` 原先在菜单里找不到菜名时回退到 `dish_id`（预填或草稿恢复发生在菜单响应之前时就会闪 `s01、m10`）。改为只显示能对上菜名的项；菜单加载中显示「菜单加载中…」，加载失败则只显示已解析出的菜名，任何情况下都不把内部 id 展示给用户。
+
+**流程问题（静默走 Mock）**：`web/.env.example` 补一段显式说明——手动走查必须 `VITE_API_BASE= npm run dev`（空值走同源代理），不设变量会走 `mock://local`，容易把 Mock 数据不全误判成产品 bug。根 README 归 PD，建议「快速开始」补同一句话。
+
+**测试与验证**：
+- 新增 `tests/unit/logPrefillLabels.test.ts` 2 例：菜单 pending 时摘要显示「菜单加载中…」且不含 dish_id、菜单回来后换成菜名；菜单失败时不回退 id。
+- `components.test.ts` 的无目标断言改为「仅供参考」，并检查 aria-label。
+- web **84 用例**、lint / typecheck / build 全绿。
+- 浏览器实走（Mock 模式）：建档 → 推荐采纳 → 回填（摘要「3 项已选 葱油拌面、宫保鸡丁、醋溜土豆丝」）→ 反馈（脂肪/碳水/钠「仅供参考」，菜品反馈入口在位）。
