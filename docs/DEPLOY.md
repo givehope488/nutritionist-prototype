@@ -114,3 +114,25 @@ docker compose stop server
 npm run restore -- ./backups/app-2026-11-21T13-05-02-817Z.db
 docker compose start server
 ```
+
+## 6. 「无解」链路验证（2026-11-22，§2.5 步 2 ③）
+
+用真实数据构造「所有午餐候选都不可用」：
+
+```bash
+# 下架全部午餐候选（356 道），模拟所有午餐档口关停
+sqlite3 app.db "UPDATE dishes SET status='hidden' WHERE meals LIKE '%lunch%';"
+curl -s -X POST -H 'Content-Type: application/json' \
+  -d '{"session_id":"drill","meal":"lunch"}' http://127.0.0.1:8787/api/v1/recommendations
+```
+
+返回：
+
+```json
+{ "combos": [], "notice": "符合忌口条件的菜品太少，建议放宽一两个限制或换个时段", "target": { ... } }
+```
+
+**结论**：无解时是 **200 + `combos: []` + `notice`**，不是 404/500，前端「无解」页有文案可渲染（与 API.md §2.3 一致）。
+
+顺带验证了一个容易误判的现象：**只下架「午餐主食」并不会无解**——v3 有 258 道 `single` 成品餐
+（一份即一餐），不依赖主食+主菜+素菜的组合结构。要造无解，必须把午餐候选整体下架。

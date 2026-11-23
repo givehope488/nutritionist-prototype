@@ -83,3 +83,20 @@ BACKUP_DIR=./backups npm run backup
 ```
 
 恢复时先 `docker compose stop server`，恢复完再 `docker compose start server`。
+
+## 5. 回滚演练记录（2026-11-22）
+
+> 对应 §2.5 步 2 ①：停服务 → 恢复 → 起服务，记录**停机窗口**。
+
+| 步骤 | 结果 |
+|---|---|
+| 备份 | 脚本 **15 ms**（120 KB，`dishes=384 profiles=1 meal_logs=1`）；含 npm/tsx 启动的端到端 711 ms |
+| 模拟事故 | 清空 meal_logs/profiles + 50 道菜 `kcal` 归 0 |
+| 恢复 | 脚本 **3 ms** |
+| **停机窗口（停止 → 恢复 → 重新 healthy）** | **2221 ms ≈ 2.2 秒** |
+| 恢复后核对 | `dishes=384 profiles=1 logs=1`、**零热量菜 0**、`integrity=ok` |
+
+**结论**：单机 SQLite 场景下，一次完整回滚的停机时间在 **2~3 秒**量级，远小于「发布窗口」预期；
+真正耗时的不是恢复本身（毫秒级），而是进程重启（tsx 启动约 1~2 秒）。
+容器部署时这个数字会略高（容器重启 + 健康检查间隔 15s），建议发布时用 `docker compose up -d` 的
+`depends_on: service_healthy` 等待就绪，不要用固定 sleep。
