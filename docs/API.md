@@ -1,6 +1,8 @@
 # 接口协定（API Contract）
 
-> 版本 v1.2.5（2026-11-18），回填采纳快照版。**本文档是前后端并行开发的唯一事实源：先改文档、评审通过、再改代码。** 修改流程见附录 C。开发行为规范见 `docs/COLLAB.md`。
+> 版本 v1.2.6（2026-11-24），回填目标补齐版。**本文档是前后端并行开发的唯一事实源：先改文档、评审通过、再改代码。** 修改流程见附录 C。开发行为规范见 `docs/COLLAB.md`。
+>
+> **v1.2.6 回填响应 `target` 补齐脂肪 / 碳水 / 钠**（PD 2026-11-24 实机体验反馈，BE-A 复核）：§2.4 `POST /meal-logs` 响应 `target` 从 `{ kcal, protein_g }` 补为 `{ kcal, protein_g, fat_g, carbs_g, sodium_mg }` 五项——`calcTargets` 本就算全五项，此前只映射两项导致反馈页这三条恒为「仅供参考」。`verdict` 判定口径**不变**，仍只按 kcal 与 protein_g。纯新增字段、兼容变更、无过渡期。
 >
 > **v1.2.5 定稿回填采纳快照字段**：§2.4 `POST /meal-logs` 新增可选 `adopted_combo`（推荐快照），与 `adopted_combo_id` 绑定，并写明逐菜判定规则（`fixed` 集合级比对 / `weigh` ±15% / 无 id 自选 `false`）。口径由 PD 11-17 拍板，属新增字段、兼容变更、无过渡期。服务端实现归 BE-B、快照发送归 FE-B。
 >
@@ -315,7 +317,7 @@
 | v1.2.3 | 2026-11-06 | **补两处会让实现直接算错的数字缺口。** ① 附录 A 餐次占比原为 `0.30 / 0.40 / 0.35`，**三者之和 1.05**——按餐目标加总会比 `day_kcal` 高 5%（实测日目标 2344kcal，三餐相加 2461.2）。改为 `dinner 0.30`，并写明「三者之和必须 = 1.0」，测试须断言此等式。② 附录 B 只写「钠 >1600mg 线性罚」却没给系数，BE-A 取了 ×0.01（超 900mg 仅扣 9 分），实测午餐三套钠 2150 / 2150 / 2500mg 全超标，而池内 1539 套组合中有 937 套（60.9%）能做到 ≤1600mg。现定分段系数 `(Na−1600)×0.05` + `(Na−1900)×0.10`，并要求超 1900 的组合理由带控盐提示。③ 附录 B「补小荤」补边界：不得新增菜品、不得改变 §2.3 组合件数（原规则与 v1.2.2 的结构定义冲突，会产出「双主菜」四件套）。无字段结构变更 |
 | v1.2.4 | 2026-11-17 | **对齐实测菜单 v3 并补齐联调两处契约缺口**（BE-A 定稿，来源 PD 草稿 2026-11-15）。① §0 第 4 条删「价格元」（产品 2026-11-13 决定不提供价格）。② §2.1 示例换成 v3 真实菜（`cly-01`），删 `price_yuan`、补五个可选字段 `floor` / `stall` / `serving_mode` / `pricing_mode` / `recommendable`（老种子不下发这五个键），新增四段说明：份量形态四态 / 结算方式两态 / 可推荐性 / 楼层档口与 reliability 的使用方判定。③ §2.3 补两级称重标记 `ComboDish.pricing_mode?` + `Combo.has_weighed_dish?`（兼容新增，满足 W2 验收 I5）。④ §2.2 新增 `DELETE /profiles/me?session_id=`（204 / 404，**连带删除该 session 全部 meal-logs**，合规删除入口）。均为新增字段 / 新增端点、无过渡期 |
 | v1.2.5 | 2026-11-18 | **回填采纳快照字段定稿**（BE-A 定稿，口径由 PD 11-17 拍板，见 PROGRESS §6 裁决行）。§2.4 `POST /meal-logs` 请求体新增可选 `adopted_combo: { id, items: [{dish_id, servings}] }`，与 `adopted_combo_id` 绑定——带 id 必带快照，缺 → `400 VALIDATION_ERROR`，用于逐菜比对替代「id 非空即采纳」。写明 `adopted` 判定：`fixed` 集合级比对、`weigh` 推荐份量 ±15%、无 id = 自选 `false`；快照随请求携带不再查 combo，老记录维持原值不重算。新增字段、兼容变更、无过渡期 |
-| v1.2.6 | 2026-11-24 | **回填响应 `target` 补齐脂肪 / 碳水 / 钠**（PD 2026-11-24 实机体验反馈，BE-A 复核）。`calcTargets` 本来就产出六项，此前响应只映射 `kcal` / `protein_g`，导致反馈页这三条没有目标、只能显示「仅供参考」且对比条恒为空。现 `MealLogTarget = { kcal, protein_g, fat_g, carbs_g, sodium_mg }`。**判定口径不变**：`verdict` 仍只按 kcal 与 protein_g 计算。纯新增字段、兼容变更、无过渡期 |
+| v1.2.6 | 2026-11-24 | **回填响应 `target` 补齐脂肪 / 碳水 / 钠**（PD 2026-11-24 实机体验反馈，BE-A 复核）。`calcTargets` 本来就产出五项营养值（`NutritionTotals = { kcal, protein_g, fat_g, carbs_g, sodium_mg }`，另带 `day_kcal` / `meal_ratio` 两个目标元数据），此前响应只映射 `kcal` / `protein_g`，导致反馈页这三条没有目标、只能显示「仅供参考」且对比条恒为空。现 `MealLogTarget` 补齐为上述五项（不含 `day_kcal` / `meal_ratio`）。**判定口径不变**：`verdict` 仍只按 kcal 与 protein_g 计算。纯新增字段、兼容变更、无过渡期 |
 
 ### 附录 D：忌口选项全表（v1.2 新增，唯一事实源）
 
