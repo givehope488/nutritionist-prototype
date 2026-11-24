@@ -996,3 +996,33 @@ web: npm run build       → dist/assets/index-BdL9KnKX.js 181.40 kB │ gzip 62
 - CI（head `179eaa6`）：`lint` / `test` / `typecheck` / `deploy-config` 全部 `completed / success`；PR `mergeable=true`、`mergeable_state=blocked`（等评审，符合预期）。
 - 按防线 7 不自审自合：**未合并、未关闭**，Merge 归 PD。
 - 口径说明：验收 A6 原文为「营养值为估算，不宣称精确」，§2.5 步 3 引文为「营养值为估算值，不宣称精确」；采用带「值」的版本，既包含验收要求的子串「营养值为估算」，也与 §2.5 引文逐字一致。
+
+## 24. 2026-11-24：早餐占比提案（25/40/35）与交接
+
+### 24.1 问题与根因
+
+- 实机日目标 2673 kcal 时早餐目标 801.9 kcal，推荐三套均为 700+ kcal 单碗；用户反馈「早餐推荐卡路里偏高」。
+- 根因：早餐占比 30% 偏高 + 早餐池无套餐结构（combo 0 道）、多数来自二楼全天档口，正餐份量直接进早餐。
+- 用户选择：早餐 25% / 午餐 40% / 晚餐 35%；交付方式「准备分支 + 交接说明」。
+
+### 24.2 改动
+
+- `server/src/engines/nutrition.ts`：`MEAL_RATIO` = `{ breakfast: 0.25, lunch: 0.4, dinner: 0.35 }`；其他公式未动。
+- `web/src/api/__mock__/nutrition.ts`：Mock 同步同组比例。
+- `server/test/engines/nutrition.test.ts`：新增提案断言（2282 kcal 样本：早餐 570.5 kcal / 19.5 g，晚餐 798.7 kcal / 27.3 g）。
+- 新增 `reviews/fe-a/HANDOFF-BREAKFAST-RATIO-2026-11-24.md`：效果、风险、合入前置条件、回滚。
+
+### 24.3 验证
+
+```
+server: npm test        → 8 files / 112 tests passed
+web:    npm run test    → 17 files / 89 tests passed
+root:   npm run check   → lint / typecheck / test / smoke 13-13 / check:data / check:progress 全过
+浏览器（5173 + 真实后端）：早餐 668.3 kcal、晚餐 935.6 kcal；早餐三套 667/640/671 kcal
+```
+
+### 24.4 交付与边界
+
+- 分支 `proposal/breakfast-ratio-25`，提交 `87de67e`（代码+单测）与本条文档提交。
+- **未改 `docs/API.md`**：附录 A 仍为 0.30/0.40/0.30，合入前必须由 PD 走契约变更并确认口径；FE-A 不自审自合。
+- 远端分支与 PR 见下条回填。
