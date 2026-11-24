@@ -2600,21 +2600,6 @@
       "note": "份量足又有料"
     },
     {
-      "id": "obs-178",
-      "floor": 2,
-      "area": "二楼·拌个饭饭",
-      "meals": [
-        "breakfast",
-        "lunch",
-        "dinner"
-      ],
-      "name": "任意双拼",
-      "category": "protein",
-      "source": "sign",
-      "confidence": "high",
-      "note": "招牌推荐"
-    },
-    {
       "id": "obs-179",
       "floor": 2,
       "area": "二楼·拌个饭饭",
@@ -3003,21 +2988,6 @@
       "source": "sign",
       "confidence": "high",
       "note": ""
-    },
-    {
-      "id": "obs-205",
-      "floor": 2,
-      "area": "二楼·炸串精选",
-      "meals": [
-        "breakfast",
-        "lunch",
-        "dinner"
-      ],
-      "name": "四合一",
-      "category": "protein",
-      "source": "sign",
-      "confidence": "high",
-      "note": "小份 8 / 中份 11 / 大份 15"
     },
     {
       "id": "obs-206",
@@ -4093,7 +4063,7 @@
         "lunch",
         "dinner"
       ],
-      "name": "鸡蛋灌饼&手抓饼",
+      "name": "鸡蛋灌饼",
       "category": "staple",
       "source": "sign",
       "confidence": "high",
@@ -5710,6 +5680,21 @@
       "confidence": "mid",
       "note": "麻辣烫三种汤底之一（用户确认）；微辣档，油脂与钠偏高；汤底与主食不是称重，按份给",
       "pricing_mode": "fixed"
+    },
+    {
+      "id": "obs-385",
+      "floor": 2,
+      "area": "二楼·绍兴小吃",
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "name": "手抓饼",
+      "category": "staple",
+      "source": "sign",
+      "confidence": "high",
+      "note": "原味，单张"
     }
   ]
 }

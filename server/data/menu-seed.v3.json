@@ -1,6 +1,6 @@
 {
   "version": 3,
-  "exported_at": "2026-11-15T07:35:21.027Z",
+  "exported_at": "2026-11-24T15:42:49.703Z",
   "note": "v3 = 实测菜单。**一切餐食以照片数据为准**：原型估算的 55 道基线数据已全部抛弃，本种子只含照片识别与用户口述的条目。**本产品不向用户提供价格**：种子里不含任何价格字段。治理字段 floor/stall/serving_mode/recommendable/evidence/confidence 当前不入库、不出接口——seed.ts 是逐字段 INSERT，需 BE-B 扩 shared 类型与 SQLite 列后生效。serving_mode 语义：plate=一盘自选（只给餐食建议）/ single=独立成品餐 / component=可选组件（配菜、浇头）。",
   "dishes": [
     {
@@ -597,8 +597,8 @@
       "sodium_mg": 120,
       "tags": [
         "egg",
-        "meat",
-        "milk"
+        "milk",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
@@ -1301,8 +1301,8 @@
       "tags": [
         "pork",
         "gluten",
-        "meat",
-        "seafood"
+        "seafood",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
@@ -2117,8 +2117,8 @@
       "carbs_g": 13,
       "sodium_mg": 800,
       "tags": [
-        "vegprotein",
-        "spicy"
+        "spicy",
+        "vegprotein"
       ],
       "drink": false,
       "reliability": "B",
@@ -2752,8 +2752,8 @@
       "tags": [
         "pork",
         "gluten",
-        "meat",
-        "seafood"
+        "seafood",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
@@ -7062,8 +7062,8 @@
         "pork",
         "gluten",
         "spicy",
-        "meat",
-        "beef"
+        "beef",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
@@ -7203,8 +7203,8 @@
       "tags": [
         "egg",
         "gluten",
-        "meat",
-        "pork"
+        "pork",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
@@ -9282,60 +9282,6 @@
     },
     {
       "id": "bfg-01",
-      "name": "任意双拼",
-      "category": "protein",
-      "portion_label": "1 份",
-      "portion_grams": null,
-      "meals": [
-        "breakfast",
-        "lunch",
-        "dinner"
-      ],
-      "kcal": 700,
-      "protein_g": 30,
-      "fat_g": 30,
-      "carbs_g": 80,
-      "sodium_mg": 1500,
-      "tags": [
-        "pork",
-        "meat"
-      ],
-      "drink": false,
-      "reliability": "B",
-      "status": "active",
-      "ingredients": [
-        {
-          "name": "米饭",
-          "grams": 234,
-          "source": "标准配比（食堂常规做法），克重按标注热量校准"
-        },
-        {
-          "name": "猪梅花肉",
-          "grams": 74,
-          "source": "标准配比（食堂常规做法），克重按标注热量校准"
-        },
-        {
-          "name": "鸡腿",
-          "grams": 74,
-          "source": "标准配比（食堂常规做法），克重按标注热量校准"
-        },
-        {
-          "name": "植物油",
-          "grams": 11,
-          "source": "标准配比（食堂常规做法），克重按标注热量校准"
-        }
-      ],
-      "source": "照片牌面抄录菜名；营养值按标准配方估算；配料已按标准配比反推",
-      "floor": 2,
-      "stall": "二楼·拌个饭饭",
-      "serving_mode": "single",
-      "pricing_mode": "fixed",
-      "recommendable": true,
-      "evidence": "sign",
-      "confidence": "high"
-    },
-    {
-      "id": "bfg-02",
       "name": "孜然烧鸡饭",
       "category": "protein",
       "portion_label": "1 份",
@@ -9388,7 +9334,7 @@
       "confidence": "high"
     },
     {
-      "id": "bfg-03",
+      "id": "bfg-02",
       "name": "招牌口水鸡",
       "category": "protein",
       "portion_label": "1 份",
@@ -9442,7 +9388,7 @@
       "confidence": "high"
     },
     {
-      "id": "bfg-04",
+      "id": "bfg-03",
       "name": "肉沫茄子饭",
       "category": "protein",
       "portion_label": "1 份",
@@ -9496,7 +9442,7 @@
       "confidence": "high"
     },
     {
-      "id": "bfg-05",
+      "id": "bfg-04",
       "name": "西红柿鸡蛋饭",
       "category": "protein",
       "portion_label": "1 个",
@@ -9550,7 +9496,7 @@
       "confidence": "high"
     },
     {
-      "id": "bfg-06",
+      "id": "bfg-05",
       "name": "可乐鸡块饭",
       "category": "protein",
       "portion_label": "1 份",
@@ -9608,7 +9554,7 @@
       "confidence": "high"
     },
     {
-      "id": "bfg-07",
+      "id": "bfg-06",
       "name": "黑椒烧鸡饭",
       "category": "protein",
       "portion_label": "1 份",
@@ -9666,7 +9612,7 @@
       "confidence": "high"
     },
     {
-      "id": "bfg-08",
+      "id": "bfg-07",
       "name": "经典辣子鸡饭",
       "category": "protein",
       "portion_label": "1 份",
@@ -9731,7 +9677,7 @@
       "confidence": "high"
     },
     {
-      "id": "bfg-09",
+      "id": "bfg-08",
       "name": "香辣烧鸡饭",
       "category": "protein",
       "portion_label": "1 份",
@@ -9790,7 +9736,7 @@
       "confidence": "high"
     },
     {
-      "id": "bfg-10",
+      "id": "bfg-09",
       "name": "蜜汁酱鸭饭",
       "category": "protein",
       "portion_label": "1 份",
@@ -9843,7 +9789,7 @@
       "confidence": "high"
     },
     {
-      "id": "bfg-11",
+      "id": "bfg-10",
       "name": "咖喱鸡肉饭",
       "category": "protein",
       "portion_label": "1 份",
@@ -9901,7 +9847,7 @@
       "confidence": "high"
     },
     {
-      "id": "bfg-12",
+      "id": "bfg-11",
       "name": "鱼香肉丝饭",
       "category": "protein",
       "portion_label": "1 份",
@@ -9918,9 +9864,9 @@
       "sodium_mg": 802,
       "tags": [
         "seafood",
-        "meat",
         "pork",
-        "spicy"
+        "spicy",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
@@ -9982,7 +9928,7 @@
       "confidence": "high"
     },
     {
-      "id": "bfg-13",
+      "id": "bfg-12",
       "name": "广式叉烧鸭饭",
       "category": "protein",
       "portion_label": "1 份",
@@ -10041,7 +9987,7 @@
       "confidence": "high"
     },
     {
-      "id": "bfg-14",
+      "id": "bfg-13",
       "name": "铁板黑烧鸡饭",
       "category": "protein",
       "portion_label": "1 份",
@@ -10094,7 +10040,7 @@
       "confidence": "high"
     },
     {
-      "id": "bfg-15",
+      "id": "bfg-14",
       "name": "酱香小炒鸡",
       "category": "protein",
       "portion_label": "1 份",
@@ -10734,60 +10680,6 @@
     },
     {
       "id": "zcj-13",
-      "name": "四合一",
-      "category": "protein",
-      "portion_label": "小份",
-      "portion_grams": null,
-      "meals": [
-        "breakfast",
-        "lunch",
-        "dinner"
-      ],
-      "kcal": 260,
-      "protein_g": 14,
-      "fat_g": 16,
-      "carbs_g": 16,
-      "sodium_mg": 1000,
-      "tags": [
-        "pork",
-        "meat"
-      ],
-      "drink": false,
-      "reliability": "B",
-      "status": "active",
-      "ingredients": [
-        {
-          "name": "香肠",
-          "grams": 15,
-          "source": "标准配比（食堂常规做法），克重按标注热量校准"
-        },
-        {
-          "name": "鸡柳",
-          "grams": 19,
-          "source": "标准配比（食堂常规做法），克重按标注热量校准"
-        },
-        {
-          "name": "薯条",
-          "grams": 30,
-          "source": "标准配比（食堂常规做法），克重按标注热量校准"
-        },
-        {
-          "name": "可乐",
-          "grams": 76,
-          "source": "标准配比（食堂常规做法），克重按标注热量校准"
-        }
-      ],
-      "source": "照片牌面抄录菜名；营养值按标准配方估算；配料已按标准配比反推",
-      "floor": 2,
-      "stall": "二楼·炸串精选",
-      "serving_mode": "single",
-      "pricing_mode": "fixed",
-      "recommendable": false,
-      "evidence": "sign",
-      "confidence": "high"
-    },
-    {
-      "id": "zcj-14",
       "name": "鸡锁骨",
       "category": "protein",
       "portion_label": "小份",
@@ -10858,8 +10750,8 @@
       "tags": [
         "seafood",
         "gluten",
-        "meat",
-        "pork"
+        "pork",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
@@ -11401,9 +11293,9 @@
       "tags": [
         "seafood",
         "gluten",
-        "meat",
         "pork",
-        "spicy"
+        "spicy",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
@@ -13106,7 +12998,6 @@
       "carbs_g": 12,
       "sodium_mg": 700,
       "tags": [
-        "vegprotein",
         "pork",
         "meat"
       ],
@@ -13528,8 +13419,8 @@
       "sodium_mg": 1100,
       "tags": [
         "pork",
-        "meat",
-        "spicy"
+        "spicy",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
@@ -13696,8 +13587,8 @@
       "sodium_mg": 1000,
       "tags": [
         "beef",
-        "meat",
-        "spicy"
+        "spicy",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
@@ -13751,8 +13642,8 @@
       "sodium_mg": 1200,
       "tags": [
         "pork",
-        "vegprotein",
         "spicy",
+        "vegprotein",
         "meat"
       ],
       "drink": false,
@@ -14849,7 +14740,7 @@
     },
     {
       "id": "sx-03",
-      "name": "鸡蛋灌饼&手抓饼",
+      "name": "鸡蛋灌饼",
       "category": "staple",
       "portion_label": "1 个",
       "portion_grams": null,
@@ -17481,8 +17372,8 @@
       "sodium_mg": 120,
       "tags": [
         "egg",
-        "meat",
-        "milk"
+        "milk",
+        "meat"
       ],
       "drink": false,
       "reliability": "B",
@@ -19980,6 +19871,54 @@
       "recommendable": true,
       "evidence": "user",
       "confidence": "mid"
+    },
+    {
+      "id": "sx-12",
+      "name": "手抓饼",
+      "category": "staple",
+      "portion_label": "1 个",
+      "portion_grams": null,
+      "meals": [
+        "breakfast",
+        "lunch",
+        "dinner"
+      ],
+      "kcal": 350,
+      "protein_g": 8,
+      "fat_g": 18,
+      "carbs_g": 42,
+      "sodium_mg": 750,
+      "tags": [
+        "gluten"
+      ],
+      "drink": false,
+      "reliability": "B",
+      "status": "active",
+      "ingredients": [
+        {
+          "name": "面粉",
+          "grams": 62,
+          "source": "标准配比（食堂常规做法），克重按标注热量校准"
+        },
+        {
+          "name": "植物油",
+          "grams": 14,
+          "source": "标准配比（食堂常规做法），克重按标注热量校准"
+        },
+        {
+          "name": "盐",
+          "grams": 1,
+          "source": "标准配比（食堂常规做法），克重按标注热量校准"
+        }
+      ],
+      "source": "照片牌面抄录菜名；营养值按标准配方估算；配料已按标准配比反推",
+      "floor": 2,
+      "stall": "二楼·绍兴小吃",
+      "serving_mode": "single",
+      "pricing_mode": "fixed",
+      "recommendable": false,
+      "evidence": "sign",
+      "confidence": "high"
     }
   ]
 }
