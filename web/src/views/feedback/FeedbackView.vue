@@ -54,7 +54,11 @@ onMounted(load);
 
 <template>
   <div class="page">
-    <AppNavBar title="这一餐的反馈" back-label="回填" @back="router.push('/log')">
+    <AppNavBar
+      title="这一餐的反馈"
+      back-label="首页"
+      @back="router.push({ name: 'home' })"
+    >
       <template #action>
         <router-link class="page__link" to="/history">历史</router-link>
       </template>

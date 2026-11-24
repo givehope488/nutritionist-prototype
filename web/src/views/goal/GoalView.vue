@@ -16,13 +16,10 @@ import AppField from '@/components/base/AppField.vue';
 import AppLoading from '@/components/base/AppLoading.vue';
 import AppNavBar from '@/components/base/AppNavBar.vue';
 import AppRadioGroup from '@/components/base/AppRadioGroup.vue';
-import AppStepBar from '@/components/base/AppStepBar.vue';
 import type { RadioOption } from '@/components/types';
 import { sessionId } from '@/composables/useSession';
 
 const router = useRouter();
-
-const STEPS = ['建档', '目标与忌口', '推荐', '回填', '反馈'];
 
 const loading = ref(true);
 const saving = ref(false);
@@ -129,13 +126,11 @@ onMounted(async () => {
     <AppNavBar
       title="目标与忌口"
       subtitle="决定推荐的能量口径和过滤条件"
-      back-label="建档"
-      @back="router.push({ name: 'profile' })"
+      back-label="首页"
+      @back="router.push({ name: 'home' })"
     />
 
     <div class="page__body">
-      <AppStepBar :steps="STEPS" :current="1" />
-
       <AppErrorBanner v-if="error" :error="error" />
       <AppErrorBanner v-if="menuError" :error="menuError">
         <template #action>

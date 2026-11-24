@@ -53,7 +53,7 @@ async function settle(times = 4): Promise<void> {
 }
 
 describe('建档页', () => {
-  it('区间提示与 PROFILE_BOUNDS 同源；越界被拦下，合法后进入目标页', async () => {
+  it('区间提示与 PROFILE_BOUNDS 同源；越界被拦下，合法后回首页', async () => {
     const router = await startRouter('/profile');
     const wrapper = mount(ProfileView, { global: { plugins: [router] } });
     await settle();
@@ -77,7 +77,8 @@ describe('建档页', () => {
     await inputs[0].setValue('172');
     await wrapper.get('button.btn--primary').trigger('click');
     await settle();
-    expect(router.currentRoute.value.name).toBe('goal');
+    // 2026-11-24：建档完成后回首页，目标与忌口改从个人中心进
+    expect(router.currentRoute.value.name).toBe('home');
 
     const saved = await getProfile(sessionId);
     expect(saved.ok).toBe(true);

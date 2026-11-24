@@ -1,6 +1,6 @@
 // 展示用文案与排序，不属于接口契约（契约在 @canteen/shared）。
 // 放这里而不是 shared/：同一份契约服务端不需要中文餐次名，混进契约会让 shared 变成 UI 配置。
-import type { Category, Meal } from '@canteen/shared';
+import type { Category, Goal, Meal } from '@canteen/shared';
 
 export const MEAL_OPTIONS: { value: Meal; label: string }[] = [
   { value: 'breakfast', label: '早餐' },
@@ -17,6 +17,12 @@ export const DISH_CATEGORY_LABEL: Record<Category, string> = {
   veg: '蔬菜',
   soup: '汤品',
   fruit: '水果',
+};
+
+export const GOAL_LABEL: Record<Goal, string> = {
+  health: '日常保健',
+  lose: '减脂',
+  gain: '增肌',
 };
 
 /** API.md §2.4 date 字段格式；服务端为最终判定，前端只做预校验 */

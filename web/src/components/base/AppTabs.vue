@@ -15,7 +15,10 @@ watch(
   () => props.modelValue,
   () => {
     const active = scroller.value?.querySelector<HTMLElement>('[aria-selected="true"]');
-    active?.scrollIntoView({ block: 'nearest', inline: 'center' });
+    // jsdom 与部分老 WebView 没有 scrollIntoView：缺了只是不自动滚入视野，不能让它抛错中断渲染
+    if (active && typeof active.scrollIntoView === 'function') {
+      active.scrollIntoView({ block: 'nearest', inline: 'center' });
+    }
   },
 );
 </script>

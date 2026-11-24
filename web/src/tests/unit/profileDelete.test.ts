@@ -1,5 +1,6 @@
 // 合规删除入口（PROGRESS §2.2 FE-A #5① / API.md v1.2.4 §2.2）：
 // 二次确认文案必须写明「删除档案与全部用餐记录」；确认后服务端连带删除记录，本机缓存同步清理。
+// 2026-11-24：删除入口随档案管理一起搬进个人中心（/mine），建档页只服务新用户。
 import { describe, expect, it } from 'vitest';
 import { flushPromises, mount } from '@vue/test-utils';
 import { createMemoryHistory, createRouter } from 'vue-router';
@@ -15,7 +16,7 @@ import {
 import { routes } from '@/router';
 import { sessionId } from '@/composables/useSession';
 import { saveRecommendationResponse } from '@/composables/useRecommendationCache';
-import ProfileView from '@/views/profile/ProfileView.vue';
+import MineView from '@/views/mine/MineView.vue';
 
 const baseProfile: ProfileInput = {
   session_id: sessionId,
@@ -50,7 +51,7 @@ async function seedLog(): Promise<void> {
 
 async function startRouter() {
   const router = createRouter({ history: createMemoryHistory(), routes });
-  await router.push('/profile');
+  await router.push('/mine');
   await router.isReady();
   return router;
 }
@@ -64,7 +65,7 @@ async function settle(times = 4): Promise<void> {
 
 async function mountProfile() {
   const router = await startRouter();
-  const wrapper = mount(ProfileView, { global: { plugins: [router] } });
+  const wrapper = mount(MineView, { global: { plugins: [router] } });
   await settle();
   return wrapper;
 }
@@ -118,7 +119,7 @@ describe('档案删除入口', () => {
     expect(profile.ok).toBe(true);
   });
 
-  it('确认删除：档案与记录清空、本机缓存清空、表单复位', async () => {
+  it('确认删除：档案与记录清空、本机缓存清空、页面回到可重新建档的状态', async () => {
     await seedProfile();
     await seedLog();
     const cached: RecommendationResponse = {
@@ -149,11 +150,9 @@ describe('档案删除入口', () => {
 
     expect(wrapper.text()).toContain('档案与全部用餐记录已删除');
     expect(wrapper.text()).not.toContain('删除档案…');
-
-    const inputs = wrapper.findAll('input.numfield__input');
-    expect((inputs[0].element as HTMLInputElement).value).toBe('');
-    expect((inputs[1].element as HTMLInputElement).value).toBe('');
-    expect((inputs[2].element as HTMLInputElement).value).toBe('');
+    // 档案没了就不再渲染表单，只留「去建档」入口
+    expect(wrapper.findAll('input.numfield__input')).toHaveLength(0);
+    expect(buttonByText(wrapper, '去建档')).toBeDefined();
 
     expect(localStorage.getItem('cn.last_recommendation')).toBeNull();
     expect(sessionStorage.getItem(`cn.draft.${sessionId}.2026-11-18.lunch`)).toBeNull();

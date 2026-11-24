@@ -148,7 +148,14 @@ describe('回填（§2.4）', () => {
       'protein_g',
       'sodium_mg',
     ]);
-    expect(Object.keys(result.data.target).sort()).toEqual(['kcal', 'protein_g']);
+    // API.md v1.2.6：回填响应补脂肪 / 碳水 / 钠三项，反馈页五条目标都有值
+    expect(Object.keys(result.data.target).sort()).toEqual([
+      'carbs_g',
+      'fat_g',
+      'kcal',
+      'protein_g',
+      'sodium_mg',
+    ]);
     expect(['ok', 'warn']).toContain(result.data.verdict.level);
     expect(result.data.items[0]).toEqual({ dish_id: 's01', name: '白米饭', servings: 1 });
   });

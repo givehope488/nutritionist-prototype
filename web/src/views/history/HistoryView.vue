@@ -91,7 +91,12 @@ onMounted(() => void loadAll());
 
 <template>
   <div class="page">
-    <AppNavBar title="我的记录" subtitle="建议 → 执行 → 反馈">
+    <AppNavBar
+      title="我的记录"
+      subtitle="建议 → 执行 → 反馈"
+      back-label="首页"
+      @back="router.push({ name: 'home' })"
+    >
       <template #action>
         <router-link class="page__link" to="/log">去回填</router-link>
       </template>

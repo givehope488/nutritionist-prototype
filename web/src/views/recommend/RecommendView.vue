@@ -14,7 +14,6 @@ import AppErrorBanner from '@/components/base/AppErrorBanner.vue';
 import AppLoading from '@/components/base/AppLoading.vue';
 import AppNavBar from '@/components/base/AppNavBar.vue';
 import AppSegmented from '@/components/base/AppSegmented.vue';
-import AppStepBar from '@/components/base/AppStepBar.vue';
 import ComboCard from '@/components/business/ComboCard.vue';
 import NoSolutionNotice from '@/components/business/NoSolutionNotice.vue';
 import { saveRecommendationResponse } from '@/composables/useRecommendationCache';
@@ -25,7 +24,6 @@ import { MEAL_OPTIONS } from '@/utils/labels';
 const route = useRoute();
 const router = useRouter();
 
-const STEPS = ['建档', '目标与忌口', '推荐', '回填', '反馈'];
 const mealItems = MEAL_OPTIONS.map((option) => ({ value: option.value, label: option.label }));
 
 const loading = ref(true);
@@ -150,7 +148,12 @@ onMounted(async () => {
 
 <template>
   <div class="page">
-    <AppNavBar title="这餐怎么吃" :subtitle="`${today} · ${mealLabel}`">
+    <AppNavBar
+      title="这餐怎么吃"
+      :subtitle="`${today} · ${mealLabel}`"
+      back-label="首页"
+      @back="router.push({ name: 'home' })"
+    >
       <template #action>
         <button
           v-if="!missingProfile"
@@ -165,8 +168,6 @@ onMounted(async () => {
     </AppNavBar>
 
     <div class="page__body">
-      <AppStepBar :steps="STEPS" :current="2" />
-
       <AppEmpty
         v-if="missingProfile"
         title="还没有建档"

@@ -74,7 +74,7 @@ describe('回填 → 反馈 → 历史', () => {
     const save = profilePage.findAll('button').find((node) => node.text().includes('保存'));
     await save?.trigger('click');
     await settle();
-    expect(router.currentRoute.value.name).toBe('goal');
+    expect(router.currentRoute.value.name).toBe('home');
 
     // 推荐页：默认午餐拉 1~3 套，采纳第一套后交给回填页
     await router.push({ name: 'recommend' });

@@ -41,7 +41,11 @@ const dishes = ref<Dish[]>([]);
 const menuLoading = ref(false);
 const menuError = ref<ApiError | null>(null);
 const noProfile = ref(false);
-const activeCategory = ref<Category>('staple');
+// 'selected' 是「已选」分类（PD 2026-11-24）：草稿里已有菜时默认落在这里，
+// 让用户一眼看清自己选了什么，而不是在几百道菜里翻找打勾的项。
+const activeCategory = ref<Category | 'selected'>(
+  draft.selectedCount.value > 0 ? 'selected' : 'staple',
+);
 const prefillNotice = ref<string | null>(null);
 const submitting = ref(false);
 const submitError = ref<ApiError | null>(null);
@@ -117,17 +121,40 @@ const grouped = computed(() => {
   }));
 });
 
-const tabItems = computed(() =>
-  grouped.value.map((group) => ({
-    value: group.category,
+const tabItems = computed(() => [
+  { value: 'selected', label: '已选', count: draft.selectedCount.value },
+  ...grouped.value.map((group) => ({
+    value: group.category as string,
     label: DISH_CATEGORY_LABEL[group.category],
     count: group.items.length,
   })),
-);
+]);
 
 const currentDishes = computed(
   () => grouped.value.find((group) => group.category === activeCategory.value)?.items ?? [],
 );
+
+/** 已选清单：按草稿顺序还原菜品，菜单没加载完时先留空（外层已有 loading 兜住） */
+const pickedDishes = computed(() =>
+  draft
+    .buildItems()
+    .map((item) => {
+      const dish = dishes.value.find((candidate) => candidate.id === item.dish_id);
+      return dish ? { dish, servings: item.servings } : null;
+    })
+    .filter((entry): entry is { dish: Dish; servings: number } => entry !== null),
+);
+
+function setServings(dishId: string, servings: number): void {
+  if (servings === 0) delete draft.items.value[dishId];
+  else draft.items.value[dishId] = servings;
+}
+
+function clearPicked(): void {
+  draft.items.value = {};
+  // 清空后这餐不再算「按推荐吃」，否则提交时仍会带上采纳快照
+  draft.adoptedComboId.value = null;
+}
 
 /** 搜索时跨品类显示，否则只显示当前品类 */
 const visibleDishes = computed(() =>
@@ -146,12 +173,14 @@ const stallGroups = computed(() => {
   return [...map.entries()].map(([stall, items]) => ({ stall, items }));
 });
 
-// 筛完可能把当前品类筛空：自动落到第一个还有菜的品类，避免用户看着空白以为没菜
+// 筛完可能把当前品类筛空：自动落到第一个还有菜的品类，避免用户看着空白以为没菜。
+// 「已选」不受楼层/店铺/关键词影响，不参与这条纠偏。
 watch([activeFloor, activeStall, keyword], () => {
   if (activeStall.value !== 'all' && !stallOptions.value.includes(activeStall.value)) {
     activeStall.value = 'all';
     return;
   }
+  if (activeCategory.value === 'selected') return;
   if (!grouped.value.some((group) => group.category === activeCategory.value)) {
     const first = grouped.value[0];
     if (first) activeCategory.value = first.category;
@@ -179,6 +208,7 @@ async function loadMenu(): Promise<void> {
   menuLoading.value = false;
   if (result.ok) {
     dishes.value = result.data.dishes;
+    if (activeCategory.value === 'selected') return;
     const first = grouped.value[0];
     if (first && !grouped.value.some((group) => group.category === activeCategory.value)) {
       activeCategory.value = first.category;
@@ -203,6 +233,8 @@ function applyPrefillFromCombo(): void {
   }
   draft.adoptedComboId.value = combo.id;
   prefillNotice.value = `已按推荐搭配预填 ${combo.dishes.length} 项，吃完后按实际调整份数即可`;
+  // 预填后直接停在「已选」：进来第一眼就是这餐要吃什么，而不是几百道菜的列表
+  activeCategory.value = 'selected';
 }
 
 async function submit(): Promise<void> {
@@ -234,7 +266,11 @@ async function submit(): Promise<void> {
   await router.push({ name: 'feedback', query: { id: result.data.id } });
 }
 
-watch(meal, () => void loadMenu());
+watch(meal, () => {
+  // 换餐次就是换一份草稿：有菜才停在「已选」，否则回到菜品列表
+  activeCategory.value = draft.selectedCount.value > 0 ? 'selected' : 'staple';
+  void loadMenu();
+});
 watch([date, meal], () => {
   prefillNotice.value = null;
   applyPrefillFromCombo();
@@ -255,7 +291,12 @@ onMounted(async () => {
 
 <template>
   <div class="page">
-    <AppNavBar title="这餐吃了什么" :subtitle="`${formatDateLabel(date)} · ${mealLabel}`">
+    <AppNavBar
+      title="这餐吃了什么"
+      :subtitle="`${formatDateLabel(date)} · ${mealLabel}`"
+      back-label="首页"
+      @back="router.push({ name: 'home' })"
+    >
       <template #action>
         <router-link class="page__link" to="/history">历史</router-link>
       </template>
@@ -299,7 +340,8 @@ onMounted(async () => {
         />
 
         <template v-else-if="dishes.length > 0">
-          <div class="filters">
+          <!-- 已选分类下筛选无意义（清单本来就跨楼层/店铺），收起来让页面只讲「我选了什么」 -->
+          <div v-if="activeCategory !== 'selected' || searching" class="filters">
             <div class="filters__search">
               <input
                 v-model="keyword"
@@ -350,37 +392,71 @@ onMounted(async () => {
             role="tablist"
           />
 
-          <p v-if="searching" class="filters__hint">
-            找到 {{ filteredDishes.length }} 道（搜索时跨品类显示）
-          </p>
+          <section v-if="!searching && activeCategory === 'selected'" class="picked">
+            <div class="picked__head">
+              <h3 class="picked__title">
+                已选
+                <span class="picked__count">{{ draft.selectedCount.value }}</span>
+              </h3>
+              <button
+                v-if="draft.selectedCount.value"
+                class="picked__clear"
+                type="button"
+                @click="clearPicked"
+              >
+                清空
+              </button>
+            </div>
 
-          <AppEmpty
-            v-if="visibleDishes.length === 0"
-            title="没有匹配的菜"
-            description="换个关键词，或把楼层 / 店铺切回「全部」。"
-          />
+            <AppEmpty
+              v-if="pickedDishes.length === 0"
+              title="还没选菜"
+              description="从下面的分类里挑，选中的菜会集中显示在这里，方便核对份数。"
+            />
+
+            <ul v-else class="page__list">
+              <li v-for="item in pickedDishes" :key="item.dish.id">
+                <DishCard
+                  :dish="item.dish"
+                  :model-value="item.servings"
+                  @update:model-value="setServings(item.dish.id, $event)"
+                />
+              </li>
+            </ul>
+
+            <p v-if="pickedDishes.length" class="picked__hint">
+              份数减到 0 即从这餐移除；核对无误后点下面「生成反馈」。
+            </p>
+          </section>
 
           <template v-else>
-            <section v-for="group in stallGroups" :key="group.stall" class="stall">
-              <h3 class="stall__title">
-                {{ group.stall }}
-                <span class="stall__count">{{ group.items.length }}</span>
-              </h3>
-              <ul class="page__list">
-                <li v-for="dish in group.items" :key="dish.id">
-                  <DishCard
-                    :dish="dish"
-                    :model-value="draft.items.value[dish.id] ?? 0"
-                    @update:model-value="
-                      (value) => {
-                        if (value === 0) delete draft.items.value[dish.id];
-                        else draft.items.value[dish.id] = value;
-                      }
-                    "
-                  />
-                </li>
-              </ul>
-            </section>
+            <p v-if="searching" class="filters__hint">
+              找到 {{ filteredDishes.length }} 道（搜索时跨品类显示）
+            </p>
+
+            <AppEmpty
+              v-if="visibleDishes.length === 0"
+              title="没有匹配的菜"
+              description="换个关键词，或把楼层 / 店铺切回「全部」。"
+            />
+
+            <template v-else>
+              <section v-for="group in stallGroups" :key="group.stall" class="stall">
+                <h3 class="stall__title">
+                  {{ group.stall }}
+                  <span class="stall__count">{{ group.items.length }}</span>
+                </h3>
+                <ul class="page__list">
+                  <li v-for="dish in group.items" :key="dish.id">
+                    <DishCard
+                      :dish="dish"
+                      :model-value="draft.items.value[dish.id] ?? 0"
+                      @update:model-value="setServings(dish.id, $event)"
+                    />
+                  </li>
+                </ul>
+              </section>
+            </template>
           </template>
         </template>
       </template>
@@ -513,6 +589,42 @@ onMounted(async () => {
   color: var(--color-text-tertiary);
   font-size: var(--font-size-xs);
 }
+.picked {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.picked__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+.picked__title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: 600;
+}
+.picked__count {
+  margin-left: var(--space-1);
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+}
+.picked__clear {
+  min-height: var(--size-touch);
+  padding: 0 var(--space-2);
+  border: 0;
+  background: transparent;
+  color: var(--color-brand-600);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+.picked__hint {
+  margin: 0;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+}
 .stall {
   display: flex;
   flex-direction: column;
@@ -542,7 +654,7 @@ onMounted(async () => {
 }
 .submitbar {
   position: sticky;
-  bottom: calc(var(--size-touch) + var(--app-safe-bottom));
+  bottom: calc(var(--space-3) + var(--app-safe-bottom));
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
