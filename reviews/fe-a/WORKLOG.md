@@ -1033,3 +1033,9 @@ curl /api/v1/menu?meal=lunch               → 355 道；鸡蛋灌饼 sx-03 350 
 - §23.4 的「未推送」已被本条替代：按用户指示执行 `git push --dry-run` 通过后正式推送。
 - 远端分支 `data/menu-cleanup-2026-11-24` = `1e1676247c31ab9e3e23f2da151b7b1d36f22950`（`git ls-remote` 复核）。
 - PR 由用户创建（按分工：代理只推分支）；`origin/main` 未动，仍为 `2c0bbb7`。
+
+### 23.6 补记（同日）：PR #88
+
+- 用户指示创建 PR：PR **#88** <https://github.com/givehope488/nutritionist-prototype/pull/88>，head `db1ca64`，base `main`。
+- reviewers：`givehope488` / `wyf-111` 等；CI `lint` / `typecheck` / `test` / `deploy-config` 四项 `completed / success`。
+- `mergeable=true`，等评审；未合并。首次创建的 PR 正文因 Shell 反引号被展开丢失代码格式，已用 PATCH 修正为完整内容。
