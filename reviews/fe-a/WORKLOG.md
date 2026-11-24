@@ -1027,3 +1027,51 @@ root:   npm run check   → lint / typecheck / test / smoke 13-13 / check:data /
 - PR **#87**：<https://github.com/givehope488/nutritionist-prototype/pull/87>，reviewers `givehope488` / `wyf-111` 等。
 - CI（head `a44e72d`）：`lint` / `typecheck` / `test` / `deploy-config` 全部 `completed / success`；PR `mergeable=true`、`mergeable_state=blocked`（等评审）。**未合并。**
 - **未改 `docs/API.md`**：附录 A 仍为 0.30/0.40/0.30，合入前必须由 PD 走契约变更并确认口径；FE-A 不自审自合。
+
+### 24.5 用户授权后直接落地（2026-11-25）
+
+- 用户 2026-11-24 明确授权「直接改并同步文档，并在 PROGRESS 标出，接下来只有我和 BE-B 协作」，故由提案改为**直接落地**：
+  - `docs/API.md` 升 **v1.2.7**：附录 A 改 `breakfast 0.25 / lunch 0.40 / dinner 0.35`，版本表加一行；文件头同步。
+  - `docs/PROGRESS.md` §5 顶部加 2026-11-25 FE-A 条目（仅 §5，PD 指纹不变，`check:progress` 通过）。
+  - 提交 `6d01fe4` 已推到 `origin/proposal/breakfast-ratio-25`；`origin/main` 仍 `2c0bbb7`。
+- **远端 main 未能直接改**：GitHub 分支保护要求「1 个有写权限的批准 + 3 个必需检查」，Agent 账号无批准权限；PR #87 CI 全绿但 `mergeable_state=blocked`。需 givehope488 / BE-B 等有写权限的人 Approve 后合并。
+- 浏览器实测（本地后端已热载新比例）：早餐目标 **668.3 kcal**、午餐 **1069.2**、晚餐 **935.6**，三餐和 = 日目标 2673。
+
+## 25. 2026-11-25：超重/肥胖不推荐超出本餐热量（API v1.2.8）
+
+### 25.1 需求与口径
+
+- 用户原话：「如果使用者 bmi 达到肥胖或超重标准，就不要给出超出目标热量的推荐，直接作出修改」。
+- 判定：服务端按档案身高体重算出的 BMI（与 `bmi_tag` 同口径，中国标准 `≥ 24` 即超重/肥胖）。不新增请求字段、不让前端判定。
+- 策略：候选组合先按 `totals.kcal > target.kcal` 剔除，再进评分与去重；全部被剔除时不回退超热量组合，返回 `200` + `combos: []` + 专属 `notice`。
+
+### 25.2 改动
+
+- `server/src/engines/recommend.ts`
+  - `RecommendInput` 新增可选 `bmi?: number`（缺省 = 不做上限，老调用方/单测行为不变）。
+  - `overweightCap = bmi !== undefined && bmi >= 24`；候选过滤第一步即 `if (overweightCap && totalsOf(c.dishes).kcal > target.kcal) return false;`。
+  - `OVERWEIGHT_NOTICE`：「按你的体重管理目标，暂无不超过本餐热量的搭配，建议减少份量或选择更清淡的菜品」；`scored.length === 0` 时按是否超重分别返回该文案或原无解文案。
+- `server/src/routes/recommendations.ts`：`const { profile: derivedProfile, mealTargets } = calcTargets(input)`，把 `derivedProfile.bmi` 传给引擎。
+- `server/test/engines/recommend.test.ts`：新增 describe「BMI ≥ 24 不推荐超出本餐热量」，3 例：BMI 25 目标 700 → 3 套全部 ≤ 700；BMI 29 目标 500 → 空 + 含「不超过本餐热量」；BMI 23 目标 500 → 照旧 3 套。
+- 前端无改动：空 `combos` + `notice` 已由 `NoSolutionNotice` 消费，契约无新增字段。
+
+### 25.3 验证
+
+```
+server: npm run typecheck -w @canteen/server  → 0 error
+server: npm test -w @canteen/server           → 8 files / 115 tests passed（+3）
+真实接口（localhost:8787，档案 BMI 29.39 肥胖，日目标 2673）：
+  breakfast target 668.3 → 667 / 640 / 645（改前有 680 超目标）
+  lunch     target 1069.2 → 940 / 1006 / 872
+  dinner    target 935.6  → 900 / 920 / 872
+临时档案（BMI 26.67 超重，日目标 1351，测完已 DELETE）：
+  breakfast 337.8 → 328 / 335 / 330；lunch 540.4 → 540 / 540 / 535；dinner 472.9 → 470 / 472 / 472
+```
+
+- 空结果分支由单测覆盖（真实数据池在极低目标下仍能凑出小份组合，未强行构造线上空结果）。
+- 合同同步：`docs/API.md` §2.3 新增一条 + 版本表 v1.2.8；`docs/PROGRESS.md` §5 顶部加同日条目。
+
+### 25.4 边界
+
+- 只对「超过本餐目标」设硬上限，**不**改动评分权重、不引入「越低越好」——低于目标仍按原惩罚规则评分，避免超重用户被推向极端低热量组合。
+- `bmi < 24`、以及不传 `bmi` 的调用方行为完全不变。

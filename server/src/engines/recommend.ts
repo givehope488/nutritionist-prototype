@@ -42,6 +42,12 @@ export interface RecommendInput {
   /** 已解析成 DishTag 的忌口标签（调用方用 avoid_options 把 key 映射成 tag） */
   avoidTags: DishTag[];
   target: MealTarget;
+  /**
+   * 用户 BMI（2026-11-25 用户决策）：BMI ≥ 24（超重/肥胖）时，只返回热量不超过
+   * 本餐目标的组合；估算可能略超的称重菜也不例外。缺省 undefined = 不做该上限
+   * （老调用方 / 单测保持原行为）。
+   */
+  bmi?: number;
 }
 
 function round1(n: number): number {
@@ -201,6 +207,10 @@ function toCombo(dishes: Dish[], target: MealTarget, lightFill = false): Combo {
 const NO_SOLUTION_NOTICE =
   '符合忌口条件的菜品太少，建议放宽一两个限制或换个时段';
 
+/** BMI ≥ 24：只允许 kcal ≤ 本餐目标的组合；全超时给这条引导，而不是硬塞超热量套 */
+const OVERWEIGHT_NOTICE =
+  '按你的体重管理目标，暂无不超过本餐热量的搭配，建议减少份量或选择更清淡的菜品';
+
 /**
  * 生成推荐组合。
  *
@@ -211,7 +221,9 @@ export function recommendCombos(
   allDishes: Dish[],
   input: RecommendInput,
 ): { combos: Combo[]; notice: string | null } {
-  const { meal, goal, avoidTags, target } = input;
+  const { meal, goal, avoidTags, target, bmi } = input;
+  // BMI ≥ 24（中国标准：超重 24~27.9、肥胖 ≥28）不推荐超出本餐目标热量的组合
+  const overweightCap = bmi !== undefined && bmi >= 24;
 
   // E1 + E4：候选池先过滤（recommendable=false 的 78 道不进池；忌口在组合生成之前过滤）
   const pool = allDishes.filter(
@@ -296,6 +308,8 @@ export function recommendCombos(
   const seen = new Set<string>();
   const scored = candidates
     .filter((c) => {
+      // 超重/肥胖硬上限：先按热量剔除，再参与去重与评分
+      if (overweightCap && totalsOf(c.dishes).kcal > target.kcal) return false;
       const key = c.dishes
         .map((d) => d.id)
         .slice()
@@ -319,6 +333,14 @@ export function recommendCombos(
       };
     })
     .sort((a, b) => b.score - a.score);
+
+  // 超重/肥胖上限把所有候选都筛掉时，如实返回空 + 引导，不退回超热量组合
+  if (scored.length === 0) {
+    return {
+      combos: [],
+      notice: overweightCap ? OVERWEIGHT_NOTICE : NO_SOLUTION_NOTICE,
+    };
+  }
 
   type Scored = (typeof scored)[number];
 
