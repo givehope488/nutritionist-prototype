@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // 推荐组合卡（供 FE-A 推荐页消费）：3 套搭配中的 1 套。
 // 卡片只做展示与「采纳」事件上报，不判断营养达标与否——判定在服务端。
+// 「这组不行」的语义是**只换这一张**（PD 2026-11-24），具体怎么取新组合由页面决定，
+// 卡片只负责上报是第几张（index 由父级闭包带入）并在换的过程中禁用按钮。
 import type { Combo, MealTarget } from '@canteen/shared';
 import AppBadge from '../base/AppBadge.vue';
 import AppButton from '../base/AppButton.vue';
@@ -14,8 +16,10 @@ withDefaults(
     /** 1-based 序号，用于「搭配一 / 二 / 三」 */
     index: number;
     adopted?: boolean;
+    /** 正在为这张卡取新组合：按钮禁用并换文案，避免连点 */
+    replacing?: boolean;
   }>(),
-  { adopted: false },
+  { adopted: false, replacing: false },
 );
 
 const emit = defineEmits<{ adopt: []; replay: [] }>();
@@ -46,8 +50,15 @@ const labels = ['一', '二', '三', '四', '五'];
     <p class="combo__reason">{{ combo.reason }}</p>
 
     <div class="combo__actions">
-      <AppButton size="sm" variant="ghost" @click="emit('replay')">这组不行</AppButton>
-      <AppButton size="sm" :variant="adopted ? 'secondary' : 'primary'" @click="emit('adopt')">
+      <AppButton size="sm" variant="ghost" :disabled="replacing" @click="emit('replay')">
+        {{ replacing ? '正在换…' : '这组不行' }}
+      </AppButton>
+      <AppButton
+        size="sm"
+        :variant="adopted ? 'secondary' : 'primary'"
+        :disabled="replacing"
+        @click="emit('adopt')"
+      >
         {{ adopted ? '按这组回填' : '就去吃这组' }}
       </AppButton>
     </div>

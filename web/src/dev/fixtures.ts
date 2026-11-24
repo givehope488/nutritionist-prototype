@@ -135,7 +135,7 @@ export const sampleMealLog: MealLogResponse = {
     { dish_id: 'v01', name: '清炒时蔬', servings: 1.5 },
   ],
   totals,
-  target: { kcal: 913, protein_g: 37 },
+  target: { kcal: 913, protein_g: 37, fat_g: 28, carbs_g: 108, sodium_mg: 1600 },
   verdict: {
     level: 'ok',
     title: '吃得挺准',

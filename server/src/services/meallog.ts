@@ -31,7 +31,14 @@ function round1(value: number): number {
  * `gap` 必须 round1：引擎给出的目标带小数（如 937.6），直接相减会算出
  * `107.60000000000002` 这种尾巴，而它会被原样拼进 `verdict.body` 直出给用户。
  */
-export function judgeVerdict(totals: NutritionTotals, target: MealLogTarget): Verdict {
+/**
+ * 判定只看热量与蛋白：v1.2.6 起 `target` 已带六项，但把入参收窄成两项，
+ * 免得调用方为了过类型检查去凑脂肪/碳水/钠——那三项不参与判定。
+ */
+export function judgeVerdict(
+  totals: NutritionTotals,
+  target: Pick<MealLogTarget, 'kcal' | 'protein_g'>,
+): Verdict {
   const gap = round1(Math.abs(totals.kcal - target.kcal));
   const isOnTarget = target.kcal > 0 && gap / target.kcal <= ON_TARGET_TOLERANCE;
 

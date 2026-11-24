@@ -79,14 +79,9 @@ export function sodiumPenalty(sodiumMg: number): number {
   return p;
 }
 
-/** Fisher–Yates 洗牌（供「换一批」随机抽取，使结果可变化） */
-function shuffle<T>(arr: T[]): T[] {
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
+/** 从候选窗口里随机取一个（「换一批」的变化性由调用处的 PICK_WINDOW 控制） */
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
 }
 
 /**
@@ -348,39 +343,26 @@ export function recommendCombos(
     scored[0];
   take(best);
 
-  // 2) 其余按 group 分组（排除已占用），组内按得分降序
-  const byGroup = new Map<string, Scored[]>();
-  for (const s of scored) {
-    if (chosen.includes(s)) continue;
-    const g = s.candidate.group;
-    if (usedGroups.has(g)) continue;
-    if (!byGroup.has(g)) byGroup.set(g, []);
-    byGroup.get(g)!.push(s);
-  }
-  for (const arr of byGroup.values()) arr.sort((a, b) => b.score - a.score);
-
-  // 3) 随机顺序遍历各组，组内取首个「次键（主菜）未占用」的最优，凑满 3 套。
-  // P2-1：正餐组（含非单菜候选）排在前面，纯单菜补位组排最后——组内仍随机以保留
-  // 「换一批」的变化，但只要还有正餐组就不会用单菜去凑第 2/3 套。
-  const groupKeys = shuffle([...byGroup.keys()]).sort((g1, g2) => {
-    const tier = (g: string) => (byGroup.get(g)!.some((x) => !x.light) ? 0 : 1);
-    return tier(g1) - tier(g2);
-  });
-  for (const g of groupKeys) {
-    if (chosen.length >= 3) break;
-    const group = byGroup.get(g)!;
-    // P2-1：同组里优先取「正餐组合」（非单菜补位），单菜只在该组没有正餐时兜底
-    const pick =
-      group.find((x) => {
-        const sec = x.candidate.secondary;
-        return !x.light && (!sec || !usedSecondary.has(sec));
-      }) ??
-      group.find((x) => {
-        const sec = x.candidate.secondary;
-        return !sec || !usedSecondary.has(sec);
-      });
-    if (!pick) continue;
-    take(pick);
+  // 2) 其余两套：**按得分降序**挑，在「前 K 名可用候选」里随机取一个。
+  //
+  //    旧做法是「随机顺序遍历主食组 → 组内取最优」。问题在于组是随机挑的，等于让
+  //    「最高分只有 550kcal 的主食组」和「最高分 910kcal 的主食组」等概率入选：
+  //    PD 2026-11-24 实测 15 套，8 套偏离目标 >20%，平均 −16.7%，最差 −39.7%，且全部偏低。
+  //    改成前 K 名随机后：变化性仍在（同样请求每次不同），但不会再把明显偏低的组顶上来。
+  //    约束不变：主食互不相同（usedGroups）、主菜不重复（usedSecondary）、单菜补位靠后。
+  const PICK_WINDOW = 5;
+  while (chosen.length < 3) {
+    const available = scored.filter((s) => {
+      if (chosen.includes(s)) return false;
+      if (usedGroups.has(s.candidate.group)) return false;
+      const sec = s.candidate.secondary;
+      if (sec && usedSecondary.has(sec)) return false;
+      return true;
+    });
+    if (available.length === 0) break;
+    const proper = available.filter((s) => !s.light);
+    const window = (proper.length > 0 ? proper : available).slice(0, PICK_WINDOW);
+    take(pickRandom(window));
   }
 
   // 4) 跨形态补齐：仍不足 3 套时按分数从剩余候选补（跳过已选的完全相同的菜集合）

@@ -8,6 +8,7 @@ import type { ApiError, Dish, Category, Meal } from '@canteen/shared';
 import { createMealLog, getMenu, getProfile } from '@/api/endpoints';
 import AppButton from '@/components/base/AppButton.vue';
 import AppCard from '@/components/base/AppCard.vue';
+import AppChip from '@/components/base/AppChip.vue';
 import AppEmpty from '@/components/base/AppEmpty.vue';
 import AppErrorBanner from '@/components/base/AppErrorBanner.vue';
 import AppLoading from '@/components/base/AppLoading.vue';
@@ -45,6 +46,51 @@ const prefillNotice = ref<string | null>(null);
 const submitting = ref(false);
 const submitError = ref<ApiError | null>(null);
 
+/**
+ * 筛选（PD 2026-11-24 反馈 2：几百款菜品翻不过来）。
+ * 菜单里本来就有 `floor` / `stall`（API.md v1.2.4 起下发），按三个维度逐层收敛：
+ * 关键词（菜名或店铺）→ 楼层 → 店铺，最后落在品类 Tab 上。
+ */
+const keyword = ref('');
+const activeFloor = ref<number | 'all'>('all');
+const activeStall = ref<string>('all');
+
+/** 有关键词时跨品类搜索：用户通常不知道「炸酱面」属于哪个品类 */
+const searching = computed(() => keyword.value.trim().length > 0);
+
+const floors = computed(() => {
+  const set = new Set<number>();
+  for (const dish of dishes.value) {
+    if (typeof dish.floor === 'number') set.add(dish.floor);
+  }
+  return [...set].sort((a, b) => a - b);
+});
+
+const stallOptions = computed(() => {
+  const set = new Set<string>();
+  for (const dish of dishes.value) {
+    if (activeFloor.value !== 'all' && dish.floor !== activeFloor.value) continue;
+    if (dish.stall) set.add(dish.stall);
+  }
+  return [...set];
+});
+
+/** chip 上省掉「一楼·」前缀（楼层已经单独筛过），列表分组标题仍用全名便于定位 */
+function stallLabel(stall: string): string {
+  const parts = stall.split('·');
+  return parts.length > 1 ? parts.slice(1).join('·') : stall;
+}
+
+const filteredDishes = computed(() => {
+  const kw = keyword.value.trim().toLowerCase();
+  return dishes.value.filter((dish) => {
+    if (activeFloor.value !== 'all' && dish.floor !== activeFloor.value) return false;
+    if (activeStall.value !== 'all' && dish.stall !== activeStall.value) return false;
+    if (!kw) return true;
+    return dish.name.toLowerCase().includes(kw) || (dish.stall ?? '').toLowerCase().includes(kw);
+  });
+});
+
 function setMeal(value: string): void {
   meal.value = value as Meal;
 }
@@ -60,7 +106,7 @@ const dateItems = [0, 1].map((offset) => {
 
 const grouped = computed(() => {
   const map = new Map<Category, Dish[]>();
-  for (const dish of dishes.value) {
+  for (const dish of filteredDishes.value) {
     const list = map.get(dish.category) ?? [];
     list.push(dish);
     map.set(dish.category, list);
@@ -82,6 +128,35 @@ const tabItems = computed(() =>
 const currentDishes = computed(
   () => grouped.value.find((group) => group.category === activeCategory.value)?.items ?? [],
 );
+
+/** 搜索时跨品类显示，否则只显示当前品类 */
+const visibleDishes = computed(() =>
+  searching.value ? filteredDishes.value : currentDishes.value,
+);
+
+/** 列表按店铺分段，让「一楼·早餐」「二楼·轻食」各自成块 */
+const stallGroups = computed(() => {
+  const map = new Map<string, Dish[]>();
+  for (const dish of visibleDishes.value) {
+    const key = dish.stall || '未标注店铺';
+    const list = map.get(key);
+    if (list) list.push(dish);
+    else map.set(key, [dish]);
+  }
+  return [...map.entries()].map(([stall, items]) => ({ stall, items }));
+});
+
+// 筛完可能把当前品类筛空：自动落到第一个还有菜的品类，避免用户看着空白以为没菜
+watch([activeFloor, activeStall, keyword], () => {
+  if (activeStall.value !== 'all' && !stallOptions.value.includes(activeStall.value)) {
+    activeStall.value = 'all';
+    return;
+  }
+  if (!grouped.value.some((group) => group.category === activeCategory.value)) {
+    const first = grouped.value[0];
+    if (first) activeCategory.value = first.category;
+  }
+});
 
 // 只展示能对上菜名的项：菜单未就绪时宁可显示「加载中」，也不能把内部 dish_id 漏给用户
 // （PD 视觉走查 P2-3：预填进入瞬间摘要闪 s01、m10 这类 id）。
@@ -224,26 +299,89 @@ onMounted(async () => {
         />
 
         <template v-else-if="dishes.length > 0">
+          <div class="filters">
+            <div class="filters__search">
+              <input
+                v-model="keyword"
+                class="filters__input"
+                type="search"
+                placeholder="搜菜名或店铺，例如「炸酱面」「轻食」"
+                aria-label="搜索菜品"
+              />
+              <button v-if="searching" class="filters__clear" type="button" @click="keyword = ''">
+                清除
+              </button>
+            </div>
+
+            <div v-if="floors.length > 1" class="filters__row">
+              <span class="filters__label">楼层</span>
+              <div class="filters__chips">
+                <AppChip label="全部" :active="activeFloor === 'all'" @toggle="activeFloor = 'all'" />
+                <AppChip
+                  v-for="floor in floors"
+                  :key="floor"
+                  :label="`${floor}F`"
+                  :active="activeFloor === floor"
+                  @toggle="activeFloor = floor"
+                />
+              </div>
+            </div>
+
+            <div v-if="stallOptions.length > 1" class="filters__row">
+              <span class="filters__label">店铺</span>
+              <div class="filters__chips filters__chips--scroll">
+                <AppChip label="全部" :active="activeStall === 'all'" @toggle="activeStall = 'all'" />
+                <AppChip
+                  v-for="stall in stallOptions"
+                  :key="stall"
+                  :label="stallLabel(stall)"
+                  :active="activeStall === stall"
+                  @toggle="activeStall = stall"
+                />
+              </div>
+            </div>
+          </div>
+
           <AppTabs
+            v-if="!searching"
             v-model="activeCategory"
             class="page__tabs"
             :items="tabItems"
             role="tablist"
           />
-          <ul class="page__list">
-            <li v-for="dish in currentDishes" :key="dish.id">
-              <DishCard
-                :dish="dish"
-                :model-value="draft.items.value[dish.id] ?? 0"
-                @update:model-value="
-                  (value) => {
-                    if (value === 0) delete draft.items.value[dish.id];
-                    else draft.items.value[dish.id] = value;
-                  }
-                "
-              />
-            </li>
-          </ul>
+
+          <p v-if="searching" class="filters__hint">
+            找到 {{ filteredDishes.length }} 道（搜索时跨品类显示）
+          </p>
+
+          <AppEmpty
+            v-if="visibleDishes.length === 0"
+            title="没有匹配的菜"
+            description="换个关键词，或把楼层 / 店铺切回「全部」。"
+          />
+
+          <template v-else>
+            <section v-for="group in stallGroups" :key="group.stall" class="stall">
+              <h3 class="stall__title">
+                {{ group.stall }}
+                <span class="stall__count">{{ group.items.length }}</span>
+              </h3>
+              <ul class="page__list">
+                <li v-for="dish in group.items" :key="dish.id">
+                  <DishCard
+                    :dish="dish"
+                    :model-value="draft.items.value[dish.id] ?? 0"
+                    @update:model-value="
+                      (value) => {
+                        if (value === 0) delete draft.items.value[dish.id];
+                        else draft.items.value[dish.id] = value;
+                      }
+                    "
+                  />
+                </li>
+              </ul>
+            </section>
+          </template>
         </template>
       </template>
     </div>
@@ -308,6 +446,91 @@ onMounted(async () => {
   top: 0;
   z-index: 2;
   background: var(--color-bg-page);
+}
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.filters__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.filters__input {
+  width: 100%;
+  box-sizing: border-box;
+  min-height: var(--size-touch);
+  padding: var(--space-2) var(--space-3);
+  padding-right: 4.5em;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-surface);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-md);
+}
+.filters__clear {
+  position: absolute;
+  right: var(--space-2);
+  padding: var(--space-1) var(--space-2);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--color-bg-subtle);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+.filters__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.filters__label {
+  flex: none;
+  width: 2.6em;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
+}
+.filters__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+}
+/* chip 是子组件根元素：不给 flex: none 会在横向滚动容器里被压成竖排文字 */
+.filters__chips > * {
+  flex: none;
+  white-space: nowrap;
+}
+/* 店铺可能十几个，横向滚动比换行更省屏幕 */
+.filters__chips--scroll {
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: thin;
+}
+.filters__hint {
+  margin: 0;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+}
+.stall {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.stall__title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  margin: var(--space-1) 0 0;
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+.stall__count {
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-xs);
+  font-weight: 400;
 }
 .page__list {
   display: flex;

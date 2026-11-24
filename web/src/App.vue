@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // 应用外壳：页面容器 + 底部导航 + 全局免责声明。
-// 主流程入口：建档 → 推荐 → 回填 → 历史；组件库是 FE-B 的开发页，保留在最后。
+// 主流程入口：建档 → 推荐 → 回填 → 历史。组件故事页是 FE-B 的开发页，
+// **不进底部导航**（PD 2026-11-24：用户导航里出现「组件库」会让人误以为是功能页），
+// 开发直接访问 /dev/components 即可。
 import { useRoute } from 'vue-router';
 import AppDisclaimer from '@/components/base/AppDisclaimer.vue';
 
@@ -21,7 +23,6 @@ const isStory = route.name === 'design-system';
       <RouterLink class="tabbar__item" to="/recommend">推荐</RouterLink>
       <RouterLink class="tabbar__item" to="/log">回填</RouterLink>
       <RouterLink class="tabbar__item" to="/history">历史</RouterLink>
-      <RouterLink class="tabbar__item tabbar__item--dev" to="/dev/components">组件库</RouterLink>
     </nav>
 
     <footer v-if="!isStory" class="app__footer">
@@ -65,9 +66,6 @@ const isStory = route.name === 'design-system';
   place-items: center;
   color: var(--color-text-secondary);
   font-size: var(--font-size-md);
-}
-.tabbar__item--dev {
-  color: var(--color-text-tertiary);
 }
 .tabbar__item.router-link-active {
   color: var(--color-brand-600);

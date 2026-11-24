@@ -2,6 +2,7 @@
 // 推荐页（主流程第 3 步）：按档案与忌口请求 1~3 套组合。
 // 边界：kcal / 营养值 / notice 全部来自服务端响应；本页不做营养计算，也不改契约字段。
 // 「换一批」= 重新 POST /recommendations（API.md §2.3，没有 refill 字段）。
+// 「这组不行」= 只换被点的那一张（PD 2026-11-24），做法见 replayOne()。
 import { computed, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import type { ApiError, Meal, RecommendationResponse } from '@canteen/shared';
@@ -36,6 +37,10 @@ const meal = ref<Meal>('lunch');
 /** 防止连点「换一批」时旧响应覆盖新响应 */
 let requestSeq = 0;
 
+/** 「这组不行」正在换第几张（null = 没有在换）；同时用于禁用该卡按钮 */
+const replacingIndex = ref<number | null>(null);
+const replayNotice = ref<string | null>(null);
+
 const mealLabel = computed(
   () => MEAL_OPTIONS.find((option) => option.value === meal.value)?.label ?? meal.value,
 );
@@ -44,6 +49,9 @@ const today = computed(() => formatDateLabel(toDateStr(new Date())));
 async function load(nextMeal: Meal): Promise<void> {
   const seq = ++requestSeq;
   meal.value = nextMeal;
+  // 整批刷新时，单卡替换的中间状态一并作废
+  replacingIndex.value = null;
+  replayNotice.value = null;
   loading.value = true;
   error.value = null;
   const result = await createRecommendation({ session_id: sessionId, meal: nextMeal });
@@ -72,6 +80,48 @@ function setMeal(value: string): void {
 /** 换一批：再请求一次，服务端会重新挑选（B3 结案口径） */
 function refresh(): void {
   void load(meal.value);
+}
+
+/**
+ * 「这组不行」：只替换被点的那一张，另外两张原样保留（PD 2026-11-24 反馈 1）。
+ * 契约里没有「排除指定组合」的入参（§4.1 A 已定不加参数），所以做法是：重新 POST 拿新的一批，
+ * 从中挑一个当前列表里没有的组合顶上；一批里挑不到就再要一次。两次都没有新组合就如实告知，
+ * 而不是假装换过。
+ */
+async function replayOne(index: number): Promise<void> {
+  if (!response.value || replacingIndex.value !== null) return;
+  const seq = ++requestSeq;
+  replacingIndex.value = index;
+  replayNotice.value = null;
+  error.value = null;
+
+  const current = response.value;
+  const used = new Set(current.combos.map((combo) => combo.id));
+  let replaced = false;
+
+  for (let attempt = 0; attempt < 2 && !replaced; attempt += 1) {
+    const result = await createRecommendation({ session_id: sessionId, meal: meal.value });
+    // 期间用户点了「换一批」或切了餐次：丢弃本次结果，不能用旧批覆盖新批
+    if (seq !== requestSeq) return;
+    if (!result.ok) {
+      error.value = result.error;
+      break;
+    }
+    const candidate = result.data.combos.find((combo) => !used.has(combo.id));
+    if (!candidate) continue;
+    const combos = [...current.combos];
+    combos[index] = candidate;
+    const next: RecommendationResponse = { ...current, combos };
+    response.value = next;
+    // 采纳新卡时回填页要从缓存取明细，替换后必须同步重写缓存
+    saveRecommendationResponse(sessionId, meal.value, next);
+    replaced = true;
+  }
+
+  if (!replaced && !error.value) {
+    replayNotice.value = '这回没配出不一样的，可以点右上角「换一批」整批重来';
+  }
+  replacingIndex.value = null;
 }
 
 function switchMeal(): void {
@@ -171,14 +221,17 @@ onMounted(async () => {
             </dl>
           </AppCard>
 
+          <p v-if="replayNotice" class="replay-notice">{{ replayNotice }}</p>
+
           <ul v-if="response.combos.length" class="list">
             <li v-for="(combo, index) in response.combos" :key="combo.id">
               <ComboCard
                 :combo="combo"
                 :target="response.target"
                 :index="index + 1"
+                :replacing="replacingIndex === index"
                 @adopt="adopt(combo.id)"
-                @replay="refresh"
+                @replay="replayOne(index)"
               />
               <!-- A6/I5：服务端算好的组合级标记（API.md v1.2.4 §2.3），本页只做一行判断 -->
               <p v-if="combo.has_weighed_dish" class="weigh-note">
@@ -286,6 +339,14 @@ onMounted(async () => {
   margin: 0;
   padding: 0;
   list-style: none;
+}
+.replay-notice {
+  margin: 0;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-info-bg);
+  color: var(--color-info);
+  font-size: var(--font-size-sm);
 }
 .weigh-note {
   margin: calc(-1 * var(--space-2)) var(--space-2) 0;

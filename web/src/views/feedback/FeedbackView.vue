@@ -30,14 +30,9 @@ const mealLabel = computed(() => {
 });
 
 /**
- * MealLogResponse.target 按契约只含 kcal 与 protein_g（API.md §2.4），
- * 所以脂肪/碳水/钠三条只显示数值、标注「仅供参考」；补齐目标字段需走接口变更流程（待评审议题 Q4）。
+ * 本餐目标直接取服务端响应（v1.2.6 起六项齐全：kcal/蛋白/脂肪/碳水/钠），
+ * 反馈页不再只比热量与蛋白；判定文案仍由服务端 `verdict` 给出，本页不重算。
  */
-const comparisonTarget = computed(() => {
-  const target = log.value?.target;
-  if (!target) return undefined;
-  return { kcal: target.kcal, protein_g: target.protein_g };
-});
 
 async function load(): Promise<void> {
   const id = typeof route.query.id === 'string' ? route.query.id : '';
@@ -80,7 +75,7 @@ onMounted(load);
           <template #action>
             <span class="page__id tabular">{{ log.id.slice(0, 8) }}</span>
           </template>
-          <NutritionSummary :totals="log.totals" :target="comparisonTarget" />
+          <NutritionSummary :totals="log.totals" :target="log.target" />
         </AppCard>
 
         <AppCard title="吃了什么" :subtitle="`${log.items.length} 项`">

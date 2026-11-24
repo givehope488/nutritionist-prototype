@@ -188,6 +188,10 @@ mealLogsRouter.post('/', (req, res) => {
   const target: MealLogResponse['target'] = {
     kcal: mealTarget.kcal,
     protein_g: mealTarget.protein_g,
+    // v1.2.6：六项一起下发，反馈页的脂肪/碳水/钠才有目标可比（判定仍只用前两项）
+    fat_g: mealTarget.fat_g,
+    carbs_g: mealTarget.carbs_g,
+    sodium_mg: mealTarget.sodium_mg,
   };
   const verdict = judgeVerdict(totals, target);
   const judgement = judgeAdoption({

@@ -289,7 +289,13 @@ function postMealLog(body: MealLogRequest): MockResponse {
       servings: item.servings,
     })),
     totals,
-    target: { kcal: target.kcal, protein_g: target.protein_g },
+    target: {
+      kcal: target.kcal,
+      protein_g: target.protein_g,
+      fat_g: target.fat_g,
+      carbs_g: target.carbs_g,
+      sodium_mg: target.sodium_mg,
+    },
     verdict: verdictOf(totals, target, mealLabel(body.meal)),
     adopted,
   };
