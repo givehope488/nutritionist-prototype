@@ -7,11 +7,15 @@ import type { Goal, MealTarget, Meal, Profile, Sex } from '@canteen/shared';
 const ACTIVITY_FACTOR: Record<Profile['activity'], number> = { low: 1.2, mid: 1.4, high: 1.6 };
 const GOAL_FACTOR: Record<Goal, number> = { health: 1.0, lose: 0.8, gain: 1.12 };
 const PROTEIN_PER_KG: Record<Goal, number> = { health: 1.2, lose: 1.6, gain: 1.8 };
-/** 附录 A：餐次占比（v1.2.3 起和为 1.0，dinner 由 0.35 改 0.30） */
+/**
+ * 附录 A：餐次占比。v1.2.3 起和为 1.0（dinner 由 0.35 改 0.30）。
+ * 提案分支（2026-11-24）：暂改为 0.25 / 0.40 / 0.35 以对齐 BE-A 的验证实现；
+ * 契约定稿前以 docs/API.md 为准，本文件随契约变更一起回退或确认。
+ */
 export const MEAL_RATIO: Record<Meal, number> = {
-  breakfast: 0.3,
+  breakfast: 0.25,
   lunch: 0.4,
-  dinner: 0.3,
+  dinner: 0.35,
 };
 /** 附录 A：单餐钠参考线 */
 export const MEAL_SODIUM_REF_MG = 1600;

@@ -21,7 +21,11 @@ import type {
 const ACTIVITY_FACTOR: Record<Activity, number> = { low: 1.2, mid: 1.4, high: 1.6 };
 const GOAL_FACTOR: Record<Goal, number> = { health: 1.0, lose: 0.8, gain: 1.12 };
 const PROTEIN_PER_KG: Record<Goal, number> = { health: 1.2, lose: 1.6, gain: 1.8 };
-const MEAL_RATIO: Record<Meal, number> = { breakfast: 0.3, lunch: 0.4, dinner: 0.3 };
+// 提案（非正式口径）：早餐占比 0.30 → 0.25、晚餐 0.30 → 0.35，午餐不变；三者之和仍 = 1.0。
+// 起因：2026-11-24 实机体验，日目标 2673 kcal 下早餐目标 801.9 kcal，推荐三套均为
+// 700+ kcal 的拌面单碗，用户反馈「早餐推荐热量偏高」。本分支只做验证与交接，
+// docs/API.md 附录 A 仍写 0.30/0.40/0.30，必须由 PD 走契约变更流程后再合入。
+const MEAL_RATIO: Record<Meal, number> = { breakfast: 0.25, lunch: 0.4, dinner: 0.35 };
 
 const FAT_ENERGY_RATIO = 0.27;
 const CARBS_FLOOR_G = 60;
