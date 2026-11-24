@@ -3,7 +3,7 @@
 - 日期：2026-11-24
 - 提出人：FE-A（主流程体验时发现）
 - 分支：`proposal/breakfast-ratio-25`（基于 `main` @ `2c0bbb7`）
-- 状态：**仅提案，不自行合并**。契约文档 `docs/API.md` 未改，附录 A 仍写 0.30 / 0.40 / 0.30。
+- 状态：**已于 2026-11-25 按用户授权直接落地（原为提案）**。`docs/API.md` 升 **v1.2.7**（附录 A 与版本表），`docs/PROGRESS.md` §5 已记录；提交 `6d01fe4`。远端 `main` 仍需 PR #87 经有写权限的人 Approve 后合并，详见 `reviews/fe-a/WORKLOG.md` §24.5。
 
 ## 1. 问题
 
