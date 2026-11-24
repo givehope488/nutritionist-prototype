@@ -1023,6 +1023,7 @@ root:   npm run check   → lint / typecheck / test / smoke 13-13 / check:data /
 
 ### 24.4 交付与边界
 
-- 分支 `proposal/breakfast-ratio-25`，提交 `87de67e`（代码+单测）与本条文档提交。
+- 分支 `proposal/breakfast-ratio-25`，提交 `87de67e`（代码+单测）、`a44e72d`（交接文档+本节）。
+- PR **#87**：<https://github.com/givehope488/nutritionist-prototype/pull/87>，reviewers `givehope488` / `wyf-111` 等。
+- CI（head `a44e72d`）：`lint` / `typecheck` / `test` / `deploy-config` 全部 `completed / success`；PR `mergeable=true`、`mergeable_state=blocked`（等评审）。**未合并。**
 - **未改 `docs/API.md`**：附录 A 仍为 0.30/0.40/0.30，合入前必须由 PD 走契约变更并确认口径；FE-A 不自审自合。
-- 远端分支与 PR 见下条回填。
