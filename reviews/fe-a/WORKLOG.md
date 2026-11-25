@@ -1237,3 +1237,14 @@ web:  npm run lint        → 0 error（LogView 1 条既有 warning，非本次�
 - 分支 `feat/goal-four-options`，功能提交 **`fa3b07a`** 已推远端（`origin/feat/goal-four-options`）。
 - 本节记录随下一次提交推送；**尚未创建 PR**，等用户指示后再开（不自行合并、不自行批准）。
 - 遗留：`docs/PROGRESS.md` §1 仍写「384 道」与旧 main，属 PD 专区，未改；若 PD 认可 v1.2.9 口径，需要把「待复核」改为定稿。
+
+### 29.5 2026-11-25：PR 已开（用户指示「开 PR」）
+
+- 用户明确指示开 PR，按 2026-11-24 约定由 agent 用 GitHub API 代建；作者为 `Aredjdhd`，**不自行批准、不自行合并**。
+- PR **#91**：https://github.com/givehope488/nutritionist-prototype/pull/91
+  - 标题：饮食目标扩为四档（保持/减肥/增肌/增重）并接入建档与个人中心（API v1.2.9）
+  - head `feat/goal-four-options` @ `59413b6` → base `main`
+  - 正文按 `.github/PULL_REQUEST_TEMPLATE.md` 填写，含四档口径、待 PD 复核项、验证输出；越界文件（shared/server/docs）已说明是契约变更所需，未勾选「只改我负责目录」。
+  - 创建时 `mergeable_state: blocked`（等 CI 与真人 Review），正文回读 2004 字符完整。
+- 网络备注：本机访问 `api.github.com` 需强制 IPv4（`curl -4`），否则 HTTPS 443 间歇超时；PR 由 curl 成功后立即用 API 回读核对，未依据本地推测。
+- 本节为追加记录，`29.4` 的「尚未创建 PR」是当时状态，不改写。
