@@ -1039,12 +1039,25 @@ curl /api/v1/menu?meal=lunch               → 355 道；鸡蛋灌饼 sx-03 350 
 - 用户指示创建 PR：PR **#88** <https://github.com/givehope488/nutritionist-prototype/pull/88>，head `db1ca64`，base `main`。
 - reviewers：`givehope488` / `wyf-111` 等；CI `lint` / `typecheck` / `test` / `deploy-config` 四项 `completed / success`。
 - `mergeable=true`，等评审；未合并。首次创建的 PR 正文因 Shell 反引号被展开丢失代码格式，已用 PATCH 修正为完整内容。
+
 ### 23.7 补记（2026-11-25）：与 main 合并、解决 WORKLOG 冲突
 
 - 起因：PR #87 于 2026-11-25 合入 main（合并提交 `467b88d`），#88 与 main 同时改到本文件尾部，GitHub 报 `mergeable_state=dirty`、`mergeable=false`，无法合并。
 - 本地试合并（`git merge-tree origin/main a6e1af7`）：冲突文件只有本文件一个；把 `origin/main` 合入 `data/menu-cleanup-2026-11-24` 后按时间序保留 §23（本分支）→ §24/§25（main），代码与数据文件自动合并。
 - 数据侧结论不变：仍是 383 道（营养值 exact 270 / combo 88 / partial 25 / fallback 0），本次合并未改任何菜品数据。
 - 旧批准可能失效：分支推新提交后，若仓库开启了「Dismiss stale approvals」，11-24 的两次 Approve 会被清掉，需要再批一次。
+
+### 23.8 补记（2026-11-25）：冲突已解决并推回远端
+
+- 合并提交 `8dc5730`（parents：`a6e1af7` + `467b88d`），已推送；远端分支 head 经 `git ls-remote` 复核为 `8dc5730be0e6d3a8c2d13bf986d1284f3a6376ec`。
+- 本地校验（提交后、推送后同内容）：
+  - `npm run lint` 通过；`npm run typecheck`（shared + server）通过
+  - `npm run test` → server 8 files / **115 tests passed**；`cd web && npm run test` → 17 files / **89 tests passed**
+  - `npm run smoke` → **13/13 通过**
+  - `npm run check:data` → **383 道，全部通过**；`npm run check:progress` → 通过（PD 指纹一致）
+- CI（head `8dc5730`）：`lint` / `typecheck` / `test` / `deploy-config` 4/4 `success`。
+- 远端 PR #88：`mergeable=true`，但 GraphQL `reviewDecision=REVIEW_REQUIRED`、`mergeStateStatus=BLOCKED` —— 11-24 的批准挂在旧 head `a6e1af7` 上，新提交后不计入，需要**在最新 head 上重新 Approve 一次**才能合并。
+- 冲突解决只动本文件，`build-observed-seed` 未重跑（数据文件未变）。
 
 ## 24. 2026-11-24：早餐占比提案（25/40/35）与交接
 
