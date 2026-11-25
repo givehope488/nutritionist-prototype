@@ -1095,3 +1095,4 @@ server: npm test -w @canteen/server           → 8 files / 115 tests passed（+
 - `web/src/views/recommend/RecommendView.vue`：`.weigh-note` 的 margin 改为 `var(--space-1) var(--space-2) 0`（4px），说明行完整落在卡片下方。
 - 浏览器实测（5173 + 真实后端，晚餐）：称重卡「搭配二」下方说明行完整位于卡片外，与下一张卡间距正常；截图核对通过。
 - 未改组件（`ComboCard` 属 FE-B），未改契约与数据。
+- 交付：分支 `fix/recommend-weigh-note`，提交 `99276ab` 已推远端；PR **#89**，CI 4/4 绿，`mergeable_state=blocked`（等 Approve）。
