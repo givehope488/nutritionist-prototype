@@ -118,4 +118,16 @@ describe('推荐页称重标记（A6 / I5）', () => {
       wrapper.unmount();
     }
   });
+
+  it('服务端 reason 已含称重说明时只出现一次，不再重复外置一行', async () => {
+    const saved = await saveProfile(baseProfile);
+    expect(saved.ok).toBe(true);
+
+    const response = makeResponse(true);
+    response.combos[0].reason = '这一餐约 352kcal；含称重菜，份量以现场称重为准，热量仅供参考。';
+    const wrapper = await mountWith(response);
+    const occurrences = wrapper.text().split('份量以现场称重为准').length - 1;
+    expect(occurrences).toBe(1);
+    expect(wrapper.find('.weigh-note').exists()).toBe(false);
+  });
 });

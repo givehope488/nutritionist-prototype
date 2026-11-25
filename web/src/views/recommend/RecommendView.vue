@@ -234,8 +234,9 @@ onMounted(async () => {
                 @adopt="adopt(combo.id)"
                 @replay="replayOne(index)"
               />
-              <!-- A6/I5：服务端算好的组合级标记（API.md v1.2.4 §2.3），本页只做一行判断 -->
-              <p v-if="combo.has_weighed_dish" class="weigh-note">
+              <!-- A6/I5：服务端算好的组合级标记（API.md v1.2.4 §2.3），本页只做一行判断。
+                   服务端 reason 文案里已经带「含称重菜，份量以现场称重为准」，此时不再重复外置一行。 -->
+              <p v-if="combo.has_weighed_dish && !combo.reason.includes('称重')" class="weigh-note">
                 含称重菜：份量以现场称重为准，热量为参考值。
               </p>
             </li>
