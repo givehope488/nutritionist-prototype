@@ -1125,3 +1125,8 @@ root: npm run lint      → 通过
 ```
 
 - 未改 `ComboCard`（FE-B）、未改契约与数据；服务端文案维持原样。
+
+### 27.4 PR #90（2026-11-25）
+
+- 按用户指示代开 PR：**#90** <https://github.com/givehope488/nutritionist-prototype/pull/90>，head `da539f4`，base `main`；reviewers `givehope488` / `wyf-111`。
+- CI（head `da539f4`）：`lint` / `typecheck` / `test` / `deploy-config` 4/4 `success`；`mergeable=true`、`mergeable_state=blocked`（等 Approve）。
