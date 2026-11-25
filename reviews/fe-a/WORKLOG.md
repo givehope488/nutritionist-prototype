@@ -1075,3 +1075,24 @@ server: npm test -w @canteen/server           → 8 files / 115 tests passed（+
 
 - 只对「超过本餐目标」设硬上限，**不**改动评分权重、不引入「越低越好」——低于目标仍按原惩罚规则评分，避免超重用户被推向极端低热量组合。
 - `bmi < 24`、以及不传 `bmi` 的调用方行为完全不变。
+
+### 25.5 合并结果（2026-11-25）
+
+- PR **#87** 由 `givehope488` **APPROVED**（2026-11-24T16:32Z），随后合并成功：`origin/main` `2c0bbb7` → **`467b88d`**（合并提交），PR `state=merged`。
+- 本地 main 已 fast-forward 到 `467b88d`；`npm run check` 全绿（server 115、smoke 13/13、check:data 384、check:progress）。
+- 重启后端（`npm run dev`，会先 `seed`）后实测：早餐 667/640/641 ≤ 668.3，午餐 940/1006/872 ≤ 1069.2，晚餐 900/920/872 ≤ 935.6，BMI 上限在 main 上生效。
+- 注意：后端 `dev` 脚本会重新播种，本地库已从 #88 测试期的 383 道回到 main 的 384 道，手抓饼拆分仍等 PR #88。
+
+## 26. 2026-11-25：推荐页「含称重菜」小字压卡片底边
+
+### 26.1 现象与根因
+
+- 现象：`/recommend` 里称重组合卡片下方的「含称重菜：份量以现场称重为准，热量为参考值。」一行，上半截落在白色卡片内、下半截落在页面底色上。
+- 根因：`.weigh-note` 用了 `margin-top: calc(-1 * var(--space-2))`（−8px）把说明行向上拉，意图是「贴着卡片下沿」；但卡片是圆角 + 阴影的 `AppCard`，−8px 已把整行文字拉进卡片底边，行高约 16~18px，于是正好一半盖在卡上、一半在卡外。
+
+### 26.2 改动与验证
+
+- `web/src/views/recommend/RecommendView.vue`：`.weigh-note` 的 margin 改为 `var(--space-1) var(--space-2) 0`（4px），说明行完整落在卡片下方。
+- 浏览器实测（5173 + 真实后端，晚餐）：称重卡「搭配二」下方说明行完整位于卡片外，与下一张卡间距正常；截图核对通过。
+- 未改组件（`ComboCard` 属 FE-B），未改契约与数据。
+- 交付：分支 `fix/recommend-weigh-note`，提交 `99276ab` 已推远端；PR **#89**，CI 4/4 绿，`mergeable_state=blocked`（等 Approve）。
