@@ -1,6 +1,6 @@
 <script setup lang="ts">
 // 目标与忌口页（主流程第 2 步）：目标单选 + 忌口多选。
-// 边界：忌口选项一律用 GET /menu 的 avoid_options（不硬编码）；未成年减脂在本地先禁用，
+// 边界：忌口选项一律用 GET /menu 的 avoid_options（不硬编码）；未成年减肥在本地先禁用，
 // 服务端仍会兜底改写 goal 并下发 warnings，本页如实展示。
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -18,6 +18,7 @@ import AppNavBar from '@/components/base/AppNavBar.vue';
 import AppRadioGroup from '@/components/base/AppRadioGroup.vue';
 import type { RadioOption } from '@/components/types';
 import { sessionId } from '@/composables/useSession';
+import { GOAL_OPTIONS } from '@/utils/labels';
 
 const router = useRouter();
 
@@ -35,17 +36,13 @@ const avoid = ref<string[]>([]);
 
 const isMinor = computed(() => (profile.value ? profile.value.age < MINOR_AGE : false));
 
-const goalOptions = computed<RadioOption[]>(() => [
-  { value: 'health', label: '日常保健', hint: '维持体重，吃得均衡就好' },
-  {
-    value: 'lose',
-    label: '减脂',
-    hint: isMinor.value ? undefined : '在安全范围内留出热量缺口',
-    disabled: isMinor.value,
-    disabledReason: isMinor.value ? `未满 ${MINOR_AGE} 岁不提供热量缺口方案` : undefined,
-  },
-  { value: 'gain', label: '增肌', hint: '提高蛋白与总能量' },
-]);
+const goalOptions = computed<RadioOption[]>(() =>
+  GOAL_OPTIONS.map((option) =>
+    option.value === 'lose' && isMinor.value
+      ? { ...option, disabled: true, disabledReason: `未满 ${MINOR_AGE} 岁不提供热量缺口方案` }
+      : { ...option },
+  ),
+);
 
 const summary = computed(() => {
   const current = profile.value;
@@ -166,7 +163,7 @@ onMounted(async () => {
             <AppRadioGroup v-model="goal" name="goal" direction="column" :options="goalOptions" />
           </AppField>
           <p v-if="isMinor" class="rule-note">
-            未满 {{ MINOR_AGE }} 岁只提供日常保健方案；这是产品合规规则，服务端会再次校验。
+            未满 {{ MINOR_AGE }} 岁只提供保持 / 增肌 / 增重方案；这是产品合规规则，服务端会再次校验。
           </p>
         </AppCard>
 

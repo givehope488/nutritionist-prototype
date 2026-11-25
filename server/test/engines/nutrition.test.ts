@@ -52,9 +52,15 @@ describe('calcTargets：4 组样例 day_kcal 与手算一致', () => {
     expect(p.day_kcal).toBe(1826);
   });
 
-  it('男 gain（mid）：TDEE×1.12 = 2556', () => {
+  it('男 gain（增肌，mid）：TDEE×1.12 = 2556', () => {
     const { profile: p } = calcTargets(profile({ sex: 'male', goal: 'gain' }));
     expect(p.day_kcal).toBe(2556); // 2282*1.12=2555.8→2556
+  });
+
+  it('男 weight_gain（增重，mid）：TDEE×1.15 = 2624', () => {
+    const { profile: p } = calcTargets(profile({ sex: 'male', goal: 'weight_gain' }));
+    expect(p.day_kcal).toBe(2624); // 2282*1.15=2624.3→2624
+    expect(p.bmi_tag).toBe('正常');
   });
 });
 
@@ -65,7 +71,28 @@ describe('餐次目标（午餐 0.4）', () => {
     expect(lunch.meal_ratio).toBe(0.4);
     expect(lunch.kcal).toBe(912.8);
     expect(lunch.protein_g).toBe(31.2);
+    // 脂肪 27%：2282×0.27/9=68.5 → 午餐 27.4；碳水余量 338.4 → 135.4
+    expect(lunch.fat_g).toBe(27.4);
+    expect(lunch.carbs_g).toBe(135.4);
     expect(lunch.sodium_mg).toBe(1600);
+  });
+
+  it('减肥（lose）脂肪占比下调到 25%：午餐脂肪 20.3g，低于保持的 27.4g', () => {
+    const { mealTargets } = calcTargets(profile({ goal: 'lose' }));
+    const lunch = mealTargets.lunch;
+    // 日目标 1826 kcal：脂肪 1826×0.25/9=50.7 → 午餐 20.3；蛋白 65×1.6×0.4=41.6
+    expect(lunch.kcal).toBe(730.4);
+    expect(lunch.protein_g).toBe(41.6);
+    expect(lunch.fat_g).toBe(20.3);
+    expect(lunch.carbs_g).toBe(95.4);
+  });
+
+  it('增重（weight_gain）蛋白按保持的 1.2：午餐蛋白 31.2g，低于增肌的 46.8g', () => {
+    const { profile: p, mealTargets } = calcTargets(profile({ goal: 'weight_gain' }));
+    expect(p.day_kcal).toBe(2624);
+    expect(mealTargets.lunch.protein_g).toBe(31.2); // 65×1.2×0.4
+    const gain = calcTargets(profile({ goal: 'gain' })).mealTargets.lunch;
+    expect(gain.protein_g).toBe(46.8); // 65×1.8×0.4
   });
 });
 
@@ -123,7 +150,7 @@ describe('边界：未成年 + lose 强制降级 health', () => {
       profile({ height_cm: 170, weight_kg: 60, age: 16, goal: 'lose' }),
     );
     expect(p.goal).toBe('health');
-    expect(p.warnings).toContain('未满18岁不提供热量缺口方案，已调整为日常保健');
+    expect(p.warnings).toContain('未满18岁不提供热量缺口方案，已调整为保持');
     // health 的 day_kcal = BMR×1.4 = 1588×1.4 = 2223
     expect(calcBMR('male', 60, 170, 16)).toBe(1588);
     expect(p.day_kcal).toBe(2223);

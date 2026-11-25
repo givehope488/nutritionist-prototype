@@ -8,7 +8,7 @@ import { recommendCombos } from '../engines/recommend';
 import { bodyObject, invalid, optionalEnum, requireEnum, requireString } from '../http/validation';
 
 const MEALS: readonly Meal[] = ['breakfast', 'lunch', 'dinner'];
-const GOALS: readonly Goal[] = ['health', 'lose', 'gain'];
+const GOALS: readonly Goal[] = ['health', 'lose', 'gain', 'weight_gain'];
 const AVOID_KEYS: readonly string[] = AVOID_OPTIONS.map((option) => option.key);
 
 /** avoid key → 排除的菜品标签（唯一来源是 data/avoid-options，与 API.md 附录 D 对齐） */

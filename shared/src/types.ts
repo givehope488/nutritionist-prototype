@@ -17,7 +17,14 @@ export type Sex = 'male' | 'female';
 
 export type Activity = 'low' | 'mid' | 'high';
 
-export type Goal = 'health' | 'lose' | 'gain';
+/**
+ * 饮食目标四档（v1.2.9）：
+ * - `health`      保持：维持体重，按 TDEE 吃（展示名「保持」）
+ * - `lose`        减肥：留热量缺口，并下调脂肪能量占比（展示名「减肥」）
+ * - `gain`        增肌：小幅热量盈余 + 高蛋白（展示名「增肌」）
+ * - `weight_gain` 增重：更大幅度的热量盈余，蛋白维持量（展示名「增重」）
+ */
+export type Goal = 'health' | 'lose' | 'gain' | 'weight_gain';
 
 /** 菜品数据可信度：A 称重 / B 反推 / C 众包 */
 export type Reliability = 'A' | 'B' | 'C';

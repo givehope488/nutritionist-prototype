@@ -71,16 +71,21 @@ describe('档案派生值（附录 A 口径）', () => {
     expect(profile.warnings).toEqual([]);
   });
 
-  it('减脂目标按 ×0.8 计算，且不低于 BMR×1.05', async () => {
+  it('减肥目标按 ×0.8 计算，且不低于 BMR×1.05', async () => {
     const profile = await seedProfile({ goal: 'lose' });
     // BMR = 1630，×1.4×0.8 = 1825.6 → 1826；下限 1630×1.05 = 1711.5 不触发
     expect(profile.day_kcal).toBe(1826);
   });
 
-  it('未成年 + 减脂：服务端强制降级 health 并回 warnings（双保险的另一半）', async () => {
+  it('增重目标按 ×1.15 计算（四档里最高）', async () => {
+    const profile = await seedProfile({ goal: 'weight_gain' });
+    expect(profile.day_kcal).toBe(2624); // 2282×1.15=2624.3→2624
+  });
+
+  it('未成年 + 减肥：服务端强制降级 health 并回 warnings（双保险的另一半）', async () => {
     const profile = await seedProfile({ age: 16, goal: 'lose' });
     expect(profile.goal).toBe('health');
-    expect(profile.warnings).toEqual(['未满18岁不提供热量缺口方案，已调整为日常保健']);
+    expect(profile.warnings).toEqual(['未满18岁不提供热量缺口方案，已调整为保持']);
   });
 
   it('档案不存在时返回 404，前端可据此引导建档', async () => {

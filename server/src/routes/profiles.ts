@@ -16,7 +16,7 @@ import {
 
 const SEXES: readonly Sex[] = ['male', 'female'];
 const ACTIVITIES: readonly Activity[] = ['low', 'mid', 'high'];
-const GOALS: readonly Goal[] = ['health', 'lose', 'gain'];
+const GOALS: readonly Goal[] = ['health', 'lose', 'gain', 'weight_gain'];
 const MEALS: readonly Meal[] = ['breakfast', 'lunch', 'dinner'];
 const AVOID_KEYS: readonly string[] = AVOID_OPTIONS.map((option) => option.key);
 
@@ -56,7 +56,7 @@ profilesRouter.post('/', (req, res) => {
   // 前端也会禁用减脂选项，这里是双保险——只信服务端这道。
   if (age < MINOR_AGE && goal === 'lose') {
     goal = 'health';
-    warnings.push('未满18岁不提供热量缺口方案，已调整为日常保健');
+    warnings.push('未满18岁不提供热量缺口方案，已调整为保持');
   }
 
   const { bmi, bmi_tag } = deriveBmi(heightCm, weightKg);

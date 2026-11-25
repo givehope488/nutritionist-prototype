@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// 单选组：目标（health/lose/gain）、性别、活动量。支持 disabledReason 解释规则来源。
+// 单选组：目标（health/lose/gain/weight_gain）、性别、活动量。支持 disabledReason 解释规则来源。
 import type { RadioOption } from '../types';
 
 defineProps<{

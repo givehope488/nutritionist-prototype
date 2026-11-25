@@ -19,11 +19,20 @@ export const DISH_CATEGORY_LABEL: Record<Category, string> = {
   fruit: '水果',
 };
 
+/** 四档饮食目标（API.md v1.2.9 §2.2）：顺序即建档 / 目标页 / 个人中心的展示顺序 */
 export const GOAL_LABEL: Record<Goal, string> = {
-  health: '日常保健',
-  lose: '减脂',
+  health: '保持',
+  lose: '减肥',
   gain: '增肌',
+  weight_gain: '增重',
 };
+
+export const GOAL_OPTIONS: { value: Goal; label: string; hint: string }[] = [
+  { value: 'health', label: '保持', hint: '维持体重，吃得均衡就好' },
+  { value: 'lose', label: '减肥', hint: '留出热量缺口，脂肪占比更低' },
+  { value: 'gain', label: '增肌', hint: '小幅热量盈余，优先高蛋白' },
+  { value: 'weight_gain', label: '增重', hint: '提高总能量，体重稳步上升' },
+];
 
 /** API.md §2.4 date 字段格式；服务端为最终判定，前端只做预校验 */
 export const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;

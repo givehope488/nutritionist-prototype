@@ -281,6 +281,29 @@ describe('POST /api/v1/recommendations', () => {
       expect(categories).not.toContain('veg');
     }
   });
+
+  it('四档目标驱动本餐目标：减肥热量与脂肪都低于保持，增重最高（v1.2.9）', async () => {
+    const targets = {} as Record<string, RecommendationResponse['target']>;
+    for (const goal of ['health', 'lose', 'gain', 'weight_gain'] as const) {
+      await post('/api/v1/profiles', { ...validProfile, goal });
+      const res = await post('/api/v1/recommendations', { session_id: 'sess-a', meal: 'lunch' });
+      expect(res.status).toBe(200);
+      targets[goal] = (res.json as RecommendationResponse).target;
+    }
+
+    // 保持 2282 → 午餐 912.8；减肥 1826 → 730.4 且脂肪 25%（20.3g < 27.4g）
+    expect(targets.health.kcal).toBe(912.8);
+    expect(targets.lose.kcal).toBe(730.4);
+    expect(targets.lose.fat_g).toBeLessThan(targets.health.fat_g);
+    expect(targets.lose.fat_g).toBe(20.3);
+    // 增肌 2556 → 1022.4；增重 2624 → 1049.6，是四档里最高的
+    expect(targets.gain.kcal).toBe(1022.4);
+    expect(targets.weight_gain.kcal).toBe(1049.6);
+    expect(targets.weight_gain.kcal).toBeGreaterThan(targets.gain.kcal);
+    // 增重蛋白按保持量（65×1.2），不按增肌的 1.8
+    expect(targets.weight_gain.protein_g).toBe(31.2);
+    expect(targets.gain.protein_g).toBe(46.8);
+  });
 });
 
 describe('POST /api/v1/meal-logs', () => {

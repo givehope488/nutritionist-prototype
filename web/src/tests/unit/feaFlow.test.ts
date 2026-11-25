@@ -8,6 +8,7 @@ import { createRecommendation, getProfile, saveProfile } from '@/api/endpoints';
 import { routes } from '@/router';
 import { sessionId } from '@/composables/useSession';
 import GoalView from '@/views/goal/GoalView.vue';
+import MineView from '@/views/mine/MineView.vue';
 import ProfileView from '@/views/profile/ProfileView.vue';
 import RecommendView from '@/views/recommend/RecommendView.vue';
 
@@ -61,6 +62,9 @@ describe('建档页', () => {
     expect(wrapper.text()).toContain('140~210');
     expect(wrapper.text()).toContain('35~150');
     expect(wrapper.text()).toContain('14~70');
+    // 2026-11-25：建档页直接提供四档饮食目标（保持 / 减肥 / 增肌 / 增重）
+    expect(wrapper.findAll('input[type="radio"][name="goal"]')).toHaveLength(4);
+    expect(wrapper.text()).toContain('增重');
 
     const inputs = wrapper.findAll('input.numfield__input');
     expect(inputs.length).toBe(3);
@@ -75,16 +79,57 @@ describe('建档页', () => {
     expect(rejected.ok).toBe(false);
 
     await inputs[0].setValue('172');
+    // 选「增重」再保存：目标必须随档案一起落库，而不是永远带默认值
+    await wrapper.get('input[type="radio"][value="weight_gain"]').setValue();
     await wrapper.get('button.btn--primary').trigger('click');
     await settle();
-    // 2026-11-24：建档完成后回首页，目标与忌口改从个人中心进
+    // 2026-11-24：建档完成后回首页，忌口改从个人中心进
     expect(router.currentRoute.value.name).toBe('home');
 
     const saved = await getProfile(sessionId);
     expect(saved.ok).toBe(true);
     if (!saved.ok) return;
     expect(saved.data.bmi).toBeGreaterThan(0);
-    expect(saved.data.day_kcal).toBeGreaterThan(0);
+    expect(saved.data.goal).toBe('weight_gain');
+    expect(saved.data.day_kcal).toBe(2624); // 2282×1.15
+  });
+});
+
+describe('个人中心', () => {
+  it('四档目标直接在表单里改：选减肥保存后日目标 1826、概览显示减肥', async () => {
+    await seedProfile();
+    const router = await startRouter('/mine');
+    const wrapper = mount(MineView, { global: { plugins: [router] } });
+    await settle();
+
+    expect(wrapper.findAll('input[type="radio"][name="goal"]')).toHaveLength(4);
+    expect(wrapper.text()).toContain('保持');
+
+    await wrapper.get('input[type="radio"][value="lose"]').setValue();
+    await wrapper
+      .findAll('button')
+      .find((button) => button.text() === '保存修改')!
+      .trigger('click');
+    await settle();
+
+    const saved = await getProfile(sessionId);
+    expect(saved.ok).toBe(true);
+    if (!saved.ok) return;
+    expect(saved.data.goal).toBe('lose');
+    expect(saved.data.day_kcal).toBe(1826);
+    expect(wrapper.text()).toContain('已保存');
+    expect(wrapper.text()).toContain('减肥');
+  });
+
+  it('未成年档案：个人中心同样锁住减肥选项', async () => {
+    await seedProfile({ age: 16 });
+    const router = await startRouter('/mine');
+    const wrapper = mount(MineView, { global: { plugins: [router] } });
+    await settle();
+
+    const lose = wrapper.find('input[type="radio"][value="lose"]');
+    expect((lose.element as HTMLInputElement).disabled).toBe(true);
+    expect(wrapper.text()).toContain('未满 18 岁');
   });
 });
 

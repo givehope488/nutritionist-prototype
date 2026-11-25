@@ -3,6 +3,7 @@
 // 只在开发环境路由 /dev/components 下可见，用于设计系统走查与 FE-A 取用参考。
 import { ref } from 'vue';
 import { APP_ERROR_CODES, SWATCHES, TYPOGRAPHY_ROWS } from '@/dev/storyData';
+import { GOAL_OPTIONS } from '@/utils/labels';
 import {
   sampleCombo,
   sampleDishA,
@@ -49,17 +50,13 @@ const tabs = [
   { value: 'fruit', label: '水果', count: 2 },
 ];
 
-const goalOptions = [
-  { value: 'health', label: '日常保健', hint: '维持体重' },
-  { value: 'lose', label: '减脂', hint: '热量缺口' },
-  { value: 'gain', label: '增肌', hint: '热量盈余' },
-];
+const goalOptions = GOAL_OPTIONS;
 
-const lockedGoalOptions = [
-  ...goalOptions.slice(0, 1),
-  { ...goalOptions[1], disabled: true, disabledReason: '未满 18 岁不提供热量缺口' },
-  ...goalOptions.slice(2),
-];
+const lockedGoalOptions = goalOptions.map((option) =>
+  option.value === 'lose'
+    ? { ...option, disabled: true, disabledReason: '未满 18 岁不提供热量缺口' }
+    : { ...option },
+);
 
 function goBack(): void {
   window.history.back();

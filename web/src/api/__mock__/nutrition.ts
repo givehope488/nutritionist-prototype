@@ -5,8 +5,18 @@ import { MINOR_AGE } from '@canteen/shared';
 import type { Goal, MealTarget, Meal, Profile, Sex } from '@canteen/shared';
 
 const ACTIVITY_FACTOR: Record<Profile['activity'], number> = { low: 1.2, mid: 1.4, high: 1.6 };
-const GOAL_FACTOR: Record<Goal, number> = { health: 1.0, lose: 0.8, gain: 1.12 };
-const PROTEIN_PER_KG: Record<Goal, number> = { health: 1.2, lose: 1.6, gain: 1.8 };
+const GOAL_FACTOR: Record<Goal, number> = {
+  health: 1.0,
+  lose: 0.8,
+  gain: 1.12,
+  weight_gain: 1.15,
+};
+const PROTEIN_PER_KG: Record<Goal, number> = {
+  health: 1.2,
+  lose: 1.6,
+  gain: 1.8,
+  weight_gain: 1.2,
+};
 /**
  * 附录 A：餐次占比。v1.2.3 起和为 1.0（dinner 由 0.35 改 0.30）。
  * 提案分支（2026-11-24）：暂改为 0.25 / 0.40 / 0.35 以对齐 BE-A 的验证实现；
@@ -19,7 +29,13 @@ export const MEAL_RATIO: Record<Meal, number> = {
 };
 /** 附录 A：单餐钠参考线 */
 export const MEAL_SODIUM_REF_MG = 1600;
-const FAT_ENERGY_RATIO = 0.27;
+/** 脂肪能量占比：减肥 25%，其余 27%（API.md v1.2.9 附录 A） */
+const FAT_ENERGY_RATIO: Record<Goal, number> = {
+  health: 0.27,
+  lose: 0.25,
+  gain: 0.27,
+  weight_gain: 0.27,
+};
 const CARBS_MIN_G = 60;
 
 export function bmr(sex: Sex, weightKg: number, heightCm: number, age: number): number {
@@ -31,7 +47,7 @@ export function bmr(sex: Sex, weightKg: number, heightCm: number, age: number): 
 /** 未成年规则：age<18 且 goal=lose → 强制降级 health，并由调用方写入 warnings */
 export function resolveGoal(age: number, goal: Goal): { goal: Goal; warning: string | null } {
   if (age < MINOR_AGE && goal === 'lose') {
-    return { goal: 'health', warning: '未满18岁不提供热量缺口方案，已调整为日常保健' };
+    return { goal: 'health', warning: '未满18岁不提供热量缺口方案，已调整为保持' };
   }
   return { goal, warning: null };
 }
@@ -52,14 +68,14 @@ export function dayKcal(profile: Pick<Profile, 'sex' | 'height_cm' | 'weight_kg'
   return Math.round(kcal);
 }
 
-/** 全日宏量目标：蛋白按 g/kg，脂肪占日热量 27%，碳水吃余量（下限 60g） */
+/** 全日宏量目标：蛋白按 g/kg，脂肪按目标占比（减肥 25%，其余 27%），碳水吃余量（下限 60g） */
 export function dayMacros(
   dayKcalValue: number,
   weightKg: number,
   goal: Goal,
 ): { protein_g: number; fat_g: number; carbs_g: number } {
   const protein_g = PROTEIN_PER_KG[goal] * weightKg;
-  const fat_g = (dayKcalValue * FAT_ENERGY_RATIO) / 9;
+  const fat_g = (dayKcalValue * FAT_ENERGY_RATIO[goal]) / 9;
   const remainder = dayKcalValue - protein_g * 4 - fat_g * 9;
   return { protein_g, fat_g, carbs_g: Math.max(remainder / 4, CARBS_MIN_G) };
 }

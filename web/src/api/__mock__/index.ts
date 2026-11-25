@@ -44,7 +44,7 @@ export interface MockResponse {
 const MEALS: Meal[] = ['breakfast', 'lunch', 'dinner'];
 const SEXES: Sex[] = ['male', 'female'];
 const ACTIVITIES: Activity[] = ['low', 'mid', 'high'];
-const GOALS: Goal[] = ['health', 'lose', 'gain'];
+const GOALS: Goal[] = ['health', 'lose', 'gain', 'weight_gain'];
 
 function fail(
   status: number,

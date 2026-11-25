@@ -1192,3 +1192,59 @@ root: npm run lint      → 通过
 
 - 按用户指示代开 PR：**#90** <https://github.com/givehope488/nutritionist-prototype/pull/90>，head `da539f4`，base `main`；reviewers `givehope488` / `wyf-111`。
 - CI（head `da539f4`）：`lint` / `typecheck` / `test` / `deploy-config` 4/4 `success`；`mergeable=true`、`mergeable_state=blocked`（等 Approve）。
+
+## 28. 补记：#88 与 #90 合并结果（2026-11-25）
+
+- **PR #88**（菜品数据清理，383 道）：head `1833341`（含解冲突合并 `8dc5730`，parents `a6e1af7` + `467b88d`），由 `givehope488` 在最新 head 上批准后合并——main `a3d582e` → **`82026cc`**（parents `a3d582e` + `1833341`）。合并后 `check:data` 为 383 道，与清理目标一致。
+- **PR #90**（推荐页称重说明去重）：head `66f8767`，批准后合并——main `82026cc` → **`a43c7b4`**（parents `82026cc` + `66f8767`）。去重条件与 §27 记录一致。
+- 本地 main 已 fast-forward 至 `a43c7b4`。此前只口头说过「随下一个 PR 补」，本节为补记，不修改 §23.8 / §27.4 的当时状态。
+
+## 29. 2026-11-25：饮食目标四档（保持 / 减肥 / 增肌 / 增重，API v1.2.9）
+
+### 29.1 需求与边界
+
+- 用户原话：「在建档页面和个人中心加回饮食目标选择，包括增肌、减肥、保持、增重这四个选项，并根据用户的选择对推荐作出调整，例如若为减肥，则适量减少目标热量以及脂肪摄入」。
+- 契约影响：`Goal` 枚举扩一个值、附录 A 两处系数、附录 B 一处条件。按流程应由 PD 复核；本次按用户直接指示落地，`docs/API.md` 明写「待 PD 复核口径后定稿」，未把提案说成已评审结论。
+
+### 29.2 口径与改动
+
+- 内部值不改名，只扩一档并换展示名：`health` 保持（原「日常保健」）、`lose` 减肥（原「减脂」）、`gain` 增肌、**`weight_gain` 增重（新增）**。
+- 附录 A：目标系数 `health 1.0 / lose 0.8（≥BMR×1.05）/ gain 1.12 / weight_gain 1.15`；蛋白 `1.2 / 1.6 / 1.8 / 1.2`（增重只做能量盈余）；脂肪占比**按目标区分**：`lose 0.25`、其余 `0.27`。碳水仍为余量、下限 60g。
+- 附录 B：`weight_gain` 纳入「热量 <85% 目标额外罚」；蛋白达标 +9 仍只给 `gain`（增重的蛋白目标按保持量，若也给分会把排序推向高蛋白而偏离增重意图）。
+- 服务端：`shared/src/types.ts`、`engines/nutrition.ts`、`engines/recommend.ts`、`routes/profiles.ts`、`routes/recommendations.ts`；未成年警告文案改为「…已调整为保持」。
+- 前端：`ProfileForm` 新增「饮食目标」卡片（建档页与个人中心共用），`GoalView` 改用同一份 `GOAL_OPTIONS`；`labels.ts` 统一展示名；`StoryView` 同步；个人中心概览新增「饮食目标」，原「目标与忌口」入口收窄为「忌口设置」，避免同一页两处改目标。
+- Mock（`web/src/api/__mock__`）与真实实现同步：`nutrition.ts` 系数 / 脂肪占比 / 警告文案，`recommender.ts` 低热量罚条件，`index.ts` 白名单。
+
+### 29.3 验证
+
+```
+root: npm run typecheck   → shared / server 0 error
+web:  npm run typecheck   → vue-tsc 0 error
+root: npm test            → 8 files / 119 tests passed（+4）
+web:  npm test            → 17 files / 93 tests passed（+3）
+root: npm run check       → lint + typecheck + 119 tests + smoke 13/13 + check:data 383 + check:progress 全绿
+web:  npm run lint        → 0 error（LogView 1 条既有 warning，非本次改动）
+```
+
+浏览器（5173 + 真实后端，DOM 快照核对；截图面板不可用，未声称截图）：
+
+- 个人中心：四个 radio 齐全；当前档案 175cm / 90kg / 18 岁保持，日目标 **2673**。切减肥保存 → **2138**，早餐目标 **534.5 kcal / 脂肪 14.9g**；切增重保存 → **3074**，早餐目标 **768.5 kcal / 脂肪 23.1g**；最后复原保持 **2673**（未改动用户其他档案字段）。
+- 建档页（临时新 session，验证后已恢复原 `cn.session_id`）：四个 radio 齐全；年龄输入 16 后减肥 `disabled=true`，提示「未满 18 岁只提供保持 / 增肌 / 增重方案」。
+- 早前 Mock 单测另锁定：mock 下 `weight_gain` 日目标 2624、未成年警告文案、建档选增重落库 2624、个人中心改减肥 1826。
+
+### 29.4 分支与交付状态
+
+- 分支 `feat/goal-four-options`，功能提交 **`fa3b07a`** 已推远端（`origin/feat/goal-four-options`）。
+- 本节记录随下一次提交推送；**尚未创建 PR**，等用户指示后再开（不自行合并、不自行批准）。
+- 遗留：`docs/PROGRESS.md` §1 仍写「384 道」与旧 main，属 PD 专区，未改；若 PD 认可 v1.2.9 口径，需要把「待复核」改为定稿。
+
+### 29.5 2026-11-25：PR 已开（用户指示「开 PR」）
+
+- 用户明确指示开 PR，按 2026-11-24 约定由 agent 用 GitHub API 代建；作者为 `Aredjdhd`，**不自行批准、不自行合并**。
+- PR **#91**：https://github.com/givehope488/nutritionist-prototype/pull/91
+  - 标题：饮食目标扩为四档（保持/减肥/增肌/增重）并接入建档与个人中心（API v1.2.9）
+  - head `feat/goal-four-options` @ `59413b6` → base `main`
+  - 正文按 `.github/PULL_REQUEST_TEMPLATE.md` 填写，含四档口径、待 PD 复核项、验证输出；越界文件（shared/server/docs）已说明是契约变更所需，未勾选「只改我负责目录」。
+  - 创建时 `mergeable_state: blocked`（等 CI 与真人 Review），正文回读 2004 字符完整。
+- 网络备注：本机访问 `api.github.com` 需强制 IPv4（`curl -4`），否则 HTTPS 443 间歇超时；PR 由 curl 成功后立即用 API 回读核对，未依据本地推测。
+- 本节为追加记录，`29.4` 的「尚未创建 PR」是当时状态，不改写。

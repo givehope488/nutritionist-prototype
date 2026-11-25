@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // 建档页：**只在没有档案时出现**（PD 2026-11-24）。
 // 已有档案访问 /profile 时直接回首页——改档走个人中心，避免同一份表单两处逻辑漂移。
+// 2026-11-25：饮食目标（保持 / 减肥 / 增肌 / 增重）随体征一起在 ProfileForm 里选，建档即生效。
 // 边界：BMI / 日目标是服务端派生值，本页只展示 getProfile / saveProfile 的返回值（架构 D1）。
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -34,7 +35,7 @@ async function save(input: ProfileInput): Promise<void> {
     saveError.value = result.error;
     return;
   }
-  // 建档完成直接回首页（PD 2026-11-24）；目标与忌口在个人中心里继续调
+  // 建档完成直接回首页（PD 2026-11-24）；忌口在个人中心里继续调
   goHome();
 }
 
@@ -68,7 +69,7 @@ onMounted(async () => {
 
         <AppCard padding="tight" class="intro">
           <p class="intro__line">
-            填三项体征即可开始；建档后可在「个人中心」随时修改，目标和忌口也在那里调整。
+            填好体征并选一个饮食目标即可开始；建档后可在「个人中心」随时修改。
           </p>
         </AppCard>
 
