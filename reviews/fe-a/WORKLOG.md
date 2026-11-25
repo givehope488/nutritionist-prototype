@@ -997,6 +997,68 @@ web: npm run build       → dist/assets/index-BdL9KnKX.js 181.40 kB │ gzip 62
 - 按防线 7 不自审自合：**未合并、未关闭**，Merge 归 PD。
 - 口径说明：验收 A6 原文为「营养值为估算，不宣称精确」，§2.5 步 3 引文为「营养值为估算值，不宣称精确」；采用带「值」的版本，既包含验收要求的子串「营养值为估算」，也与 §2.5 引文逐字一致。
 
+## 23. 2026-11-24：菜品数据清理（删 2 道、拆 1 道）
+
+### 23.1 需求与口径
+
+- 用户对 384 道实测菜单提出：删除「任意双拼」「四合一」；「鸡蛋灌饼&手抓饼」拆成两道独立菜品。
+- 数据链路：`server/data/observed-menu.json`（照片/牌面源数据）→ `build-observed-seed.mjs` + `nutrition-templates.mjs` / `recipes.mjs` → `menu-seed.v3.json` → SQLite。改动只动上游，种子与库由脚本重建，不手改生成物。
+- 口径：删掉的两道不再入库；拆分的两道各按 1 个/1 份独立计量。鸡蛋灌饼沿用原合并项标注（350 kcal / 11 P / 15 F / 40 C / 850 Na）；手抓饼沿用模板库已有精确值（350 / 8 / 18 / 42 / 750），未新造营养值。
+
+### 23.2 改动
+
+- `observed-menu.json`：移除 obs-178「任意双拼」、obs-205「四合一」；obs-277 更名为「鸡蛋灌饼」（备注保留「饼+鸡蛋+豆皮+生菜」）；新增 obs-385「手抓饼」（二楼·绍兴小吃，原味单张）。
+- `nutrition-templates.mjs`：`鸡蛋灌饼&手抓饼` 键改为 `鸡蛋灌饼`；删除 `四合一`、`任意双拼` 两条精确模板；`手抓饼` 精确模板原已存在。
+- `recipes.mjs`：`鸡蛋灌饼手抓饼` 配方键改为 `鸡蛋灌饼`；删除 `四合一`、`任意双拼` 配方；`手抓饼` 配方原已存在。
+- 重建结果：**383 道**（384 − 2 + 1），营养值来源 exact 270 / combo 88 / partial 25 / fallback 0；配料 recipe 295 / combo 88 / fallback 0；推荐池 306 → 305 道。
+- ID 影响（顺序编号所致，需知会调用方）：拌个饭饭 bfg-02..15 → bfg-01..14；炸串精选 zcj-14..15 → zcj-13..14；绍兴小吃 sx-03 名称变更、新增 sx-12。历史餐食日志存的是菜名快照，不受影响；删除菜的旧 ID 不再可回填。
+- 同步重生成 `菜品清单-v3-2026-11-24.csv`（385 → 384 行，含表头）。
+
+### 23.3 验证
+
+```
+node server/scripts/build-observed-seed.mjs → 383 道；fallback 0
+npm run seed                               → 写入 383 道，库内 383 行
+npm run check                              → lint/typecheck/test 110 passed/smoke 13-13/check:data 383 全过/check:progress ✓
+curl /api/v1/menu?meal=lunch               → 355 道；鸡蛋灌饼 sx-03 350 kcal、手抓饼 sx-12 350 kcal；任意双拼/四合一 无
+```
+
+### 23.4 边界与待同步
+
+- 菜品数据属 PD 口径；本轮只做**本地分支** `data/menu-cleanup-2026-11-24`，未推送、未开 PR，等确认后再走远端。
+- `docs/OBSERVED-MENU.md`（263/295/383 行）、`docs/PROGRESS.md` 的「384 道」与 `reviews/pd/RECOMMENDATION-SAMPLES-2026-11-21.md:207` 仍为旧数，FE-A 不改 PD 文档，需 PD 同步为 383。
+
+### 23.5 补记（同日）：已推送远端
+
+- §23.4 的「未推送」已被本条替代：按用户指示执行 `git push --dry-run` 通过后正式推送。
+- 远端分支 `data/menu-cleanup-2026-11-24` = `1e1676247c31ab9e3e23f2da151b7b1d36f22950`（`git ls-remote` 复核）。
+- PR 由用户创建（按分工：代理只推分支）；`origin/main` 未动，仍为 `2c0bbb7`。
+
+### 23.6 补记（同日）：PR #88
+
+- 用户指示创建 PR：PR **#88** <https://github.com/givehope488/nutritionist-prototype/pull/88>，head `db1ca64`，base `main`。
+- reviewers：`givehope488` / `wyf-111` 等；CI `lint` / `typecheck` / `test` / `deploy-config` 四项 `completed / success`。
+- `mergeable=true`，等评审；未合并。首次创建的 PR 正文因 Shell 反引号被展开丢失代码格式，已用 PATCH 修正为完整内容。
+
+### 23.7 补记（2026-11-25）：与 main 合并、解决 WORKLOG 冲突
+
+- 起因：PR #87 于 2026-11-25 合入 main（合并提交 `467b88d`），#88 与 main 同时改到本文件尾部，GitHub 报 `mergeable_state=dirty`、`mergeable=false`，无法合并。
+- 本地试合并（`git merge-tree origin/main a6e1af7`）：冲突文件只有本文件一个；把 `origin/main` 合入 `data/menu-cleanup-2026-11-24` 后按时间序保留 §23（本分支）→ §24/§25（main），代码与数据文件自动合并。
+- 数据侧结论不变：仍是 383 道（营养值 exact 270 / combo 88 / partial 25 / fallback 0），本次合并未改任何菜品数据。
+- 旧批准可能失效：分支推新提交后，若仓库开启了「Dismiss stale approvals」，11-24 的两次 Approve 会被清掉，需要再批一次。
+
+### 23.8 补记（2026-11-25）：冲突已解决并推回远端
+
+- 合并提交 `8dc5730`（parents：`a6e1af7` + `467b88d`），已推送；远端分支 head 经 `git ls-remote` 复核为 `8dc5730be0e6d3a8c2d13bf986d1284f3a6376ec`。
+- 本地校验（提交后、推送后同内容）：
+  - `npm run lint` 通过；`npm run typecheck`（shared + server）通过
+  - `npm run test` → server 8 files / **115 tests passed**；`cd web && npm run test` → 17 files / **89 tests passed**
+  - `npm run smoke` → **13/13 通过**
+  - `npm run check:data` → **383 道，全部通过**；`npm run check:progress` → 通过（PD 指纹一致）
+- CI（head `8dc5730`）：`lint` / `typecheck` / `test` / `deploy-config` 4/4 `success`。
+- 远端 PR #88：`mergeable=true`，但 GraphQL `reviewDecision=REVIEW_REQUIRED`、`mergeStateStatus=BLOCKED` —— 11-24 的批准挂在旧 head `a6e1af7` 上，新提交后不计入，需要**在最新 head 上重新 Approve 一次**才能合并。
+- 冲突解决只动本文件，`build-observed-seed` 未重跑（数据文件未变）。
+
 ## 24. 2026-11-24：早餐占比提案（25/40/35）与交接
 
 ### 24.1 问题与根因
