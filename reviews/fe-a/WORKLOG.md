@@ -1158,3 +1158,37 @@ server: npm test -w @canteen/server           → 8 files / 115 tests passed（+
 - 浏览器实测（5173 + 真实后端，晚餐）：称重卡「搭配二」下方说明行完整位于卡片外，与下一张卡间距正常；截图核对通过。
 - 未改组件（`ComboCard` 属 FE-B），未改契约与数据。
 - 交付：分支 `fix/recommend-weigh-note`，提交 `99276ab` 已推远端；PR **#89**，CI 4/4 绿，`mergeable_state=blocked`（等 Approve）。
+
+### 26.3 合并结果（2026-11-25）
+
+- PR **#89** 由 `givehope488` APPROVED（2026-11-25T06:28Z，针对 head `9562f9f`），随后合并：`origin/main` `467b88d` → **`a3d582e`**，PR `state=closed`、`merged=true`。
+- 本地 main 已 fast-forward 到 `a3d582e`；`npm run check` 全绿（server 115、smoke 13/13、check:data 384、check:progress），web vitest 17 files / 89 passed。
+- 浏览器复验：`.weigh-note` 距卡片底边 4px、行高 18px，完整落在卡片外。
+
+## 27. 2026-11-25：称重菜说明不再重复（推荐页去重）
+
+### 27.1 现象
+
+- 同一张称重组合卡里，「份量以现场称重为准」出现两次：卡片内服务端 `reason` 已带「含称重菜，份量以现场称重为准，热量仅供参考」（`server/src/engines/recommend.ts` 拼装），卡片外又有 A6/I5 的外置说明行。
+- 实测（早餐，真实后端）：一张称重卡的 `li.innerText` 里两段文案同时存在。
+
+### 27.2 改动
+
+- `web/src/views/recommend/RecommendView.vue`：外置说明行的条件从 `combo.has_weighed_dish` 收紧为 `combo.has_weighed_dish && !combo.reason.includes('称重')`——服务端 reason 已说明时不重复；reason 未带说明（老服务端 / 润色文案遗漏）时仍展示，A6/I5 的标记能力保留。
+- `web/src/tests/unit/recommendWeigh.test.ts`：新增 1 例「reason 已含称重说明时只出现一次，不再重复外置一行」；原两例（flag=true 展示、flag=false/缺失不展示）保持不变。
+
+### 27.3 验证
+
+```
+web: npm run typecheck  → 0 error
+web: npm run test       → 17 files / 90 tests passed（+1）
+root: npm run lint      → 通过
+浏览器 /recommend（早餐，真实后端）：称重卡 1 张，全文「份量以现场称重为准」出现 1 次，.weigh-note 数量 0
+```
+
+- 未改 `ComboCard`（FE-B）、未改契约与数据；服务端文案维持原样。
+
+### 27.4 PR #90（2026-11-25）
+
+- 按用户指示代开 PR：**#90** <https://github.com/givehope488/nutritionist-prototype/pull/90>，head `da539f4`，base `main`；reviewers `givehope488` / `wyf-111`。
+- CI（head `da539f4`）：`lint` / `typecheck` / `test` / `deploy-config` 4/4 `success`；`mergeable=true`、`mergeable_state=blocked`（等 Approve）。
