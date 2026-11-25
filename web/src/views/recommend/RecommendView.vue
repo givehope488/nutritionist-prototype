@@ -350,7 +350,7 @@ onMounted(async () => {
   font-size: var(--font-size-sm);
 }
 .weigh-note {
-  margin: calc(-1 * var(--space-2)) var(--space-2) 0;
+  margin: var(--space-1) var(--space-2) 0;
   color: var(--color-text-tertiary);
   font-size: var(--font-size-xs);
 }
