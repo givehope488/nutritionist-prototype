@@ -1,8 +1,10 @@
 <script setup lang="ts">
 // 体征表单：建档页（新用户）与个人中心（改档）共用（PD 2026-11-24）。
+// 2026-11-25：饮食目标改为四档（保持 / 减肥 / 增肌 / 增重）直接在这里选，
+// 建档和个人中心共用同一份控件；避免只在一处能改、另一处悄悄带默认值。
 // 边界（架构 D1 / 分层护栏）：组件只维护输入与区间预校验，**不直接调接口**——
 // submit 事件把 ProfileInput 交给页面，保存结果与错误再由 props 回传。
-import { reactive, watch } from 'vue';
+import { computed, reactive, watch } from 'vue';
 import { MINOR_AGE, PROFILE_BOUNDS } from '@canteen/shared';
 import type { Activity, ApiError, Goal, Meal, Profile, ProfileInput, Sex } from '@canteen/shared';
 import AppButton from '@/components/base/AppButton.vue';
@@ -14,7 +16,7 @@ import AppRadioGroup from '@/components/base/AppRadioGroup.vue';
 import AppSegmented from '@/components/base/AppSegmented.vue';
 import type { RadioOption } from '@/components/types';
 import { sessionId } from '@/composables/useSession';
-import { MEAL_OPTIONS } from '@/utils/labels';
+import { GOAL_OPTIONS, MEAL_OPTIONS } from '@/utils/labels';
 
 const props = withDefaults(
   defineProps<{
@@ -40,7 +42,7 @@ const form = reactive({
   age: '',
   activity: 'mid' as Activity,
   defaultMeal: 'lunch' as Meal,
-  // 目标与忌口在专门页面编辑；这里原样带回去，避免保存体征时把它们重置成默认值
+  // 目标在下方「饮食目标」卡片里选；忌口仍由目标页编辑，这里原样带回，避免保存体征时被重置
   goal: 'health' as Goal,
   avoid: [] as string[],
 });
@@ -57,6 +59,25 @@ const activityOptions: RadioOption[] = [
 ];
 
 const mealItems = MEAL_OPTIONS.map((option) => ({ value: option.value, label: option.label }));
+
+/** 表单里的年龄是实时输入的：改到 18 岁以下时立刻锁掉减肥，不必等保存 */
+const isMinor = computed(() => {
+  const age = Number(form.age.trim());
+  return Number.isFinite(age) && age > 0 && age < MINOR_AGE;
+});
+
+/** 未成年双保险的前端半边：禁用减肥并写明原因；服务端仍会兜底降级。 */
+const goalOptions = computed<RadioOption[]>(() =>
+  GOAL_OPTIONS.map((option) =>
+    option.value === 'lose' && isMinor.value
+      ? {
+          ...option,
+          disabled: true,
+          disabledReason: `未满 ${MINOR_AGE} 岁不提供热量缺口方案`,
+        }
+      : { ...option },
+  ),
+);
 
 const heightHint = `范围 ${PROFILE_BOUNDS.height_cm.min}~${PROFILE_BOUNDS.height_cm.max} cm`;
 const weightHint = `范围 ${PROFILE_BOUNDS.weight_kg.min}~${PROFILE_BOUNDS.weight_kg.max} kg`;
@@ -205,6 +226,16 @@ defineExpose({ fillForm });
       </div>
     </AppCard>
 
+    <AppCard title="饮食目标" subtitle="决定目标热量与脂肪口径，推荐会按它调整">
+      <AppField label="目标" required :error="fieldErrors.goal">
+        <AppRadioGroup v-model="form.goal" name="goal" direction="column" :options="goalOptions" />
+      </AppField>
+      <p v-if="isMinor" class="rule-note">
+        未满 {{ MINOR_AGE }} 岁只提供保持 / 增肌 / 增重方案；减肥选项已锁定，服务端会再次校验。
+      </p>
+      <p v-else class="rule-note">减肥会下调目标热量并减少脂肪占比；增肌、增重会提高目标热量。</p>
+    </AppCard>
+
     <AppButton block :loading="saving" @click="submit">{{ submitLabel }}</AppButton>
   </div>
 </template>
@@ -219,5 +250,10 @@ defineExpose({ fillForm });
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
+}
+.rule-note {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-tertiary);
+  font-size: var(--font-size-sm);
 }
 </style>

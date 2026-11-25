@@ -113,8 +113,11 @@ function scoreCombo(
   const kcalWeight = hasWeighed ? 1 / WEIGH_TOLERANCE : 1;
   const kcalDev = Math.abs(t.kcal - target.kcal) / target.kcal;
   penalty += kcalDev * 120 * kcalWeight;
-  // health / gain 下热量 <85% 目标额外罚 ×140（含称重菜时同样放宽）
-  if ((goal === 'health' || goal === 'gain') && t.kcal < 0.85 * target.kcal) {
+  // 保持 / 增肌 / 增重 下热量 <85% 目标额外罚 ×140（含称重菜时同样放宽）
+  if (
+    (goal === 'health' || goal === 'gain' || goal === 'weight_gain') &&
+    t.kcal < 0.85 * target.kcal
+  ) {
     penalty += ((0.85 * target.kcal - t.kcal) / target.kcal) * 140 * kcalWeight;
   }
 
@@ -139,7 +142,7 @@ function scoreCombo(
   if (hasPlant) bonus += 7;
   // lose 且脂肪 <32% +6
   if (goal === 'lose' && fatRatio < 0.32) bonus += 6;
-  // gain 且蛋白达标 +9
+  // 增肌且蛋白达标 +9（增重只做能量盈余，不加蛋白分）
   if (goal === 'gain' && t.protein_g >= target.protein_g) bonus += 9;
 
   return 1000 - penalty + bonus;

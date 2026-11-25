@@ -81,7 +81,10 @@ export function scoreCombo(dishes: Dish[], target: MealTarget, goal: string): nu
   let score = 1000;
   const deviation = Math.abs(totals.kcal - target.kcal) / target.kcal;
   score -= deviation * 120;
-  if ((goal === 'health' || goal === 'gain') && totals.kcal < target.kcal * 0.85) {
+  if (
+    (goal === 'health' || goal === 'gain' || goal === 'weight_gain') &&
+    totals.kcal < target.kcal * 0.85
+  ) {
     score -= (1 - totals.kcal / target.kcal) * 140;
   }
   if (totals.protein_g < target.protein_g) {

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-// 个人中心：档案概览 + 改体征 + 目标与忌口入口 + 合规删除（PD 2026-11-24）。
+// 个人中心：档案概览 + 改体征/饮食目标 + 忌口入口 + 合规删除（PD 2026-11-24）。
+// 2026-11-25：饮食目标（四档）放进下方 ProfileForm 直接改，概览区同步展示当前目标。
 // 建档页只服务新用户，所有「已有档案之后的管理动作」都收在这里，避免两处表单互相漂移。
 // 边界：BMI / 日目标仍是服务端派生值；删除会连带清空用餐记录，必须二次确认。
 import { computed, onMounted, ref } from 'vue';
@@ -153,6 +154,10 @@ onMounted(async () => {
                 <span class="summary__tag">kcal</span>
               </div>
               <div class="summary__item">
+                <span class="summary__label">饮食目标</span>
+                <strong class="summary__value summary__value--text">{{ GOAL_LABEL[profile.goal] }}</strong>
+              </div>
+              <div class="summary__item">
                 <span class="summary__label">默认餐次</span>
                 <strong class="summary__value summary__value--text">{{ mealLabel }}</strong>
               </div>
@@ -166,15 +171,14 @@ onMounted(async () => {
 
           <AppCard padding="tight" class="target-entry">
             <div class="target-entry__text">
-              <p class="target-entry__title">目标与忌口</p>
+              <p class="target-entry__title">忌口设置</p>
               <p class="target-entry__meta">
-                当前 {{ GOAL_LABEL[profile.goal] }}
-                <template v-if="avoidLabels.length"> · 忌口 {{ avoidLabels.join('、') }}</template>
-                <template v-else> · 未设忌口</template>
+                <template v-if="avoidLabels.length">不吃 {{ avoidLabels.join('、') }}</template>
+                <template v-else>未设忌口</template>
               </p>
             </div>
             <AppButton size="sm" variant="secondary" @click="router.push({ name: 'goal' })">
-              调整
+              去设置
             </AppButton>
           </AppCard>
 

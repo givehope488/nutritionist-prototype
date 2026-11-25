@@ -19,15 +19,38 @@ import type {
  */
 
 const ACTIVITY_FACTOR: Record<Activity, number> = { low: 1.2, mid: 1.4, high: 1.6 };
-const GOAL_FACTOR: Record<Goal, number> = { health: 1.0, lose: 0.8, gain: 1.12 };
-const PROTEIN_PER_KG: Record<Goal, number> = { health: 1.2, lose: 1.6, gain: 1.8 };
-// 提案（非正式口径）：早餐占比 0.30 → 0.25、晚餐 0.30 → 0.35，午餐不变；三者之和仍 = 1.0。
-// 起因：2026-11-24 实机体验，日目标 2673 kcal 下早餐目标 801.9 kcal，推荐三套均为
-// 700+ kcal 的拌面单碗，用户反馈「早餐推荐热量偏高」。本分支只做验证与交接，
-// docs/API.md 附录 A 仍写 0.30/0.40/0.30，必须由 PD 走契约变更流程后再合入。
+/**
+ * 目标系数（API.md v1.2.9 附录 A）：
+ * - 保持 health ×1.0 / 减肥 lose ×0.8（不低于 BMR×1.05）/
+ *   增肌 gain ×1.12 / 增重 weight_gain ×1.15（盈余更大）
+ */
+const GOAL_FACTOR: Record<Goal, number> = {
+  health: 1.0,
+  lose: 0.8,
+  gain: 1.12,
+  weight_gain: 1.15,
+};
+/** 蛋白 g/kg：增肌最高 1.8；增重只做能量盈余，蛋白按保持的 1.2 */
+const PROTEIN_PER_KG: Record<Goal, number> = {
+  health: 1.2,
+  lose: 1.6,
+  gain: 1.8,
+  weight_gain: 1.2,
+};
+// 餐次占比（API.md v1.2.7）：早餐 0.25 / 午餐 0.40 / 晚餐 0.35，三者之和 = 1.0。
+// 2026-11-24 实机体验反馈早餐目标偏高后调整；口径已写入附录 A。
 const MEAL_RATIO: Record<Meal, number> = { breakfast: 0.25, lunch: 0.4, dinner: 0.35 };
 
-const FAT_ENERGY_RATIO = 0.27;
+/**
+ * 脂肪能量占比（API.md v1.2.9 附录 A）：减肥下调到 25%，其余三档维持 27%。
+ * 这是「适量减少脂肪摄入」的落地——只降脂肪占比，蛋白与碳水结构不变。
+ */
+const FAT_ENERGY_RATIO: Record<Goal, number> = {
+  health: 0.27,
+  lose: 0.25,
+  gain: 0.27,
+  weight_gain: 0.27,
+};
 const CARBS_FLOOR_G = 60;
 const SODIUM_MEAL_LINE_MG = 1600;
 const MINOR_AGE = 18;
@@ -86,7 +109,7 @@ export function calcTargets(input: ProfileInput): TargetsResult {
   const dayKcal = Math.round(Math.max(dayKcalRaw, dayKcalFloor));
 
   const proteinDay = round1(input.weight_kg * PROTEIN_PER_KG[effectiveGoal]);
-  const fatDay = round1((dayKcal * FAT_ENERGY_RATIO) / 9);
+  const fatDay = round1((dayKcal * FAT_ENERGY_RATIO[effectiveGoal]) / 9);
   const carbsDay = round1(
     Math.max((dayKcal - proteinDay * 4 - fatDay * 9) / 4, CARBS_FLOOR_G),
   );
@@ -96,7 +119,7 @@ export function calcTargets(input: ProfileInput): TargetsResult {
 
   const warnings: string[] = [];
   if (minorDowngraded) {
-    warnings.push('未满18岁不提供热量缺口方案，已调整为日常保健');
+    warnings.push('未满18岁不提供热量缺口方案，已调整为保持');
   }
 
   const profile: Profile = {
