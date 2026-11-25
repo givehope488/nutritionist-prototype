@@ -69,6 +69,25 @@ describe('餐次目标（午餐 0.4）', () => {
   });
 });
 
+// 提案分支（2026-11-24）：早餐占比 0.30 → 0.25、晚餐 0.30 → 0.35。
+// 必须先由 PD 把 docs/API.md 附录 A 改成同一组数字，合入时本组断言才成立。
+describe('餐次目标（提案：早餐 0.25 / 晚餐 0.35）', () => {
+  it('男 health 早餐：kcal=570.5、protein_g=19.5', () => {
+    const { mealTargets } = calcTargets(profile({ goal: 'health' }));
+    const breakfast = mealTargets.breakfast;
+    expect(breakfast.meal_ratio).toBe(0.25);
+    expect(breakfast.kcal).toBe(570.5);
+    expect(breakfast.protein_g).toBe(19.5);
+  });
+  it('男 health 晚餐：kcal=798.7、protein_g=27.3', () => {
+    const { mealTargets } = calcTargets(profile({ goal: 'health' }));
+    const dinner = mealTargets.dinner;
+    expect(dinner.meal_ratio).toBe(0.35);
+    expect(dinner.kcal).toBe(798.7);
+    expect(dinner.protein_g).toBe(27.3);
+  });
+});
+
 describe('餐次目标之和 = 日目标（v1.2.3 占比和=1.0）', () => {
   it('三餐 kcal 之和 ≈ day_kcal', () => {
     const { profile: p, mealTargets } = calcTargets(profile({ goal: 'health' }));

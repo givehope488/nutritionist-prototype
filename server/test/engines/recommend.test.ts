@@ -217,6 +217,48 @@ function mk(
   };
 }
 
+describe('BMI ≥ 24 不推荐超出本餐热量（2026-11-25 用户决策）', () => {
+  it('超重/肥胖时只返回 kcal ≤ 本餐目标的组合', () => {
+    const target = { ...lunchTarget(), kcal: 700 };
+    const { combos } = recommendCombos(DISHES, {
+      meal: 'lunch',
+      goal: 'health',
+      avoidTags: [],
+      target,
+      bmi: 25,
+    });
+    expect(combos.length).toBe(3);
+    for (const c of combos) {
+      expect(c.totals.kcal).toBeLessThanOrEqual(700);
+    }
+  });
+
+  it('所有组合都超目标时返回空 + 引导，不硬塞超热量套', () => {
+    const target = { ...lunchTarget(), kcal: 500 };
+    const { combos, notice } = recommendCombos(DISHES, {
+      meal: 'lunch',
+      goal: 'health',
+      avoidTags: [],
+      target,
+      bmi: 29,
+    });
+    expect(combos).toEqual([]);
+    expect(notice).toContain('不超过本餐热量');
+  });
+
+  it('BMI < 24 不受该上限影响（同一 500 kcal 目标仍有 3 套）', () => {
+    const target = { ...lunchTarget(), kcal: 500 };
+    const { combos } = recommendCombos(DISHES, {
+      meal: 'lunch',
+      goal: 'health',
+      avoidTags: [],
+      target,
+      bmi: 23,
+    });
+    expect(combos.length).toBe(3);
+  });
+});
+
 describe('钠罚分（v1.2.3 分段系数）', () => {
   it('Na=2150 → 52.5', () => {
     expect(sodiumPenalty(2150)).toBeCloseTo(52.5, 5);

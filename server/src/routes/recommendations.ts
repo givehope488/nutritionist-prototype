@@ -74,7 +74,7 @@ recommendationsRouter.post('/', (req, res) => {
   };
 
   // BE-A 引擎：营养目标（target 来源唯一）
-  const { mealTargets } = calcTargets(input);
+  const { profile: derivedProfile, mealTargets } = calcTargets(input);
   const target = mealTargets[meal];
 
   // avoid key → 菜品标签，交由推荐引擎过滤
@@ -83,7 +83,14 @@ recommendationsRouter.post('/', (req, res) => {
     .filter((tag): tag is DishTag => tag !== undefined);
 
   const dishes = getDishesByMeal(meal, false);
-  const { combos, notice } = recommendCombos(dishes, { meal, goal, avoidTags, target });
+  const { combos, notice } = recommendCombos(dishes, {
+    meal,
+    goal,
+    avoidTags,
+    target,
+    // 2026-11-25 用户决策：BMI ≥ 24 时引擎只输出不超过本餐热量的组合
+    bmi: derivedProfile.bmi,
+  });
 
   const response: RecommendationResponse = { target, combos, notice };
   res.json(response);
