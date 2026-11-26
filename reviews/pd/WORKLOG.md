@@ -248,3 +248,16 @@ npm run check                          → lint / typecheck / test 131 / smoke 1
 1. 真人重新 Approve **#93**（作者是 agent，不能自批；分支保护不可绕过）。
 2. Approve 后合并 #93，fast-forward 本地 main，在 main 上复跑 `npm run check` + web test，记录合并提交。
 3. C4 仍需用户提供可分享地址与反馈群。
+
+### 10.5 远端推送与 CI（2026-11-26）
+
+| 项 | 结果 |
+|---|---|
+| force-with-lease | 远端 `9dce5f1` → `c25c8e1`，成功 |
+| PR #93 head | `c25c8e1` |
+| CI @ `c25c8e1` | lint / typecheck / test / deploy-config **4/4 success** |
+| PR 状态 | `open` / `mergeable=true` / `mergeable_state=blocked`（原 Approve 已 DISMISSED） |
+| PR 标题/正文 | 已更新为本轮完整范围（健康规则 + 备份收口 + 状态同步） |
+| 评论 | [#issuecomment-7181926531](https://github.com/givehope488/nutritionist-prototype/pull/93#issuecomment-7181926531)，@givehope488 请求重新 Approve |
+
+> 后续只等真人 Approve；Agent 不自批、不合。合并后需 fast-forward 本地 main 并复跑检查。
