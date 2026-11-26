@@ -289,8 +289,9 @@ export interface Verdict {
 
 /**
  * 回填响应里的本餐目标。
- * v1.2.6（PD 2026-11-24）：补齐脂肪/碳水/钠 —— 服务端 `calcTargets` 本来就算出六项，
- * 只是此前只在响应里映射了前两项，导致反馈页这三条没有目标、只能显示「仅供参考」。
+ * v1.2.6（PD 2026-11-24）：补齐脂肪/碳水/钠 —— 服务端 `calcTargets` 本来就算出五项营养值
+ * （另带 day_kcal / meal_ratio 两个元数据），只是此前只在响应里映射了前两项，导致反馈页这
+ * 三条没有目标、只能显示「仅供参考」。
  * 判定口径不变：`judgeVerdict` 仍只看 kcal 与 protein_g。
  */
 export interface MealLogTarget {
