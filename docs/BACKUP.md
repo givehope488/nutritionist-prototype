@@ -2,6 +2,7 @@
 
 > 面向：PB（运维）/ PD（数据维护）。
 > 运行时库是 SQLite 单文件（`server/data/runtime/app.db`），**不入库**（`.gitignore` 已忽略 `*.db`）。
+> 命令在**仓库根目录**执行；根 `package.json` 已转发到 server workspace，直接在 `server/` 下跑也等价。
 
 ## 1. 备份
 

@@ -12,7 +12,7 @@
 | 1 | 可访问的部署地址（`http://<IP>:8080`） | ❌ 未定 | PD / 有机器的同学 |
 | 2 | 反馈群「食堂营养师」 | ❌ 未建 | PD |
 | 3 | `.env` 里的 `ADMIN_TOKEN`（随机 24 字节 hex） | 模板已有，未生成正式值 | 部署人 |
-| 4 | 发布前备份 `npm run backup -w @canteen/server` | 流程已演练（12 ms） | 部署人 |
+| 4 | 发布前备份 `npm run backup` | 流程已演练（12 ms） | 部署人 |
 | 5 | 小范围名单（同学，不公开推广） | 未定 | PD |
 
 > 地址只要**小范围可达**即可：同一校园网/内网 IP 就行，不要求公网域名。仓库 nginx 只监听 80、无 HTTPS（DEPLOY §4.2），所以不要把含个人信息的链接公开传播。
@@ -79,13 +79,13 @@ docker tag canteen-server:prev canteen-server:local && docker compose up -d
 
 # 数据回滚（先停服务）
 docker compose stop server
-npm run restore -w @canteen/server -- ./backups/app-<时间戳>.db
+npm run restore -- ./backups/app-<时间戳>.db
 docker compose start server
 ```
 
 发布前打镜像标签：`docker tag canteen-server:local canteen-server:prev`。
 
-> 命令差异：`backup` / `restore` 只定义在 `server/package.json`，根 `package.json` 没有转发脚本；`docs/DEPLOY.md` 与 `docs/BACKUP.md` 里写的根目录 `npm run backup` 实际会报 missing script。本文按可用的 workspace 写法给出，并把该文档不一致登记为待修项（BE-B）。
+> 命令口径：根 `package.json` 已补 `backup` / `restore` 转发脚本（2026-11-26），DEPLOY/BACKUP 里的根目录写法现在可直接执行；`-- <文件>` 也会正确转发到 server 脚本。
 
 ## 7. 发布记录模板（发完填，贴进 §5）
 
