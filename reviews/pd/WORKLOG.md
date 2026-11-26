@@ -89,6 +89,8 @@ web npm test       → 17 files, 93 tests passed
 
 回执：`git ls-remote origin refs/heads/docs/pd-status-2026-11-26` → `99749f3718b6...`；PR 关闭与评论 ID 见 §5。
 
+> 本分支只 push、未开 PR，**CI 未触发**（`actions/runs?branch=...` 返回 0 条；workflow 由 PR 或 main push 触发）。因此以本地全量 `npm run check` + web 93 为验证依据，开 PR 后再看 4 个 job。
+
 ### 4.1 已推送但未清理的旧分支（候选，未删）
 
 `chore/codeowners-web`、`chore/merge-gate-rules`、`chore/progress-doc`、`docs/api-v1.2.1-portion`、`docs/progress-fix`、`docs/progress-sync-1106`、`feat/api-unify`、`feat/fe-a-api-review-w1`、`feat/fe-a-review-update-w1`、`feat/fe-a-w1-pages`、`feat/fe-b-web`、`feat/pd-data-review`、`feat/scaffold-ci`、`fix/ci-web-standalone`。
