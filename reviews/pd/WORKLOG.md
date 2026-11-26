@@ -306,7 +306,7 @@ web: npm run build                → 149 modules，CSS 35.23 kB / JS 197.87 kB
 | 本地分支 | `docs/pd-status-2026-11-26` @ `10e5464` |
 | 远端 head | `10e5464`（普通 fast-forward，`a6ecce7..10e5464`；首次 `--force-with-lease` 因本地跟踪引用陈旧被拒，未发生覆盖） |
 | PR #93 | `open` / `mergeable=true` / `mergeable_state=blocked`，11 commits，head 已指向 `10e5464` |
-| CI | run [45760613597](https://github.com/givehope488/nutritionist-prototype/actions/runs/45760613597) 已排队，结果见下条回填 |
+| CI @ `10e5464` | run [45760613597](https://github.com/givehope488/nutritionist-prototype/actions/runs/45760613597) **completed / success**（lint / typecheck / test / deploy-config） |
 | 合并 | **未合、未自批**；原 Approve 因新提交再次失效，仍需真人重新 Approve |
 
 ### 11.4 待办
