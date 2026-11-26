@@ -13,7 +13,7 @@ export const AVOID_OPTIONS: AvoidOption[] = [
   { key: 'nomilk', label: '不吃奶制品', excludes_tag: 'milk' },
   { key: 'nopeanut', label: '不吃花生', excludes_tag: 'peanut' },
   { key: 'nogluten', label: '不吃麸质（小麦制品）', excludes_tag: 'gluten' },
-  { key: 'nomeat', label: '素食', excludes_tag: 'meat' },
+  { key: 'nomeat', label: '不吃荤', excludes_tag: 'meat' },
 ];
 
 export const AVOID_TAG_MAP: Record<string, AvoidOption['excludes_tag']> = Object.fromEntries(

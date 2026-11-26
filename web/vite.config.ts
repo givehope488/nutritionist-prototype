@@ -29,5 +29,9 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/tests/setup.ts'],
     include: ['src/**/*.test.ts'],
+    // 测试必须跑在 mock 后端上，不受本地 .env.local 影响：
+    // 本地联调会把 VITE_API_BASE 设成空（走 dev proxy 打真后端），
+    // 若测试跟着变空，所有依赖 mock://local 的用例会去发真实 HTTP 而集体失败。
+    env: { VITE_API_BASE: 'mock://local' },
   },
 });

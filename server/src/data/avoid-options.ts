@@ -7,7 +7,7 @@ import type { AvoidOption } from '@canteen/shared';
  * `server/test/contract.test.ts` 会解析附录 D 与本文件比对，不一致 CI 直接红。
  *
  * 注意 `excludes_tag` 是单值：一个 key 只能排除一类标签。
- * 「素食」排的是 `meat`（含鱼虾），不代表纯素；纯素的表达方式见 v1.3 议题。
+ * 「不吃荤」排的是 `meat`（含鱼虾），不代表纯素；纯素的表达方式见 v1.3 议题。
  */
 export const AVOID_OPTIONS: AvoidOption[] = [
   { key: 'nospicy', label: '不吃辣', excludes_tag: 'spicy' },
@@ -18,5 +18,5 @@ export const AVOID_OPTIONS: AvoidOption[] = [
   { key: 'nomilk', label: '不吃奶制品', excludes_tag: 'milk' },
   { key: 'nopeanut', label: '不吃花生', excludes_tag: 'peanut' },
   { key: 'nogluten', label: '不吃麸质（小麦制品）', excludes_tag: 'gluten' },
-  { key: 'nomeat', label: '素食', excludes_tag: 'meat' },
+  { key: 'nomeat', label: '不吃荤', excludes_tag: 'meat' },
 ];
