@@ -1248,3 +1248,83 @@ web:  npm run lint        → 0 error（LogView 1 条既有 warning，非本次�
   - 创建时 `mergeable_state: blocked`（等 CI 与真人 Review），正文回读 2004 字符完整。
 - 网络备注：本机访问 `api.github.com` 需强制 IPv4（`curl -4`），否则 HTTPS 443 间歇超时；PR 由 curl 成功后立即用 API 回读核对，未依据本地推测。
 - 本节为追加记录，`29.4` 的「尚未创建 PR」是当时状态，不改写。
+
+### 29.6 2026-11-25：#91 已合并（用户确认「已通过」）
+
+- 用户确认真人 Approve 后，按指示用 GitHub API 合并 PR **#91**，`merge_method=merge`，commit_title「合并 PR #91：饮食目标扩为四档（API v1.2.9）」。
+- main：`847b309` → **`7896d6b`**（parents `847b309` + `85fbb86`）。合并后用 `git ls-remote` 与 API 回读核对，未依据本地推测。
+- 合并后 CI（main `7896d6b`）lint / typecheck / test / deploy-config 4/4 success；本地 main fast-forward 到 `7896d6b`，根 `npm run check` 全绿（server 119 用例、smoke 13/13、check:data 383）。
+- 分支 `feat/goal-four-options` 远端仍在 `85fbb86`，是否删除留给用户决定，未自行清理。
+- 本节补记合并结果，`29.4` / `29.5` 的「未合并」是当时状态，不改写。
+
+## 30. 2026-11-26：早餐优先推荐早餐线（API v1.2.10）
+
+### 30.1 用户诉求与根因
+
+- 用户原话：「解决一下早餐偏一大碗的问题，优先推荐包子、炒饭等常见早餐」。
+- 用真实后端 + v3 种子复现（临时 session `audit-bf-a/b/c`，验证后已删除）：172/65/20 保持 target 570.5 → 孜然烧鸡饭 562 / 黑椒鸡扒饭 583 / 卤肉饭 558；175/90/18 减肥 target 534.5 → 椒麻鸡丝拌面 507 / 可乐鸡块饭 533；160/50/22 target 430.3 → 肉夹馍 430 / 米饭+肉丸 412。全是午晚大碗。
+- 根因两条叠加：
+  1. v3 的 326 道二楼全天菜 `meals` 都含 `breakfast`，单菜（盖浇饭/拌面）按「热量贴合度」天然能命中早餐目标；
+  2. 一楼早餐线 25 道是 `serving_mode=plate`，旧契约明确「plate 不进 combos」，真正的包子/粥/蛋/奶没有资格进早餐推荐。
+
+### 30.2 方案与边界
+
+- **只改引擎候选池，不加新字段、不改评分权重、不改组合件数**：早餐优先池 = 仅早餐供应的菜（`meals` 只有 `breakfast`，含早餐线 28 道）+ 常见早餐成品（名称含「炒饭/炒面/炒米粉」的 `single`，且 `kcal` 在目标 0.8~1.15 倍内）。
+- 早餐允许 `plate` 参与组合（按 `category` 入件位，`weigh` 文案照旧）；**午晚 `plate` 仍排除（E5 不变）**。
+- 优先池不足 3 套时回退完整池补齐；选品分两层，第一套与其余套先在第一层取，取不满才落到第二层——避免回退时大碗因分数高反客为主。
+- 「常见早餐成品」名单当前只认炒饭/炒面/炒米粉，来源是用户原话「包子、炒饭」；是否扩到粥/面点等由 PD 复核，入名单前先看 `observed-menu.json` 的真实档口。
+- 没有改数据：早餐线归属、炒饭档口信息都属 PD 数据管线（`observed-menu.json` → 生成 v3 种子），不在 FE-A 侧直接改种子。
+
+### 30.3 改动文件
+
+- `server/src/engines/recommend.ts`：候选生成抽成 `buildCandidates(from)`；新增早餐优先池 + 两层选品（`primaryScored` / `fallbackScored`）。
+- `server/test/engines/recommend.test.ts`：新增 4 例（早餐不出全天盖浇饭/拌面且 plate 入组合；炒饭在热量范围内入选、超 1.15 倍不入选；早餐线不足 3 套回退且第一套仍是早餐线；午晚 plate 仍排除）。
+- `docs/API.md`：v1.2.10——§2.1 `plate` 用途改为「早餐参与组合、午晚不进」；§2.3 新增早餐优先池规则；版本表补 v1.2.10。
+- `README.md`：plate 行补「早餐参与组合，午晚不进推荐」；V2 候选步骤移除已落地的 plate 配盘。
+- `docs/PROGRESS.md` §5：追加一行变更（含实测三档输出）。
+- web Mock **未改**：`@menu-seed` 别名指向原型 55 道种子，其早餐 14 道全部是「仅早餐供应」，与优先池等价；v3 的 plate/炒饭不会出现在 Mock 数据里。改 Mock 只会增加无法被数据覆盖的分支，故不加。
+
+### 30.4 验证
+
+```
+root: npm run check → lint + typecheck + 123 tests + smoke 13/13 + check:data 383 + check:progress 全绿
+root: npm test       → 8 files / 123 tests passed（+4）
+web:  npm test       → 17 files / 93 tests passed（不变）
+web:  npm run typecheck → 0 error；lint → 0 error（LogView 1 条既有 warning）
+```
+
+- 真实后端实测（同一批临时档案，三档目标各抽 3 次）：
+  - 570.5 kcal → 爆炒饭 550 / 馒头+炸猪排 603 / 炒面+白煮蛋 590（第 2、3 次出现煎饼+牛奶 510）；
+  - 534.5 kcal（BMI 29.39，v1.2.8 上限生效）→ 馒头+炸物拼盘 503 / 酱肉包+肉饼 520 / 煎饼+白煮蛋 450，炒饭 550 被上限剔除；
+  - 430.3 kcal → 小笼包+牛奶 430 / 紫薯+炸物 400 / 馒头+香肠 403，炒饭 550 超 1.15 倍不进。
+- 浏览器（5173 + 真实后端）：`/recommend?meal=breakfast` 三套为爆炒饭、馒头/花卷+炸猪排、炒面/炒米粉+白煮蛋，无盖浇饭/拌面、无 `¥`；早餐线组合带「份量以现场称重为准，热量仅供参考」。
+- 浏览器验证用的临时档案 `fea-bf-check` 已 DELETE（204），localStorage `cn.session_id` 已还原为原档案 `67a11024-…`（175/90/18 减肥，首页 BMI 29.39 / 2138 kcal 正常）。临时分析脚本 `.tmp-breakfast.cjs` / `.tmp-audit.cjs` 已删除（否则会被根 lint 扫到）。
+
+### 30.5 交付状态
+
+- 分支 `feat/breakfast-line-priority`；本节随功能提交推送。**未创建 PR**，等用户指示。
+- 待 PD 复核：①「常见早餐成品」名单是否扩展到其它档口；② v1.2.10 文档口径；③ v1.2.9 四档参数仍待复核（见 §29）。
+
+### 30.6 2026-11-26：PR 已开（用户指示「开pr」）
+
+- 用户明确指示开 PR，按 2026-11-24 约定由 agent 用 GitHub API 代建；作者 `Aredjdhd`，**不自行批准、不自行合并**。
+- PR **#92**：https://github.com/givehope488/nutritionist-prototype/pull/92
+  - 标题：早餐优先推荐早餐线，修早餐偏一大碗（API v1.2.10）
+  - head `feat/breakfast-line-priority` @ `e94c050` → base `main`；6 files / +292 −99
+  - 正文按模板填写（含根因、三档实测、验证命令、越界文件说明、待 PD 复核项）；创建后回读 `body` 2087 字符完整。
+  - 已请求 reviewers：`givehope488` / `wyf-111`（CODEOWNERS 同时自动拉了 `pigQAQ` / `yangelect`）；创建时 `mergeable=true`、`mergeable_state=blocked`（等 CI 与真人 Review）。
+- CI（head `e94c050`，run id `45744644011`）：`completed success`。
+- 网络备注沿用 §29.5：`api.github.com` 需 `curl -4` + 重试；PR 创建与 reviewer 请求均用 API 回读核对，未依据本地推测。
+- 本节为追加记录，`30.5` 的「未创建 PR」是当时状态，不改写。
+
+### 30.7 2026-11-26：补早餐 e2e 断言（并入 #92）
+
+- 用户「把你能直接做的做了」后，做了直接可做的两项（PD 专区的 §1/§4.1、发布 C4、分支清理不在内）：
+- **`server/scripts/e2e-flow.ts` 补早餐链路**（v1.2.10 回归）：真实 HTTP 下新增「早餐推荐 + 早餐菜单」步骤——①第一套早餐的每道菜必须来自早餐优先池（仅早餐供应的菜，或名称含炒饭/炒面/炒米粉的成品）；②任何**单菜**早餐组合都不得是全天供应的盖浇饭/拌面（这次问题的正身）；③早餐推荐/菜单两份响应加入「全链路无 price_yuan」检查。
+  - 断言不写死菜名与道数，保持脚本原有「换种子也能跑」的约束。
+  - 实跑：默认 v3 种子 11 步全过（首套 馒头/花卷）；`SEED_PATH=server/data/menu-seed.json` 11 步全过（首套 肉包）。
+  - 该脚本不在 CI 六件套里（CI 是 lint / typecheck / test / smoke / check:data / check:progress），仍按脚本头注释手动跑；是否纳入 CI 需改 workflow，属全队配置，未擅自改。
+- **对三个开放文档 PR 做了只读核对**（未 Approve、未合并、未评论）：
+  - #86（API v1.2.6 复核）：内容是有效的两处修正（头部版本同步、v1.2.6 行「六项」→「五项」），但分支基于 v1.2.5，头部改动会把版本降回 v1.2.6；**当前 main 已是 v1.2.10，不能按原样合**，需 rebase 只保留「六项→五项」这一行。
+  - #84（DEPLOY §7 构建坑）：内容与 11-23 实机记录一致；它在 PROGRESS §5 顶部插入一行，与本次 §30 的插入位置相同，合并时可能文本冲突，需 rebase。
+  - #85（健康规则缺口 + warnings 重复）：两条健康口径（偏瘦+减脂、超重+增肌）需 PD 拍板；「warnings 在两处重复实现」经代码核对属实（`routes/profiles.ts:59` 与 `engines/nutrition.ts:122` 各写一份文案），属产品规则变更，FE-A 不擅自改。

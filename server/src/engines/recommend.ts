@@ -20,6 +20,11 @@ import type {
  * - 午晚：主食 × 主菜 × 素菜（汤为可选加分项）
  * - 早餐：主食 × 主菜（不要求素菜、不要求汤），水果为可选加分项
  *   依据：早餐 14 道里素菜 0、汤 0，沿用午晚规则则组合数恒为 0。
+ *
+ * 早餐池优先级（v1.2.10，2026-11-26）：只有早餐线菜（仅早餐供应）+ 常见早餐成品
+ * （炒饭/炒面/炒米粉）参与早餐推荐；全天供应的盖浇饭 / 拌面不再按热量贴合度挤进早餐。
+ * 早餐线不足 3 套时才用完整池补齐（见 recommendCombos）。plate（一楼早餐自选线）
+ * 只允许在早餐进入组合——午晚仍按 E5 排除。
  */
 
 const SODIUM_LINE_MG = 1600;
@@ -238,25 +243,8 @@ export function recommendCombos(
   );
 
   // MENU-V3 §2.4 四路分流。serving_mode 缺省按 'combo'（老 55 道种子行为不变）。
-  // plate 是称重自选线：不进 combos（E5）。
+  // plate 是称重自选线：午晚不进 combos（E5）；早餐线本身就是 plate，允许参与早餐组合（v1.2.10）。
   const modeOf = (d: Dish) => d.serving_mode ?? 'combo';
-  const trioPool = pool.filter((d) => {
-    const m = modeOf(d);
-    return m === 'combo' || m === 'component';
-  });
-  const singlePool = pool.filter((d) => modeOf(d) === 'single');
-
-  const byCat = (c: Dish['category'], from: Dish[] = trioPool) =>
-    from.filter((d) => d.category === c);
-  const staples = byCat('staple');
-  const proteins = byCat('protein');
-  const veg = byCat('veg');
-  const soup = byCat('soup');
-  const fruit = byCat('fruit');
-
-  // 午晚额外要求素菜；早餐不要求素菜、不要求汤（§4.1-E）
-  const requireVeg = meal !== 'breakfast';
-  const side = meal === 'breakfast' ? fruit : soup;
 
   type Candidate = {
     dishes: Dish[];
@@ -267,75 +255,131 @@ export function recommendCombos(
     /** 是否含称重菜（评分放宽 + 文案提示 + E7 排除） */
     weighed: boolean;
   };
-  const candidates: Candidate[] = [];
 
-  // ②③ combo / component 路：沿用现有「主食 × 主菜 × 素菜」结构（轻食与麻辣烫配菜
-  // 都是 staple/protein/veg 三类；麻辣烫汤底是 soup，作为可选 side，辣度由微辣汤底把关，
-  // 忌口过滤已在 pool 阶段完成——不吃辣时微辣汤底不在池里，E4）。
-  for (const s of staples) {
-    for (const p of proteins) {
-      const base = [s, p];
-      const bodies = requireVeg
-        ? veg.length > 0
-          ? veg.map((v) => [...base, v])
-          : []
-        : [base];
-      for (const body of bodies) {
-        const make = (ds: Dish[]): Candidate => ({
-          dishes: ds,
-          group: s.id,
-          secondary: p.id,
-          weighed: ds.some((d) => d.pricing_mode === 'weigh'),
-        });
-        candidates.push(make(body));
-        for (const sd of side) candidates.push(make([...body, sd]));
+  const byCat = (c: Dish['category'], from: Dish[]) =>
+    from.filter((d) => d.category === c);
+
+  const buildCandidates = (from: Dish[]): Candidate[] => {
+    const trioPool = from.filter((d) => {
+      const m = modeOf(d);
+      return m === 'combo' || m === 'component' || (meal === 'breakfast' && m === 'plate');
+    });
+    const singlePool = from.filter((d) => modeOf(d) === 'single');
+
+    const staples = byCat('staple', trioPool);
+    const proteins = byCat('protein', trioPool);
+    const veg = byCat('veg', trioPool);
+    const soup = byCat('soup', trioPool);
+    const fruit = byCat('fruit', trioPool);
+
+    // 午晚额外要求素菜；早餐不要求素菜、不要求汤（§4.1-E）
+    const requireVeg = meal !== 'breakfast';
+    const side = meal === 'breakfast' ? fruit : soup;
+
+    const candidates: Candidate[] = [];
+
+    // ②③ combo / component 路：沿用现有「主食 × 主菜 × 素菜」结构（轻食与麻辣烫配菜
+    // 都是 staple/protein/veg 三类；麻辣烫汤底是 soup，作为可选 side，辣度由微辣汤底把关，
+    // 忌口过滤已在 pool 阶段完成——不吃辣时微辣汤底不在池里，E4）。
+    for (const s of staples) {
+      for (const p of proteins) {
+        const base = [s, p];
+        const bodies = requireVeg
+          ? veg.length > 0
+            ? veg.map((v) => [...base, v])
+            : []
+          : [base];
+        for (const body of bodies) {
+          const make = (ds: Dish[]): Candidate => ({
+            dishes: ds,
+            group: s.id,
+            secondary: p.id,
+            weighed: ds.some((d) => d.pricing_mode === 'weigh'),
+          });
+          candidates.push(make(body));
+          for (const sd of side) candidates.push(make([...body, sd]));
+        }
       }
     }
-  }
 
-  // ③ single 路：每道成品餐自成一套，不再配主食（E2 dishes.length===1 / E3 无双主食）
-  for (const d of singlePool) {
-    candidates.push({
-      dishes: [d],
-      group: d.id,
-      weighed: d.pricing_mode === 'weigh',
-    });
-  }
+    // ③ single 路：每道成品餐自成一套，不再配主食（E2 dishes.length===1 / E3 无双主食）
+    for (const d of singlePool) {
+      candidates.push({
+        dishes: [d],
+        group: d.id,
+        weighed: d.pricing_mode === 'weigh',
+      });
+    }
+    return candidates;
+  };
 
-  if (candidates.length === 0) {
+  // 早餐优先池（v1.2.10）：只取早餐线菜（仅早餐供应）+ 常见早餐成品（炒饭/炒面/炒米粉，
+  // 且热量在目标的 0.8~1.15 倍内，避免把 550kcal 的大碗炒饭塞给目标 430 的用户）。
+  // 全天供应的盖浇饭 / 拌面 / 鸡排饭不再进入早餐主推荐。
+  const COMMON_BREAKFAST_SINGLE = /炒饭|炒面|炒米粉/;
+  const breakfastPrimaryPool =
+    meal === 'breakfast'
+      ? pool.filter((d) => {
+          if (d.meals.length === 1 && d.meals[0] === 'breakfast') return true;
+          return (
+            modeOf(d) === 'single' &&
+            COMMON_BREAKFAST_SINGLE.test(d.name) &&
+            d.kcal >= target.kcal * 0.8 &&
+            d.kcal <= target.kcal * 1.15
+          );
+        })
+      : pool;
+
+  const primaryCandidates = buildCandidates(breakfastPrimaryPool);
+  // 早餐线不足时用完整池补齐；午晚 primary = pool，不存在第二层。
+  const fallbackCandidates =
+    breakfastPrimaryPool.length === pool.length ? [] : buildCandidates(pool);
+
+  if (primaryCandidates.length === 0 && fallbackCandidates.length === 0) {
     return { combos: [], notice: NO_SOLUTION_NOTICE };
   }
 
   // 注（v1.2.3）：补小荤不得新增菜品、不得改变 §2.3 组合件数——低热量组合靠热量偏离罚自然淘汰。
-  // 评分 + 去重（按菜品 id 集合）
+  // 评分 + 去重（按菜品 id 集合；primary 先算，fallback 里的同款组合不再重复）
   const seen = new Set<string>();
-  const scored = candidates
-    .filter((c) => {
-      // 超重/肥胖硬上限：先按热量剔除，再参与去重与评分
-      if (overweightCap && totalsOf(c.dishes).kcal > target.kcal) return false;
-      const key = c.dishes
-        .map((d) => d.id)
-        .slice()
-        .sort()
-        .join('|');
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    })
-    .map((c) => {
-      const t = totalsOf(c.dishes);
-      const hasPlant = c.dishes.some(
-        (d) => d.category === 'veg' || d.category === 'fruit',
-      );
-      return {
-        candidate: c,
-        score: scoreCombo(t, target, goal, hasPlant, c.weighed),
-        weighed: c.weighed,
-        // P2-1：单菜（single 路）且热量严重偏离目标 = 只配当「单点/加餐参考」
-        light: c.dishes.length === 1 && kcalDeviation(t, target) > LIGHT_FILL_DEV,
-      };
-    })
-    .sort((a, b) => b.score - a.score);
+  type Scored = {
+    candidate: Candidate;
+    score: number;
+    weighed: boolean;
+    light: boolean;
+  };
+  const scoreCandidates = (candidates: Candidate[]): Scored[] =>
+    candidates
+      .filter((c) => {
+        // 超重/肥胖硬上限：先按热量剔除，再参与去重与评分
+        if (overweightCap && totalsOf(c.dishes).kcal > target.kcal) return false;
+        const key = c.dishes
+          .map((d) => d.id)
+          .slice()
+          .sort()
+          .join('|');
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return true;
+      })
+      .map((c) => {
+        const t = totalsOf(c.dishes);
+        const hasPlant = c.dishes.some(
+          (d) => d.category === 'veg' || d.category === 'fruit',
+        );
+        return {
+          candidate: c,
+          score: scoreCombo(t, target, goal, hasPlant, c.weighed),
+          weighed: c.weighed,
+          // P2-1：单菜（single 路）且热量严重偏离目标 = 只配当「单点/加餐参考」
+          light: c.dishes.length === 1 && kcalDeviation(t, target) > LIGHT_FILL_DEV,
+        };
+      })
+      .sort((a, b) => b.score - a.score);
+
+  const primaryScored = scoreCandidates(primaryCandidates);
+  const fallbackScored = scoreCandidates(fallbackCandidates);
+  const scored = [...primaryScored, ...fallbackScored];
 
   // 超重/肥胖上限把所有候选都筛掉时，如实返回空 + 引导，不退回超热量组合
   if (scored.length === 0) {
@@ -344,8 +388,6 @@ export function recommendCombos(
       notice: overweightCap ? OVERWEIGHT_NOTICE : NO_SOLUTION_NOTICE,
     };
   }
-
-  type Scored = (typeof scored)[number];
 
   // 选 3 套：先放「非称重里得分最高」的一套（E7 贴合度兜底——判定对象限定非称重组合），
   // 其余按 group 分组、组内降序，随机抽「主食/单菜互不相同、主菜不重复」的最优凑满 3 套
@@ -362,10 +404,12 @@ export function recommendCombos(
 
   // 1) 贴合度最优兜底：非称重候选里的最高分；P2-1 再优先排除单菜补位（light），
   //    有正餐组合时绝不拿单菜当第一套；只有全是单菜/称重才逐级退让。
+  //    早餐优先池（v1.2.10）：第一套一定来自早餐线，完整池只用于补齐。
+  const tiers = [primaryScored, fallbackScored].filter((tier) => tier.length > 0);
   const best =
-    scored.find((s) => !s.weighed && !s.light) ??
-    scored.find((s) => !s.weighed) ??
-    scored[0];
+    tiers[0].find((s) => !s.weighed && !s.light) ??
+    tiers[0].find((s) => !s.weighed) ??
+    tiers[0][0];
   take(best);
 
   // 2) 其余两套：**按得分降序**挑，在「前 K 名可用候选」里随机取一个。
@@ -375,19 +419,25 @@ export function recommendCombos(
   //    PD 2026-11-24 实测 15 套，8 套偏离目标 >20%，平均 −16.7%，最差 −39.7%，且全部偏低。
   //    改成前 K 名随机后：变化性仍在（同样请求每次不同），但不会再把明显偏低的组顶上来。
   //    约束不变：主食互不相同（usedGroups）、主菜不重复（usedSecondary）、单菜补位靠后。
+  //    早餐：先把优先池挑完，仍不足 3 套才落到完整池（v1.2.10）。
   const PICK_WINDOW = 5;
   while (chosen.length < 3) {
-    const available = scored.filter((s) => {
-      if (chosen.includes(s)) return false;
-      if (usedGroups.has(s.candidate.group)) return false;
-      const sec = s.candidate.secondary;
-      if (sec && usedSecondary.has(sec)) return false;
-      return true;
-    });
-    if (available.length === 0) break;
-    const proper = available.filter((s) => !s.light);
-    const window = (proper.length > 0 ? proper : available).slice(0, PICK_WINDOW);
-    take(pickRandom(window));
+    let picked: Scored | undefined;
+    for (const tier of tiers) {
+      const available = tier.filter((s) => {
+        if (chosen.includes(s)) return false;
+        if (usedGroups.has(s.candidate.group)) return false;
+        const sec = s.candidate.secondary;
+        if (sec && usedSecondary.has(sec)) return false;
+        return true;
+      });
+      if (available.length === 0) continue;
+      const proper = available.filter((s) => !s.light);
+      picked = pickRandom((proper.length > 0 ? proper : available).slice(0, PICK_WINDOW));
+      break;
+    }
+    if (!picked) break;
+    take(picked);
   }
 
   // 4) 跨形态补齐：仍不足 3 套时按分数从剩余候选补（跳过已选的完全相同的菜集合）

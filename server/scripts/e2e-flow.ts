@@ -128,6 +128,60 @@ async function run(): Promise<void> {
   }
   step('推荐↔菜单', `${menuIds.size} 道菜，推荐引用的 id 全部存在`);
 
+  // ------------------------------------------------------------ 2b) 早餐（v1.2.10）
+  // 「早餐偏一大碗」回归：全天供应的盖浇饭/拌面不得作为单菜出现在早餐；
+  // 第一套必须来自早餐优先池（仅早餐供应的菜，或炒饭/炒面/炒米粉这类常见早餐成品）。
+  const bfRec = await req('POST', '/api/v1/recommendations', {
+    session_id: SESSION,
+    meal: 'breakfast',
+  });
+  assert.equal(bfRec.status, 200, `早餐推荐应 200，实得 ${bfRec.status}`);
+  const br = bfRec.json as {
+    combos?: Array<{ dishes?: Array<{ id?: string; name?: string }> }>;
+    notice?: string | null;
+  };
+  assert.ok(Array.isArray(br.combos) && br.combos.length >= 1, '早餐推荐应至少给出一套');
+
+  const bfMenu = await req('GET', '/api/v1/menu?meal=breakfast');
+  assert.equal(bfMenu.status, 200, '早餐菜单应 200');
+  const bfDishes = (bfMenu.json as { dishes?: Array<{ id: string; name: string; meals: string[] }> })
+    .dishes ?? [];
+  const bfById = new Map(bfDishes.map((dish) => [dish.id, dish]));
+  const isBreakfastLine = (dish: { meals: string[] }) =>
+    dish.meals.length === 1 && dish.meals[0] === 'breakfast';
+  const isCommonBreakfast = (dish: { name: string }) => /炒饭|炒面|炒米粉/.test(dish.name);
+  const inPriority = (dish: { name: string; meals: string[] }) =>
+    isBreakfastLine(dish) || isCommonBreakfast(dish);
+
+  let priorityHits = 0;
+  for (const combo of br.combos) {
+    const dishes = combo.dishes ?? [];
+    for (const item of dishes) {
+      const dish = bfById.get(item.id as string);
+      assert.ok(dish, `早餐推荐里的菜 ${item.id}（${item.name}）不在早餐菜单里`);
+      if (inPriority(dish)) priorityHits += 1;
+      // 单菜套餐是这次回归的重灾区：全天盖浇饭/拌面不能再被当成早餐
+      if (dishes.length === 1) {
+        assert.ok(
+          inPriority(dish),
+          `早餐单菜「${dish.name}」既不是早餐线也不是常见早餐成品（v1.2.10 回归）`,
+        );
+      }
+    }
+  }
+  assert.ok(priorityHits > 0, '早餐推荐里应至少有一道早餐线 / 常见早餐成品');
+  for (const item of br.combos[0].dishes ?? []) {
+    const dish = bfById.get(item.id as string);
+    assert.ok(
+      dish && inPriority(dish),
+      `第一套早餐「${item.name}」不在早餐优先池里（v1.2.10 回归）`,
+    );
+  }
+  step(
+    '早餐优先池',
+    `${br.combos.length} 套，首套 ${br.combos[0].dishes?.[0]?.name}，无全天盖浇饭/拌面单菜`,
+  );
+
   // ------------------------------------------------------------ 3) 回填
   // 份量取推荐里的 servings：回填要「照推荐吃」，快照与 items 才会一致（API v1.2.5 采纳判定）
   const items = (picked.dishes ?? []).map((d) => ({ dish_id: d.id, servings: d.servings }));
@@ -207,8 +261,10 @@ async function run(): Promise<void> {
   const payloads: Array<[string, unknown]> = [
     ['建档', profile.json],
     ['推荐', rec.json],
+    ['早餐推荐', bfRec.json],
     ['回填', log.json],
     ['菜单', menu.json],
+    ['早餐菜单', bfMenu.json],
     ['记录列表', list.json],
     ['统计', insights.json],
   ];
@@ -216,7 +272,7 @@ async function run(): Promise<void> {
     const hits = findKeys(payload, 'price_yuan');
     assert.equal(hits.length, 0, `${label} 响应里出现了价格字段：${hits.join(', ')}`);
   }
-  step('无价格', '六份响应的任意层级都没有 price_yuan');
+  step('无价格', `${payloads.length} 份响应的任意层级都没有 price_yuan`);
 }
 
 const server: Server = createApp().listen(0);
