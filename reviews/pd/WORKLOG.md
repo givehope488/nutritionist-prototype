@@ -261,3 +261,56 @@ npm run check                          → lint / typecheck / test 131 / smoke 1
 | 评论 | [#issuecomment-7181926531](https://github.com/givehope488/nutritionist-prototype/pull/93#issuecomment-7181926531)，@givehope488 请求重新 Approve |
 
 > 后续只等真人 Approve；Agent 不自批、不合。合并后需 fast-forward 本地 main 并复跑检查。
+
+---
+
+## 11. 2026-11-26 追加：个人排除清单（只做 B，A 已按用户指示取消）
+
+> 用户先选定「A+B：加个人排除」，随后明确「算了，不用做 A」。本轮**只实现 B**：session 级「不想再看到某道菜」清单，立即从推荐候选池过滤、可一键恢复。**A（把反馈数据回灌到全局推荐/运营修正）未做**，代码、表结构、接口都没有 A 的痕迹；文档与 PROGRESS 均如实标注取消原因。
+
+### 11.1 实现（提交 `10e5464`，22 文件，+892/−24）
+
+| 层 | 文件 | 改动 |
+|---|---|---|
+| 契约 | `shared/src/types.ts` | 新增 `DishExclusion` / `DishExclusionListResponse` / `DishExclusionRequest`，唯一类型源 |
+| 存储 | `server/src/data/db.ts` | 新表 `dish_exclusions(session_id, dish_id, dish_name, created_at)`，主键 `(session_id, dish_id)` + session 索引；`resetDatabase` 一并清理 |
+| 仓储 | `server/src/data/repositories.ts` | `dishExclusionRepository`：list / dishIds / add（INSERT OR IGNORE，返回是否新增）/ remove；删档案同事务级联删排除 |
+| 接口 | `server/src/routes/dish-exclusions.ts`（新） | `GET /` 列表、`POST /` 新增（菜不存在 400，重复 200）、`DELETE /:dishId`（不存在 404）；挂载于 `/api/v1/dish-exclusions` |
+| 推荐 | `server/src/routes/recommendations.ts` | 候选池先剔除本 session 排除的菜；全部排除时返回空 combos + 引导文案（不是错误） |
+| Mock | `web/src/api/__mock__/*` | localStorage 同构存储；推荐同样过滤；区分「全被排除」与「忌口无解」两种 notice |
+| 前端 | `web/src/composables/useDishExclusions.ts`（新） | 状态/请求全部收在 composable，组件不直连 API（守住分层测试） |
+| 前端 | `web/src/components/business/DishExclusionsCard.vue`（新） | 吃过的菜 + 历史排除项都可点选/恢复，状态文案即点即现 |
+| 前端 | `RecommendView.vue` / `FeedbackView.vue` | 推荐页排除后自动刷新；反馈页对已记录的菜直接排除 |
+| 测试 | 服务端 5 例 + 前端 4 例 + 流程 1 例 | 幂等、跨 session 隔离、恢复后首套组合一致、级联删除、全排除文案、组件交互 |
+| 文档 | `docs/API.md` | 升 v1.2.12：§2.3 候选过滤 + 全排除 notice，§2.6 三个接口与边界，版本表注明 A 未做 |
+| 文档 | `docs/ARCHITECTURE.md` / `docs/PROGRESS.md` | 数据模型补表；§1/§2.5/§4.1-F/§5/§6 同步，重签指纹 |
+
+### 11.2 验证（本地，提交前）
+
+```
+npm run test -w @canteen/server   → 136/136（9 文件）
+web: npm test                     → 103/103（18 文件）
+npm run smoke                     → 14/14（含「排除 → 推荐跳过 → 删除恢复」）
+npm run check                     → lint / typecheck / test 136 / smoke 14 / check:data 383 / check:progress 全通过
+web: npm run typecheck            → 通过
+web: npm run lint                 → 0 error（1 条既有 LogView 警告）
+web: npm run build                → 149 modules，CSS 35.23 kB / JS 197.87 kB
+```
+
+浏览器目视检查**未做**（本机无可用可视环境），交互由组件测试 + 流程测试覆盖。
+
+### 11.3 远端与 PR 状态（2026-11-26 推送后）
+
+| 项 | 结果 |
+|---|---|
+| 本地分支 | `docs/pd-status-2026-11-26` @ `10e5464` |
+| 远端 head | `10e5464`（普通 fast-forward，`a6ecce7..10e5464`；首次 `--force-with-lease` 因本地跟踪引用陈旧被拒，未发生覆盖） |
+| PR #93 | `open` / `mergeable=true` / `mergeable_state=blocked`，11 commits，head 已指向 `10e5464` |
+| CI | run [45760613597](https://github.com/givehope488/nutritionist-prototype/actions/runs/45760613597) 已排队，结果见下条回填 |
+| 合并 | **未合、未自批**；原 Approve 因新提交再次失效，仍需真人重新 Approve |
+
+### 11.4 待办
+
+1. 真人重新 Approve **#93**；Agent 不自批、不合、不改分支保护。
+2. Approve 后合并 #93，fast-forward 本地 main，在 main 复跑 `npm run check` + web test，记录合并提交。
+3. C4 仍缺可分享地址与反馈渠道；本机无 Docker CLI。
