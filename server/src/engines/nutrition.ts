@@ -7,6 +7,7 @@ import type {
   MealTarget,
   Sex,
 } from '@canteen/shared';
+import { BMI_OVERWEIGHT, BMI_UNDERWEIGHT, MINOR_AGE } from '@canteen/shared';
 
 /**
  * 营养计算引擎（BE-A）。
@@ -53,7 +54,6 @@ const FAT_ENERGY_RATIO: Record<Goal, number> = {
 };
 const CARBS_FLOOR_G = 60;
 const SODIUM_MEAL_LINE_MG = 1600;
-const MINOR_AGE = 18;
 
 export function round1(n: number): number {
   return Math.round(n * 10) / 10;
@@ -71,17 +71,27 @@ export function calcBMR(sex: Sex, weightKg: number, heightCm: number, age: numbe
 }
 
 /**
- * 未成年（age<18）且目标为 lose 时，强制降级为 health（附录 A / §2.2）。
- * 返回降级标记，供 warnings 使用。
+ * 目标降级原因（附录 A / §2.2 合规硬规则，规则 G）：
+ * - minor：未成年不提供热量缺口；
+ * - underweight：BMI < 18.5 不提供热量缺口（BMI 由调用方传入，未传则只校验年龄）。
+ */
+export type GoalDowngrade = 'minor' | 'underweight' | null;
+
+/**
+ * lose 的两条降级规则：age<18 或 BMI<18.5 时强制 health。
+ * 两条同时命中时按未成年口径提示（合规优先级更高）。
  */
 export function resolveGoal(
   goal: Goal,
   age: number,
-): { goal: Goal; minorDowngraded: boolean } {
-  if (goal === 'lose' && age < MINOR_AGE) {
-    return { goal: 'health', minorDowngraded: true };
+  bmi?: number,
+): { goal: Goal; downgrade: GoalDowngrade } {
+  if (goal !== 'lose') return { goal, downgrade: null };
+  if (age < MINOR_AGE) return { goal: 'health', downgrade: 'minor' };
+  if (bmi !== undefined && bmi < BMI_UNDERWEIGHT) {
+    return { goal: 'health', downgrade: 'underweight' };
   }
-  return { goal, minorDowngraded: false };
+  return { goal, downgrade: null };
 }
 
 export interface TargetsResult {
@@ -99,7 +109,8 @@ export interface TargetsResult {
  * 注：§2.3 示例里的 meal 级宏量数字仅为示意；本实现与附录 A 严格自洽（日宏量 × 餐次占比）。
  */
 export function calcTargets(input: ProfileInput): TargetsResult {
-  const { goal: effectiveGoal, minorDowngraded } = resolveGoal(input.goal, input.age);
+  const bmi = round2(input.weight_kg / Math.pow(input.height_cm / 100, 2));
+  const { goal: effectiveGoal, downgrade } = resolveGoal(input.goal, input.age, bmi);
 
   const bmr = calcBMR(input.sex, input.weight_kg, input.height_cm, input.age);
   const tdee = Math.round(bmr * ACTIVITY_FACTOR[input.activity]);
@@ -114,12 +125,19 @@ export function calcTargets(input: ProfileInput): TargetsResult {
     Math.max((dayKcal - proteinDay * 4 - fatDay * 9) / 4, CARBS_FLOOR_G),
   );
 
-  const bmi = round2(input.weight_kg / Math.pow(input.height_cm / 100, 2));
-  const bmiTag = bmi < 18.5 ? '偏瘦' : bmi < 24 ? '正常' : bmi < 28 ? '偏胖' : '肥胖';
+  const bmiTag =
+    bmi < BMI_UNDERWEIGHT ? '偏瘦' : bmi < BMI_OVERWEIGHT ? '正常' : bmi < 28 ? '超重' : '肥胖';
 
+  // 规则 I：warnings 只在引擎里生成，路由只读派生结果，避免两处口径漂移。
   const warnings: string[] = [];
-  if (minorDowngraded) {
+  if (downgrade === 'minor') {
     warnings.push('未满18岁不提供热量缺口方案，已调整为保持');
+  } else if (downgrade === 'underweight') {
+    warnings.push('BMI 低于 18.5 不提供热量缺口方案，已调整为保持');
+  }
+  // 规则 H：BMI≥24 增肌只提示、不降级，由用户决定是否继续。
+  if (bmi >= BMI_OVERWEIGHT && effectiveGoal === 'gain') {
+    warnings.push('当前 BMI 属超重/肥胖，增肌期建议优先增肌、控制增重速度');
   }
 
   const profile: Profile = {

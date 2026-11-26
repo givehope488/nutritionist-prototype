@@ -133,14 +133,15 @@ describe('餐次目标之和 = 日目标（v1.2.3 占比和=1.0）', () => {
 });
 
 describe('边界：lose 不低于 BMR×1.05', () => {
-  it('低代谢女性 lose：day_kcal 取地板值 1078 而非 986', () => {
-    // BMR=1027(女 40/150/30)，TDEE×0.8≈986，BMR×1.05≈1078 → 取 1078
+  it('低代谢女性 lose：day_kcal 取地板值 1099 而非 1005', () => {
+    // BMR=1047(女 42/150/30)，BMI=18.67（不低于 18.5，不触发降级），
+    // TDEE×0.8≈1005，BMR×1.05≈1099 → 取 1099
     const { profile: p } = calcTargets(
-      profile({ sex: 'female', height_cm: 150, weight_kg: 40, age: 30, activity: 'low', goal: 'lose' }),
+      profile({ sex: 'female', height_cm: 150, weight_kg: 42, age: 30, activity: 'low', goal: 'lose' }),
     );
-    expect(calcBMR('female', 40, 150, 30)).toBe(1027);
-    expect(p.day_kcal).toBe(1078);
-    expect(p.day_kcal).toBeGreaterThanOrEqual(Math.round(1027 * 1.05));
+    expect(calcBMR('female', 42, 150, 30)).toBe(1047);
+    expect(p.day_kcal).toBe(1099);
+    expect(p.day_kcal).toBeGreaterThanOrEqual(Math.round(1047 * 1.05));
   });
 });
 
@@ -157,11 +158,59 @@ describe('边界：未成年 + lose 强制降级 health', () => {
   });
 });
 
-describe('resolveGoal 纯函数', () => {
-  it('成年 lose 不降级', () => {
-    expect(resolveGoal('lose', 20)).toEqual({ goal: 'lose', minorDowngraded: false });
+describe('规则 G：BMI<18.5 + lose 强制降级 health', () => {
+  it('BMI 18.4 且 goal=lose → health，并提示 BMI', () => {
+    // 女 160/47.1/30 mid：BMI=18.4
+    const { profile: p } = calcTargets(
+      profile({ sex: 'female', height_cm: 160, weight_kg: 47.1, age: 30, goal: 'lose' }),
+    );
+    expect(p.bmi).toBe(18.4);
+    expect(p.goal).toBe('health');
+    expect(p.warnings).toContain('BMI 低于 18.5 不提供热量缺口方案，已调整为保持');
   });
-  it('未成年 lose 降级', () => {
-    expect(resolveGoal('lose', 16)).toEqual({ goal: 'health', minorDowngraded: true });
+
+  it('BMI 18.5（临界值）不降级', () => {
+    // 女 160/47.36/30 mid：BMI=18.5
+    const { profile: p } = calcTargets(
+      profile({ sex: 'female', height_cm: 160, weight_kg: 47.36, age: 30, goal: 'lose' }),
+    );
+    expect(p.bmi).toBe(18.5);
+    expect(p.goal).toBe('lose');
+    expect(p.warnings).toEqual([]);
+  });
+});
+
+describe('规则 H：BMI≥24 + gain 只提示不降级', () => {
+  it('BMI 24.0 且 goal=gain → 保留 gain，并提示控制增重速度', () => {
+    // 女 160/61.44/30 mid：BMI=24
+    const { profile: p } = calcTargets(
+      profile({ sex: 'female', height_cm: 160, weight_kg: 61.44, age: 30, goal: 'gain' }),
+    );
+    expect(p.bmi).toBe(24);
+    expect(p.goal).toBe('gain');
+    expect(p.warnings).toContain('当前 BMI 属超重/肥胖，增肌期建议优先增肌、控制增重速度');
+  });
+
+  it('BMI 23.9 且 goal=gain → 无警告', () => {
+    const { profile: p } = calcTargets(
+      profile({ sex: 'female', height_cm: 160, weight_kg: 61.18, age: 30, goal: 'gain' }),
+    );
+    expect(p.bmi).toBe(23.9);
+    expect(p.warnings).toEqual([]);
+  });
+});
+
+describe('resolveGoal 纯函数', () => {
+  it('成年 lose、BMI 正常 → 不降级', () => {
+    expect(resolveGoal('lose', 20, 21.97)).toEqual({ goal: 'lose', downgrade: null });
+  });
+  it('未成年 lose → 降级（即使 BMI 正常）', () => {
+    expect(resolveGoal('lose', 16, 21.97)).toEqual({ goal: 'health', downgrade: 'minor' });
+  });
+  it('BMI<18.5 的成年 lose → 降级', () => {
+    expect(resolveGoal('lose', 20, 17.8)).toEqual({ goal: 'health', downgrade: 'underweight' });
+  });
+  it('非 lose 目标不受 BMI 影响', () => {
+    expect(resolveGoal('gain', 20, 25)).toEqual({ goal: 'gain', downgrade: null });
   });
 });

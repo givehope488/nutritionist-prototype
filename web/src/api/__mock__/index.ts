@@ -17,16 +17,20 @@ import type {
 } from '@canteen/shared';
 import { AVOID_OPTIONS, isKnownAvoidKey } from './avoidOptions';
 import {
+  addExclusion,
   comboIdOf,
   dishById,
   allDishes,
   activeDishes,
   deleteProfile,
+  excludedDishIds,
   findCombo,
   findLog,
   getProfile,
   insertLog,
+  listExclusions,
   listLogs,
+  removeExclusion,
   saveCombos,
   upsertProfile,
   type StoredLog,
@@ -123,7 +127,8 @@ function postProfile(body: Partial<ProfileInput>): MockResponse {
   if (issues.length > 0) return invalid(issues);
 
   const input = body as ProfileInput;
-  const resolved = resolveGoal(input.age, input.goal);
+  const bmi = Math.round((input.weight_kg / (input.height_cm / 100) ** 2) * 100) / 100;
+  const resolved = resolveGoal(input.age, input.goal, bmi);
   const profile: Profile = {
     session_id: input.session_id,
     sex: input.sex,
@@ -134,10 +139,10 @@ function postProfile(body: Partial<ProfileInput>): MockResponse {
     goal: resolved.goal,
     avoid: input.avoid,
     default_meal: input.default_meal,
-    bmi: Math.round((input.weight_kg / (input.height_cm / 100) ** 2) * 100) / 100,
+    bmi,
     bmi_tag: '',
     day_kcal: 0,
-    warnings: resolved.warning ? [resolved.warning] : [],
+    warnings: resolved.warnings,
   };
   profile.bmi_tag = bmiTag(profile.bmi);
   profile.day_kcal = dayKcal(profile);
@@ -180,15 +185,19 @@ function postRecommendation(body: Partial<RecommendationRequest>): MockResponse 
   const avoid = body.overrides?.avoid ?? profile.avoid;
   // overrides 仅本次请求生效、不落库（API.md §2.3）
   const target = mealTarget({ ...profile, goal }, meal);
-  const combos = buildCombos({ meal, goal }, avoid, target);
+  const excluded = new Set(excludedDishIds(body.session_id));
+  const combos = buildCombos({ meal, goal }, avoid, target, excluded);
 
   if (combos.length === 0) {
+    const allExcluded = activeDishes(meal).every((dish) => excluded.has(dish.id));
     return {
       status: 200,
       body: {
         target,
         combos: [],
-        notice: '符合忌口条件的菜品太少，建议放宽一两个限制或换个时段',
+        notice: allExcluded
+          ? '你把这一餐的菜都排除了，去「这一餐的反馈」恢复几道再试'
+          : '符合忌口条件的菜品太少，建议放宽一两个限制或换个时段',
       },
     };
   }
@@ -349,6 +358,35 @@ function getInsightsSummary(query: URLSearchParams): MockResponse {
 }
 
 // ---------------------------------------------------------------------------
+// §2.6 个人排除（v1.2.12）
+// ---------------------------------------------------------------------------
+function getDishExclusions(query: URLSearchParams): MockResponse {
+  const sessionId = query.get('session_id');
+  if (!sessionId) return invalid([{ path: 'session_id', issue: '不能为空' }]);
+  return { status: 200, body: { dishes: listExclusions(sessionId) } };
+}
+
+function postDishExclusion(body: Partial<{ session_id: string; dish_id: string }>): MockResponse {
+  const issues: { path: string; issue: string }[] = [];
+  if (!body?.session_id) issues.push({ path: 'session_id', issue: '不能为空' });
+  if (!body?.dish_id) issues.push({ path: 'dish_id', issue: '不能为空' });
+  if (issues.length > 0) return invalid(issues);
+  const dish = dishById(body.dish_id!);
+  if (!dish) return invalid([{ path: 'dish_id', issue: `菜品 ${body.dish_id} 不存在` }]);
+  const created = addExclusion(body.session_id!, dish.id, dish.name);
+  return { status: created ? 201 : 200, body: { dish_id: dish.id, name: dish.name } };
+}
+
+function deleteDishExclusion(dishId: string, query: URLSearchParams): MockResponse {
+  const sessionId = query.get('session_id');
+  if (!sessionId) return invalid([{ path: 'session_id', issue: '不能为空' }]);
+  if (!removeExclusion(sessionId, dishId)) {
+    return fail(404, 'NOT_FOUND', '这道菜不在你的排除列表里');
+  }
+  return { status: 204, body: undefined };
+}
+
+// ---------------------------------------------------------------------------
 // 入口
 // ---------------------------------------------------------------------------
 export async function handleMockRequest(
@@ -367,6 +405,13 @@ export async function handleMockRequest(
   if (method === 'DELETE' && path === '/profiles/me') return deleteProfileMe(query);
   if (method === 'POST' && path === '/recommendations') {
     return postRecommendation(body as Partial<RecommendationRequest>);
+  }
+  if (method === 'GET' && path === '/dish-exclusions') return getDishExclusions(query);
+  if (method === 'POST' && path === '/dish-exclusions') {
+    return postDishExclusion(body as Partial<{ session_id: string; dish_id: string }>);
+  }
+  if (method === 'DELETE' && path.startsWith('/dish-exclusions/')) {
+    return deleteDishExclusion(decodeURIComponent(path.slice('/dish-exclusions/'.length)), query);
   }
   if (method === 'POST' && path === '/meal-logs') return postMealLog(body as MealLogRequest);
   if (method === 'GET' && path === '/meal-logs') return getMealLogs(query);

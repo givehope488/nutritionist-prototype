@@ -2,7 +2,7 @@ import { Router } from 'express';
 import type { DishTag, Goal, Meal, ProfileInput, RecommendationResponse } from '@canteen/shared';
 import { AVOID_OPTIONS } from '../data/avoid-options';
 import { getDishesByMeal } from '../data/dishes';
-import { profileRepository } from '../data/repositories';
+import { profileRepository, dishExclusionRepository } from '../data/repositories';
 import { calcTargets } from '../engines/nutrition';
 import { recommendCombos } from '../engines/recommend';
 import { bodyObject, invalid, optionalEnum, requireEnum, requireString } from '../http/validation';
@@ -83,7 +83,27 @@ recommendationsRouter.post('/', (req, res) => {
     .filter((tag): tag is DishTag => tag !== undefined);
 
   const dishes = getDishesByMeal(meal, false);
-  const { combos, notice } = recommendCombos(dishes, {
+
+  /**
+   * 个人排除（API.md v1.2.12 §2.6）：用户说「不想再看到」的菜不进入本次候选池。
+   * 只作用于该 session；菜单与回填不受影响。整餐都被排除时明确告知恢复入口，
+   * 不能把「你自己排除了全部」伪装成「忌口无解」。
+   */
+  const excludedIds = new Set(dishExclusionRepository.dishIdsBySession(sessionId));
+  const candidates = excludedIds.size
+    ? dishes.filter((dish) => !excludedIds.has(dish.id))
+    : dishes;
+
+  if (candidates.length === 0) {
+    res.json({
+      target,
+      combos: [],
+      notice: '你把这一餐的菜都排除了，去「这一餐的反馈」恢复几道再试',
+    } satisfies RecommendationResponse);
+    return;
+  }
+
+  const { combos, notice } = recommendCombos(candidates, {
     meal,
     goal,
     avoidTags,

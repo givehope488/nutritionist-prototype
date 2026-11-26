@@ -1,5 +1,5 @@
 import { existsSync, mkdirSync, readdirSync, rmSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
 
@@ -15,12 +15,18 @@ import { DatabaseSync } from 'node:sqlite';
  *   BACKUP_KEEP=3 npm run backup          # 只保留最近 3 份（默认 7）
  *
  * 备份文件是 `*.db`，已被 .gitignore 忽略，不会入库（§6 约束）。
+ * 相对 `BACKUP_DIR` 按仓库根目录解析（与 compose 的 `./backups` 卷一致）。
  */
 const REPO_ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const DEFAULT_DB = join(REPO_ROOT, 'server', 'data', 'runtime', 'app.db');
 
 const dbPath = process.env.DATABASE_URL ?? DEFAULT_DB;
-const backupDir = process.env.BACKUP_DIR ?? join(REPO_ROOT, 'server', 'data', 'backups');
+// BACKUP_DIR 的相对路径按仓库根目录解析：npm workspace 会把 cwd 切到 server/，
+// 而文档与 compose 卷（./backups）都以仓库根为基准。
+const backupDir =
+  process.env.BACKUP_DIR === undefined
+    ? join(REPO_ROOT, 'server', 'data', 'backups')
+    : resolve(REPO_ROOT, process.env.BACKUP_DIR);
 const keep = Number(process.env.BACKUP_KEEP ?? '7');
 
 function counts(db: DatabaseSync): string {

@@ -1,7 +1,7 @@
 // 附录 A 营养计算口径的转写（API.md 附录 A）——服务端替身专用，视图层禁止 import。
 // 口径以附录 A 为准；API.md §2.3 响应示例中的 target.fat_g 与附录 A 算不拢，
 // 已记入 web/docs/FE-B-开发记录.md「待评审议题 Q1」，等 BE-A 定夺。
-import { MINOR_AGE } from '@canteen/shared';
+import { BMI_OVERWEIGHT, BMI_UNDERWEIGHT, MINOR_AGE } from '@canteen/shared';
 import type { Goal, MealTarget, Meal, Profile, Sex } from '@canteen/shared';
 
 const ACTIVITY_FACTOR: Record<Profile['activity'], number> = { low: 1.2, mid: 1.4, high: 1.6 };
@@ -44,17 +44,43 @@ export function bmr(sex: Sex, weightKg: number, heightCm: number, age: number): 
   return sex === 'male' ? base + 5 : base - 161;
 }
 
-/** 未成年规则：age<18 且 goal=lose → 强制降级 health，并由调用方写入 warnings */
-export function resolveGoal(age: number, goal: Goal): { goal: Goal; warning: string | null } {
-  if (age < MINOR_AGE && goal === 'lose') {
-    return { goal: 'health', warning: '未满18岁不提供热量缺口方案，已调整为保持' };
+/**
+ * 合规护栏（与 server/src/engines/nutrition.ts 同口径）：
+ * - 未成年 / BMI<18.5 且 goal=lose → 强制降级 health；
+ * - BMI≥24 且 goal=gain → 只给提示，不降级。
+ */
+export function resolveGoal(
+  age: number,
+  goal: Goal,
+  bmi: number,
+): { goal: Goal; warnings: string[] } {
+  if (goal === 'lose') {
+    if (age < MINOR_AGE) {
+      return {
+        goal: 'health',
+        warnings: ['未满18岁不提供热量缺口方案，已调整为保持'],
+      };
+    }
+    if (bmi < BMI_UNDERWEIGHT) {
+      return {
+        goal: 'health',
+        warnings: ['BMI 低于 18.5 不提供热量缺口方案，已调整为保持'],
+      };
+    }
+    return { goal, warnings: [] };
   }
-  return { goal, warning: null };
+  if (goal === 'gain' && bmi >= BMI_OVERWEIGHT) {
+    return {
+      goal,
+      warnings: ['当前 BMI 属超重/肥胖，增肌期建议优先增肌、控制增重速度'],
+    };
+  }
+  return { goal, warnings: [] };
 }
 
 export function bmiTag(bmi: number): string {
-  if (bmi < 18.5) return '偏瘦';
-  if (bmi < 24) return '正常';
+  if (bmi < BMI_UNDERWEIGHT) return '偏瘦';
+  if (bmi < BMI_OVERWEIGHT) return '正常';
   if (bmi < 28) return '超重';
   return '肥胖';
 }

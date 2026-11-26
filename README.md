@@ -17,7 +17,7 @@
 | 可交互原型（纯前端，全流程跑通） | ✅ 完成，见 `../nutritionist-prototype/index.html` |
 | 种子数据（55 道原型估算，可信度 B） | ⛔ **已按决策整体抛弃**（2026-11-15），仅保留在 `menu-seed.json` 作回滚对照与测试夹具，不要再切回 |
 | **实测菜单 v3（383 道）** | ✅ **已上线（2026-11-17 切换）**，主干种子默认即 v3。43 张食堂照片全量识别：269 道菜名来自菜单牌逐字抄录、102 道照片推测、12 道用户口述；每道都有独立的营养值与配料依据（组合菜按「主食基底 + 浇头」拆解，加总与标注热量自洽，偏差 ≤3%）。见 `server/data/menu-seed.v3.json` |
-| 团队版（前后端分离） | 🚧 本仓库目标，**开发周期 3 周**：核心闭环（建档→推荐→回填→反馈）优先，LLM 文案层与管理端 UI 后移至上线后（架构已预留切换，见 ARCHITECTURE.md §4.3） |
+| 团队版（前后端分离） | ✅ **核心闭环已完成**（建档→推荐→回填→反馈，真实接口端到端用例进主干），W3 收尾，发布前只剩 C4 小范围发布（需可分享地址与反馈群，见 PROGRESS §6）。LLM 文案层与管理端 UI 后移至上线后（架构已预留切换，见 ARCHITECTURE.md §4.3） |
 
 ### 菜单 v3 的推进（2026-11-17 起为「已上线」状态）
 
@@ -77,9 +77,9 @@ npm run typecheck
 npm test
 ```
 
-前端 `web/` 尚未建脚手架（W1 由 FE-B 落地）。建好后在需要时把它加入根 `package.json` 的 `workspaces`，CI 会自动接管它的 lint / typecheck / test（已写好条件判断，无需改 workflow）。
+前端 `web/` 已建脚手架并进主干（Vue 3 + Vite，首页 + 建档 / 个人中心 / 目标 / 推荐 / 回填 / 反馈 / 历史）。它按独立项目安装（自带 lock），CI 在 `web/` 目录下跑 lint / typecheck / test，不需要加进根 `workspaces`。
 
-> `npm run seed`（种子写入数据库）随 W2 的 SQLite 落库一并提供，当前后端直接读 `server/data/menu-seed.json`。
+> `npm run seed`（种子写入 SQLite）已提供且幂等；默认读 `server/data/menu-seed.v3.json`（383 道）。`SEED_PATH` 可覆盖为 `menu-seed.json`（55 道原型，仅回滚对照与测试夹具）。
 
 ## 目录结构
 
@@ -118,7 +118,7 @@ canteen-nutritionist/
 │       ├── services/       # 用户档案、用餐记录、统计 —— 待 BE-B
 │       ├── llm/            # 理由生成（template / llm 双引擎 + 校验降级）—— 待 BE-B
 │       └── admin/          # 管理端 API（菜品 CRUD、数据校准）—— 待 BE-B
-└── web/                    # 前端（Vue 3）—— FE-B 已建脚手架，待合并
+└── web/                    # 前端（Vue 3）—— 已进主干，首页 + 八个页面
     └── src/
         ├── views/          # 建档 / 目标 / 推荐 / 回填 / 反馈 / 历史
         └── components/

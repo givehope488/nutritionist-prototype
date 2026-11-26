@@ -1,5 +1,7 @@
 // 用户端接口封装（docs/API.md §2）。字段名与 API.md 一字不改。
 import type {
+  DishExclusion,
+  DishExclusionListResponse,
   InsightsSummaryResponse,
   MealLogItemInput,
   MealLogResponse,
@@ -43,6 +45,25 @@ export function deleteProfile(sessionId: string) {
 
 export function createRecommendation(input: RecommendationRequest) {
   return request<RecommendationResponse>('POST', '/recommendations', { body: input });
+}
+
+/** 个人排除（API.md v1.2.12 §2.6）：只影响该 session 的后续推荐 */
+export function listDishExclusions(sessionId: string) {
+  return request<DishExclusionListResponse>(
+    'GET',
+    `/dish-exclusions${buildQuery({ session_id: sessionId })}`,
+  );
+}
+
+export function addDishExclusion(input: { session_id: string; dish_id: string }) {
+  return request<DishExclusion>('POST', '/dish-exclusions', { body: input });
+}
+
+export function removeDishExclusion(sessionId: string, dishId: string) {
+  return request<void>(
+    'DELETE',
+    `/dish-exclusions/${encodeURIComponent(dishId)}${buildQuery({ session_id: sessionId })}`,
+  );
 }
 
 /**

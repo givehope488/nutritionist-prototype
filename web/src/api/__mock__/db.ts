@@ -2,12 +2,13 @@
 // 重要边界：架构 D1 规定营养计算只在服务端。本目录是「服务端替身」，
 // 因此视图 / 组件禁止 import 本目录（由 src/tests/unit/layerBoundary.test.ts 把关）。
 import rawSeed from '@menu-seed';
-import type { Dish, MealLogResponse, Meal, Profile } from '@canteen/shared';
+import type { Dish, DishExclusion, MealLogResponse, Meal, Profile } from '@canteen/shared';
 
 const KEYS = {
   profiles: 'cn.mock.v1.profiles',
   logs: 'cn.mock.v1.meal_logs',
   combos: 'cn.mock.v1.combos',
+  exclusions: 'cn.mock.v1.dish_exclusions',
 } as const;
 
 /** 组合关联有效期：API.md §2.3「combo.id 有效期 24 小时」 */
@@ -105,6 +106,43 @@ export function deleteProfile(sessionId: string): boolean {
     KEYS.logs,
     read<StoredLog[]>(KEYS.logs, []).filter((log) => log.session_id !== sessionId),
   );
+  write(
+    KEYS.exclusions,
+    read<StoredExclusion[]>(KEYS.exclusions, []).filter((item) => item.session_id !== sessionId),
+  );
+  return true;
+}
+
+/** 个人排除（API.md v1.2.12 §2.6）：存储比响应多 session_id，用于隔离 */
+interface StoredExclusion extends DishExclusion {
+  session_id: string;
+}
+
+export function listExclusions(sessionId: string): DishExclusion[] {
+  return read<StoredExclusion[]>(KEYS.exclusions, [])
+    .filter((item) => item.session_id === sessionId)
+    .map(({ session_id: _drop, ...item }) => item);
+}
+
+export function excludedDishIds(sessionId: string): string[] {
+  return listExclusions(sessionId).map((item) => item.dish_id);
+}
+
+/** 返回 false 表示该菜已在排除列表里（幂等，不重复写） */
+export function addExclusion(sessionId: string, dishId: string, name: string): boolean {
+  const all = read<StoredExclusion[]>(KEYS.exclusions, []);
+  if (all.some((item) => item.session_id === sessionId && item.dish_id === dishId)) return false;
+  write(KEYS.exclusions, [...all, { session_id: sessionId, dish_id: dishId, name }]);
+  return true;
+}
+
+export function removeExclusion(sessionId: string, dishId: string): boolean {
+  const all = read<StoredExclusion[]>(KEYS.exclusions, []);
+  const next = all.filter(
+    (item) => !(item.session_id === sessionId && item.dish_id === dishId),
+  );
+  if (next.length === all.length) return false;
+  write(KEYS.exclusions, next);
   return true;
 }
 

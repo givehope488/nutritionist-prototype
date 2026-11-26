@@ -118,6 +118,20 @@ function migrate(db: DatabaseSync): void {
 
     CREATE INDEX IF NOT EXISTS idx_dish_revisions_dish
       ON dish_revisions (dish_id, id DESC);
+
+    -- 个人排除（API.md v1.2.12 §2.6）：按 session 记住「不再推荐这道菜」。
+    -- 存菜名是为了推荐算法换种子 / 菜单调整后仍能在反馈页显示可恢复项，
+    -- 不建外键：排除记录不应因菜品暂时下架而被级联删除。
+    CREATE TABLE IF NOT EXISTS dish_exclusions (
+      session_id TEXT NOT NULL,
+      dish_id    TEXT NOT NULL,
+      dish_name  TEXT NOT NULL,
+      created_at TEXT NOT NULL DEFAULT (datetime('now')),
+      PRIMARY KEY (session_id, dish_id)
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_dish_exclusions_session
+      ON dish_exclusions (session_id, created_at DESC);
   `);
 
   upgradeDishesSchema(db);
@@ -164,7 +178,9 @@ function upgradeDishesSchema(db: DatabaseSync): void {
 /** 测试用：清空业务表（保留表结构），避免用例互相污染 */
 export function resetDatabase(): void {
   const db = getDb();
-  db.exec('DELETE FROM meal_logs; DELETE FROM profiles;');
+  db.exec(
+    'DELETE FROM dish_exclusions; DELETE FROM meal_logs; DELETE FROM profiles;',
+  );
 }
 
 /**

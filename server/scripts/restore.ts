@@ -14,6 +14,9 @@ import { DatabaseSync } from 'node:sqlite';
  * 用法：
  *   npm run restore -- server/data/backups/app-2026-11-21T13-00-00-000Z.db
  *   npm run restore -- <备份文件> <目标库路径>
+ *
+ * 相对路径一律按**仓库根目录**解析：无论从根目录还是 `server/` 下执行，
+ * 文档里的 `server/data/backups/...` 与 `./backups/...` 都指向同一处。
  */
 const REPO_ROOT = fileURLToPath(new URL('../../', import.meta.url));
 const DEFAULT_DB = join(REPO_ROOT, 'server', 'data', 'runtime', 'app.db');
@@ -49,8 +52,10 @@ function main(): void {
     process.exitCode = 1;
     return;
   }
-  const from = resolve(backupPath);
-  const to = resolve(targetPath);
+  // 相对路径按仓库根目录解析：npm workspace 会把 cwd 切到 server/，
+  // 若用 resolve(cwd) 会把文档里的 server/data/backups/... 解析成 server/server/...
+  const from = resolve(REPO_ROOT, backupPath);
+  const to = resolve(REPO_ROOT, targetPath);
   if (!existsSync(from)) {
     console.error(`[restore] 备份不存在：${from}`);
     process.exitCode = 1;

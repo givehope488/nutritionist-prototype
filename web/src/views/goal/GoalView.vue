@@ -4,7 +4,7 @@
 // 服务端仍会兜底改写 goal 并下发 warnings，本页如实展示。
 import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { MINOR_AGE } from '@canteen/shared';
+import { BMI_UNDERWEIGHT, MINOR_AGE } from '@canteen/shared';
 import type { ApiError, AvoidOption, Goal, Profile, ProfileInput } from '@canteen/shared';
 import { getMenu, getProfile, saveProfile } from '@/api/endpoints';
 import AppButton from '@/components/base/AppButton.vue';
@@ -35,13 +35,29 @@ const goal = ref<Goal>('health');
 const avoid = ref<string[]>([]);
 
 const isMinor = computed(() => (profile.value ? profile.value.age < MINOR_AGE : false));
+const isUnderweight = computed(() =>
+  profile.value ? profile.value.bmi < BMI_UNDERWEIGHT : false,
+);
 
 const goalOptions = computed<RadioOption[]>(() =>
-  GOAL_OPTIONS.map((option) =>
-    option.value === 'lose' && isMinor.value
-      ? { ...option, disabled: true, disabledReason: `未满 ${MINOR_AGE} 岁不提供热量缺口方案` }
-      : { ...option },
-  ),
+  GOAL_OPTIONS.map((option) => {
+    if (option.value !== 'lose') return { ...option };
+    if (isMinor.value) {
+      return {
+        ...option,
+        disabled: true,
+        disabledReason: `未满 ${MINOR_AGE} 岁不提供热量缺口方案`,
+      };
+    }
+    if (isUnderweight.value) {
+      return {
+        ...option,
+        disabled: true,
+        disabledReason: `BMI 低于 ${BMI_UNDERWEIGHT} 不提供热量缺口方案`,
+      };
+    }
+    return { ...option };
+  }),
 );
 
 const summary = computed(() => {
@@ -164,6 +180,9 @@ onMounted(async () => {
           </AppField>
           <p v-if="isMinor" class="rule-note">
             未满 {{ MINOR_AGE }} 岁只提供保持 / 增肌 / 增重方案；这是产品合规规则，服务端会再次校验。
+          </p>
+          <p v-else-if="isUnderweight" class="rule-note">
+            BMI 低于 {{ BMI_UNDERWEIGHT }} 只提供保持 / 增肌 / 增重方案；这是产品合规规则，服务端会再次校验。
           </p>
         </AppCard>
 

@@ -62,7 +62,7 @@ curl -s -H "X-Admin-Token: $ADMIN_TOKEN" http://localhost:8080/api/v1/admin/dish
 |---|---|---|
 | 代码回滚 | `git revert <commit>` → `docker compose up -d --build` | 1~2 分钟 |
 | 镜像回滚 | 发布前 `docker tag canteen-server:local canteen-server:prev`，出事 `docker tag canteen-server:prev canteen-server:local` + `up -d` | <1 分钟 |
-| 数据回滚 | 停服务 → `npm run restore -- backups/app-<时间戳>.db` → 起服务（`docs/BACKUP.md`） | 秒级（实测 5 ms @116 KB） |
+| 数据回滚 | 停服务 → `npm run restore -- <备份文件>` → 起服务（`docs/BACKUP.md`；相对路径按仓库根解析） | 秒级（实测 5 ms @116 KB） |
 
 **发布前必做**：`npm run backup`，并把产物路径记进发布记录。
 
@@ -136,3 +136,51 @@ curl -s -X POST -H 'Content-Type: application/json' \
 
 顺带验证了一个容易误判的现象：**只下架「午餐主食」并不会无解**——v3 有 258 道 `single` 成品餐
 （一份即一餐），不依赖主食+主菜+素菜的组合结构。要造无解，必须把午餐候选整体下架。
+
+## 7. 构建注意事项（实机踩过的两个坑，2026-11-23）
+
+> 这两条都是「本地能跑、镜像不能跑」的类型，**不实跑一次 `docker compose up -d --build` 发现不了**。
+> 本节内容来自 BE-B 的 PR #84，2026-11-26 由 PD 摘入主干（原 PR 因 PROGRESS 冲突关闭，正文未改）。
+
+### 7.1 `NODE_ENV=production` 不能放在 `npm ci` 之前
+
+```dockerfile
+# ❌ 错误：npm 会跳过 devDependencies，而 tsx 在 devDeps 里
+ENV NODE_ENV=production
+RUN npm ci
+
+# ✅ 正确：先装全量依赖，再切生产模式
+RUN npm ci
+ENV NODE_ENV=production
+```
+
+症状：容器反复 `Restarting`，日志里 `sh: 1: tsx: not found`，退出码 127。
+原因：服务端用 `tsx` 直接跑 TS（见 §4 已知限制 1），它属于 `devDependencies`，
+`NODE_ENV=production` 会让 `npm ci` 把它整批跳过。
+
+### 7.2 web 镜像必须拷仓库根 `tsconfig.base.json`
+
+```dockerfile
+COPY tsconfig.base.json ./tsconfig.base.json
+```
+
+症状：`npm run build` 直接失败，报 `failed: Tsconfig not found /repo/tsconfig.base.json`。
+原因：`web/tsconfig.json` 的 `include` 带上了 `../shared/src/**/*.ts`，
+rolldown 为这些仓库外的文件向上查找 tsconfig 时会命中根文件——镜像里只有 `web/` 就会缺。
+
+### 7.3 改 Dockerfile 的规矩
+
+**改完必须真跑一次 `docker compose up -d --build` 再合并。** 本地 `npm run build` 通过
+不代表镜像能构建：镜像里的文件集合是白名单（`COPY` 了哪些就是哪些），而本地是整棵源码树。
+
+### 7.4 实机实测记录（2026-11-23，PD 执行）
+
+| 项 | 结果 |
+|---|---|
+| 构建启动 | `docker compose up -d --build` 成功，两容器 **healthy**（server 8787 / web 8080→80 反代） |
+| 探针 | `GET /` 200、`GET /healthz` 200、`GET /api/v1/menu` 返回 **384 道** |
+| 端到端 | 建档（bmi 21.97）→ 推荐 3 套（目标 912.8 kcal，首选 912 kcal / 蛋白 32.4 g）→ 回填 → `adoption_rate=1` |
+| 可重跑 | 二次 `docker compose up -d --build` **2.5 s**（镜像层缓存命中、容器不重建） |
+| 数据卷 | 容器 `/app/server/data/runtime/app.db` ↔ 宿主同路径，双向可见 |
+
+> 注：7.4 的「384 道」是 11-23 当时的记录；菜单已于 11-24 清理为 **383 道**（见 README 与 §5 11-24 条目）。

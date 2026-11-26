@@ -10,6 +10,7 @@ import AppCard from '@/components/base/AppCard.vue';
 import AppErrorBanner from '@/components/base/AppErrorBanner.vue';
 import AppLoading from '@/components/base/AppLoading.vue';
 import AppNavBar from '@/components/base/AppNavBar.vue';
+import DishExclusionsCard from '@/components/business/DishExclusionsCard.vue';
 import DishFeedbackCard from '@/components/business/DishFeedbackCard.vue';
 import NutritionSummary from '@/components/business/NutritionSummary.vue';
 import VerdictCard from '@/components/business/VerdictCard.vue';
@@ -28,6 +29,11 @@ const mealLabel = computed(() => {
   const option = MEAL_OPTIONS.find((item) => item.value === log.value?.meal);
   return option?.label ?? '';
 });
+
+/** 个人排除入口只列这餐吃过的菜（API v1.2.12 §2.6） */
+const logDishes = computed(() =>
+  (log.value?.items ?? []).map((item) => ({ id: item.dish_id, name: item.name })),
+);
 
 /**
  * 本餐目标直接取服务端响应（v1.2.6 起六项齐全：kcal/蛋白/脂肪/碳水/钠），
@@ -95,6 +101,7 @@ onMounted(load);
           </p>
         </AppCard>
 
+        <DishExclusionsCard :dishes="logDishes" />
         <DishFeedbackCard :items="log.items" :date="log.date" :meal-label="mealLabel" />
 
         <div class="page__actions">

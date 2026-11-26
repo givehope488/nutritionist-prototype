@@ -140,6 +140,26 @@ export interface MenuResponse {
   avoid_options: AvoidOption[];
 }
 
+/* ---------- 个人排除（API.md v1.2.12 §2.6） ---------- */
+
+/**
+ * 用户主动「不想再看到」的菜品（按 session 生效，不影响其他用户）。
+ * 只影响后续推荐候选池；菜单/回填仍保留这道菜，历史记录也不改。
+ */
+export interface DishExclusion {
+  dish_id: string;
+  name: string;
+}
+
+export interface DishExclusionListResponse {
+  dishes: DishExclusion[];
+}
+
+export interface DishExclusionRequest {
+  session_id: string;
+  dish_id: string;
+}
+
 /* ---------- 用户档案（API.md §2.2） ---------- */
 
 /** avoid 元素是 AvoidOption.key（如 "nospicy"），不是 tag */
@@ -289,8 +309,9 @@ export interface Verdict {
 
 /**
  * 回填响应里的本餐目标。
- * v1.2.6（PD 2026-11-24）：补齐脂肪/碳水/钠 —— 服务端 `calcTargets` 本来就算出六项，
- * 只是此前只在响应里映射了前两项，导致反馈页这三条没有目标、只能显示「仅供参考」。
+ * v1.2.6（PD 2026-11-24）：补齐脂肪/碳水/钠 —— 服务端 `calcTargets` 本来就算出五项营养值
+ * （另带 day_kcal / meal_ratio 两个元数据），只是此前只在响应里映射了前两项，导致反馈页这
+ * 三条没有目标、只能显示「仅供参考」。
  * 判定口径不变：`judgeVerdict` 仍只看 kcal 与 protein_g。
  */
 export interface MealLogTarget {
