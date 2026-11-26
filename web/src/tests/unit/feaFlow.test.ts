@@ -178,7 +178,7 @@ describe('目标与忌口页', () => {
     await wrapper.find('input[type="radio"][value="lose"]').setValue();
     await wrapper
       .findAll('.chip')
-      .find((chip) => chip.text().includes('素食'))!
+      .find((chip) => chip.text().includes('不吃荤'))!
       .trigger('click');
     await wrapper
       .findAll('button')

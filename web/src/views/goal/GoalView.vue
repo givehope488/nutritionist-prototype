@@ -19,6 +19,7 @@ import AppRadioGroup from '@/components/base/AppRadioGroup.vue';
 import type { RadioOption } from '@/components/types';
 import { sessionId } from '@/composables/useSession';
 import { GOAL_OPTIONS } from '@/utils/labels';
+import { isAvoidDisabled, toggleAvoidKey } from '@/utils/avoid';
 
 const router = useRouter();
 
@@ -71,10 +72,12 @@ const summary = computed(() => {
   };
 });
 
+/**
+ * 互斥规则见 `utils/avoid.ts`：勾「不吃荤」后，不吃猪/牛/海鲜三项置灰；
+ * 先勾具体项再勾「不吃荤」时，具体项会被清掉（避免冗余组合）。
+ */
 function toggleAvoid(key: string): void {
-  avoid.value = avoid.value.includes(key)
-    ? avoid.value.filter((item) => item !== key)
-    : [...avoid.value, key];
+  avoid.value = toggleAvoidKey(avoid.value, key);
 }
 
 async function loadMenu(): Promise<void> {
@@ -193,6 +196,7 @@ onMounted(async () => {
               :key="option.key"
               :label="option.label"
               :active="avoid.includes(option.key)"
+              :disabled="isAvoidDisabled(avoid, option.key)"
               @toggle="toggleAvoid(option.key)"
             />
           </div>
