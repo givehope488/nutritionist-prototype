@@ -17,6 +17,10 @@ export const PROFILE_BOUNDS = {
 /** 未成年不提供热量缺口方案（README 合规边界 2） */
 export const MINOR_AGE = 18;
 
+/** 中国成人 BMI 分级阈值（API.md 附录 A）：<18.5 偏瘦，≥24 超重 */
+export const BMI_UNDERWEIGHT = 18.5;
+export const BMI_OVERWEIGHT = 24;
+
 /** 错误码 → HTTP 状态码（API.md §1），前后端一致 */
 export const ERROR_STATUS: Record<ErrorCode, number> = {
   VALIDATION_ERROR: 400,

@@ -93,6 +93,27 @@ describe('建档页', () => {
     expect(saved.data.goal).toBe('weight_gain');
     expect(saved.data.day_kcal).toBe(2624); // 2282×1.15
   });
+
+  it('输入的身高体重让 BMI<18.5 时，减肥选项实时锁定并说明原因（规则 G）', async () => {
+    const router = await startRouter('/profile');
+    const wrapper = mount(ProfileView, { global: { plugins: [router] } });
+    await settle();
+
+    const inputs = wrapper.findAll('input.numfield__input');
+    await inputs[0].setValue('160');
+    await inputs[1].setValue('47.1');
+    await inputs[2].setValue('30');
+    await flushPromises();
+
+    const lose = wrapper.find('input[type="radio"][value="lose"]');
+    expect((lose.element as HTMLInputElement).disabled).toBe(true);
+    expect(wrapper.text()).toContain('BMI 低于 18.5');
+
+    // 体重回到 BMI≥18.5 后解锁
+    await inputs[1].setValue('50');
+    await flushPromises();
+    expect((lose.element as HTMLInputElement).disabled).toBe(false);
+  });
 });
 
 describe('个人中心', () => {
@@ -130,6 +151,17 @@ describe('个人中心', () => {
     const lose = wrapper.find('input[type="radio"][value="lose"]');
     expect((lose.element as HTMLInputElement).disabled).toBe(true);
     expect(wrapper.text()).toContain('未满 18 岁');
+  });
+
+  it('BMI<18.5 档案：个人中心锁住减肥并给出 BMI 原因（规则 G）', async () => {
+    await seedProfile({ sex: 'female', height_cm: 160, weight_kg: 47.1, age: 30 });
+    const router = await startRouter('/mine');
+    const wrapper = mount(MineView, { global: { plugins: [router] } });
+    await settle();
+
+    const lose = wrapper.find('input[type="radio"][value="lose"]');
+    expect((lose.element as HTMLInputElement).disabled).toBe(true);
+    expect(wrapper.text()).toContain('BMI 低于 18.5');
   });
 });
 
@@ -171,6 +203,17 @@ describe('目标与忌口页', () => {
     const lose = wrapper.find('input[type="radio"][value="lose"]');
     expect((lose.element as HTMLInputElement).disabled).toBe(true);
     expect(wrapper.text()).toContain('未满 18 岁');
+  });
+
+  it('BMI<18.5 禁用减脂并给出 BMI 原因（规则 G）', async () => {
+    await seedProfile({ sex: 'female', height_cm: 160, weight_kg: 47.1, age: 30 });
+    const router = await startRouter('/goal');
+    const wrapper = mount(GoalView, { global: { plugins: [router] } });
+    await settle();
+
+    const lose = wrapper.find('input[type="radio"][value="lose"]');
+    expect((lose.element as HTMLInputElement).disabled).toBe(true);
+    expect(wrapper.text()).toContain('BMI 低于 18.5');
   });
 });
 

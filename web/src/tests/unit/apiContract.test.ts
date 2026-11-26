@@ -88,6 +88,28 @@ describe('档案派生值（附录 A 口径）', () => {
     expect(profile.warnings).toEqual(['未满18岁不提供热量缺口方案，已调整为保持']);
   });
 
+  it('BMI<18.5 + 减肥：同样降级 health（规则 G）', async () => {
+    const profile = await seedProfile({
+      sex: 'female',
+      height_cm: 160,
+      weight_kg: 47.1,
+      age: 30,
+      goal: 'lose',
+    });
+    expect(profile.bmi).toBe(18.4);
+    expect(profile.goal).toBe('health');
+    expect(profile.warnings).toEqual(['BMI 低于 18.5 不提供热量缺口方案，已调整为保持']);
+  });
+
+  it('BMI≥24 + 增肌：保留 gain，只回提示（规则 H）', async () => {
+    const profile = await seedProfile({ height_cm: 172, weight_kg: 72, goal: 'gain' });
+    expect(profile.goal).toBe('gain');
+    expect(profile.bmi_tag).toBe('超重');
+    expect(profile.warnings).toEqual([
+      '当前 BMI 属超重/肥胖，增肌期建议优先增肌、控制增重速度',
+    ]);
+  });
+
   it('档案不存在时返回 404，前端可据此引导建档', async () => {
     const res = await getProfile('nobody-here');
     expect(res.ok).toBe(false);

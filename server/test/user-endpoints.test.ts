@@ -132,6 +132,35 @@ describe('POST /api/v1/profiles', () => {
     expect(body.warnings[0]).toContain('未满18岁');
   });
 
+  it('BMI<18.5 + 减脂 → 降级为 health 并提示（规则 G）', async () => {
+    const res = await post('/api/v1/profiles', {
+      ...validProfile,
+      age: 30,
+      goal: 'lose',
+      sex: 'female',
+      height_cm: 160,
+      weight_kg: 47.1,
+    });
+    const body = res.json as Profile;
+    expect(body.bmi).toBe(18.4);
+    expect(body.goal).toBe('health');
+    expect(body.warnings).toContain('BMI 低于 18.5 不提供热量缺口方案，已调整为保持');
+  });
+
+  it('BMI≥24 + 增肌 → 保留 gain 并提示（规则 H）', async () => {
+    const res = await post('/api/v1/profiles', {
+      ...validProfile,
+      goal: 'gain',
+      height_cm: 172,
+      weight_kg: 72,
+    });
+    const body = res.json as Profile;
+    expect(body.bmi).toBeGreaterThanOrEqual(24);
+    expect(body.bmi_tag).toBe('超重');
+    expect(body.goal).toBe('gain');
+    expect(body.warnings).toContain('当前 BMI 属超重/肥胖，增肌期建议优先增肌、控制增重速度');
+  });
+
   it('身高越界 → 400，并给出字段定位', async () => {
     const res = await post('/api/v1/profiles', { ...validProfile, height_cm: 120 });
     expect(res.status).toBe(400);

@@ -123,7 +123,8 @@ function postProfile(body: Partial<ProfileInput>): MockResponse {
   if (issues.length > 0) return invalid(issues);
 
   const input = body as ProfileInput;
-  const resolved = resolveGoal(input.age, input.goal);
+  const bmi = Math.round((input.weight_kg / (input.height_cm / 100) ** 2) * 100) / 100;
+  const resolved = resolveGoal(input.age, input.goal, bmi);
   const profile: Profile = {
     session_id: input.session_id,
     sex: input.sex,
@@ -134,10 +135,10 @@ function postProfile(body: Partial<ProfileInput>): MockResponse {
     goal: resolved.goal,
     avoid: input.avoid,
     default_meal: input.default_meal,
-    bmi: Math.round((input.weight_kg / (input.height_cm / 100) ** 2) * 100) / 100,
+    bmi,
     bmi_tag: '',
     day_kcal: 0,
-    warnings: resolved.warning ? [resolved.warning] : [],
+    warnings: resolved.warnings,
   };
   profile.bmi_tag = bmiTag(profile.bmi);
   profile.day_kcal = dayKcal(profile);

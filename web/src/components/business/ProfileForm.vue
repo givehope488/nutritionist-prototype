@@ -5,7 +5,7 @@
 // 边界（架构 D1 / 分层护栏）：组件只维护输入与区间预校验，**不直接调接口**——
 // submit 事件把 ProfileInput 交给页面，保存结果与错误再由 props 回传。
 import { computed, reactive, watch } from 'vue';
-import { MINOR_AGE, PROFILE_BOUNDS } from '@canteen/shared';
+import { BMI_UNDERWEIGHT, MINOR_AGE, PROFILE_BOUNDS } from '@canteen/shared';
 import type { Activity, ApiError, Goal, Meal, Profile, ProfileInput, Sex } from '@canteen/shared';
 import AppButton from '@/components/base/AppButton.vue';
 import AppCard from '@/components/base/AppCard.vue';
@@ -66,15 +66,29 @@ const isMinor = computed(() => {
   return Number.isFinite(age) && age > 0 && age < MINOR_AGE;
 });
 
-/** 未成年双保险的前端半边：禁用减肥并写明原因；服务端仍会兜底降级。 */
+/** 身高体重是实时输入的：BMI<18.5 时同样锁掉减肥（规则 G），无需等保存 */
+const liveBmi = computed(() => {
+  const height = Number(form.height.trim());
+  const weight = Number(form.weight.trim());
+  if (!Number.isFinite(height) || !Number.isFinite(weight) || height <= 0 || weight <= 0) {
+    return null;
+  }
+  const meters = height / 100;
+  return Math.round((weight / (meters * meters)) * 100) / 100;
+});
+const isUnderweight = computed(() => liveBmi.value !== null && liveBmi.value < BMI_UNDERWEIGHT);
+
+/** 热量缺口的两条前端护栏（未成年 / 偏瘦）；服务端仍会兜底降级。 */
+const loseDisabledReason = computed<string | null>(() => {
+  if (isMinor.value) return `未满 ${MINOR_AGE} 岁不提供热量缺口方案`;
+  if (isUnderweight.value) return `BMI 低于 ${BMI_UNDERWEIGHT} 不提供热量缺口方案`;
+  return null;
+});
+
 const goalOptions = computed<RadioOption[]>(() =>
   GOAL_OPTIONS.map((option) =>
-    option.value === 'lose' && isMinor.value
-      ? {
-          ...option,
-          disabled: true,
-          disabledReason: `未满 ${MINOR_AGE} 岁不提供热量缺口方案`,
-        }
+    option.value === 'lose' && loseDisabledReason.value !== null
+      ? { ...option, disabled: true, disabledReason: loseDisabledReason.value }
       : { ...option },
   ),
 );
@@ -232,6 +246,9 @@ defineExpose({ fillForm });
       </AppField>
       <p v-if="isMinor" class="rule-note">
         未满 {{ MINOR_AGE }} 岁只提供保持 / 增肌 / 增重方案；减肥选项已锁定，服务端会再次校验。
+      </p>
+      <p v-else-if="isUnderweight" class="rule-note">
+        BMI 低于 {{ BMI_UNDERWEIGHT }} 时只提供保持 / 增肌 / 增重方案；减肥选项已锁定，服务端会再次校验。
       </p>
       <p v-else class="rule-note">减肥会下调目标热量并减少脂肪占比；增肌、增重会提高目标热量。</p>
     </AppCard>

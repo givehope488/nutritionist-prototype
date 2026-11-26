@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import { MINOR_AGE, PROFILE_BOUNDS } from '@canteen/shared';
-import type { Activity, Goal, Meal, Profile, Sex } from '@canteen/shared';
+import { PROFILE_BOUNDS } from '@canteen/shared';
+import type { Activity, Goal, Meal, Sex } from '@canteen/shared';
 import { AVOID_OPTIONS } from '../data/avoid-options';
 import { profileRepository } from '../data/repositories';
 import { calcTargets } from '../engines/nutrition';
@@ -20,17 +20,6 @@ const GOALS: readonly Goal[] = ['health', 'lose', 'gain', 'weight_gain'];
 const MEALS: readonly Meal[] = ['breakfast', 'lunch', 'dinner'];
 const AVOID_KEYS: readonly string[] = AVOID_OPTIONS.map((option) => option.key);
 
-/**
- * BMI 与分级：属于档案服务的派生值（API.md §2.2 响应里明确要求下发），
- * 不是营养公式——BMR/TDEE 在 engines/，这边不碰。
- */
-function deriveBmi(heightCm: number, weightKg: number): { bmi: number; bmi_tag: string } {
-  const meters = heightCm / 100;
-  const bmi = Math.round((weightKg / (meters * meters)) * 100) / 100;
-  const tag = bmi < 18.5 ? '偏瘦' : bmi < 24 ? '正常' : bmi < 28 ? '超重' : '肥胖';
-  return { bmi, bmi_tag: tag };
-}
-
 export const profilesRouter: Router = Router();
 
 /**
@@ -49,46 +38,19 @@ profilesRouter.post('/', (req, res) => {
   const avoid = requireStringArray(body, 'avoid', 'avoid', AVOID_KEYS);
   const defaultMeal = requireEnum(body, 'default_meal', 'default_meal', MEALS);
 
-  const warnings: string[] = [];
-  let goal: Goal = requestedGoal;
-
-  // 合规硬规则（README 合规边界 2）：未成年不提供热量缺口，服务端强制降级。
-  // 前端也会禁用减脂选项，这里是双保险——只信服务端这道。
-  if (age < MINOR_AGE && goal === 'lose') {
-    goal = 'health';
-    warnings.push('未满18岁不提供热量缺口方案，已调整为保持');
-  }
-
-  const { bmi, bmi_tag } = deriveBmi(heightCm, weightKg);
-
-  // day_kcal 由 BE-A 营养引擎统一计算（口径唯一来源，见 ARCHITECTURE §1）
-  const { profile: derived } = calcTargets({
+  // 目标降级（未成年 / BMI<18.5 禁热量缺口）、BMI 分级与 warnings 全部由营养引擎派生，
+  // 路由只透传入参、落库并回传，避免同一合规规则在两层各写一遍（规则 I）。
+  const { profile } = calcTargets({
     session_id: sessionId,
     sex,
     height_cm: heightCm,
     weight_kg: weightKg,
     age,
     activity,
-    goal,
+    goal: requestedGoal,
     avoid,
     default_meal: defaultMeal,
   });
-
-  const profile: Profile = {
-    session_id: sessionId,
-    sex,
-    height_cm: heightCm,
-    weight_kg: weightKg,
-    age,
-    activity,
-    goal,
-    avoid,
-    default_meal: defaultMeal,
-    bmi,
-    bmi_tag,
-    day_kcal: derived.day_kcal,
-    warnings,
-  };
 
   profileRepository.save(profile);
   res.json(profile);
