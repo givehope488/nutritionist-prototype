@@ -1304,3 +1304,15 @@ web:  npm run typecheck → 0 error；lint → 0 error（LogView 1 条既有 war
 
 - 分支 `feat/breakfast-line-priority`；本节随功能提交推送。**未创建 PR**，等用户指示。
 - 待 PD 复核：①「常见早餐成品」名单是否扩展到其它档口；② v1.2.10 文档口径；③ v1.2.9 四档参数仍待复核（见 §29）。
+
+### 30.6 2026-11-26：PR 已开（用户指示「开pr」）
+
+- 用户明确指示开 PR，按 2026-11-24 约定由 agent 用 GitHub API 代建；作者 `Aredjdhd`，**不自行批准、不自行合并**。
+- PR **#92**：https://github.com/givehope488/nutritionist-prototype/pull/92
+  - 标题：早餐优先推荐早餐线，修早餐偏一大碗（API v1.2.10）
+  - head `feat/breakfast-line-priority` @ `e94c050` → base `main`；6 files / +292 −99
+  - 正文按模板填写（含根因、三档实测、验证命令、越界文件说明、待 PD 复核项）；创建后回读 `body` 2087 字符完整。
+  - 已请求 reviewers：`givehope488` / `wyf-111`（CODEOWNERS 同时自动拉了 `pigQAQ` / `yangelect`）；创建时 `mergeable=true`、`mergeable_state=blocked`（等 CI 与真人 Review）。
+- CI（head `e94c050`，run id `45744644011`）：`completed success`。
+- 网络备注沿用 §29.5：`api.github.com` 需 `curl -4` + 重试；PR 创建与 reviewer 请求均用 API 回读核对，未依据本地推测。
+- 本节为追加记录，`30.5` 的「未创建 PR」是当时状态，不改写。
