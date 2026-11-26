@@ -368,6 +368,81 @@ describe('E5 plate 菜不进 combos', () => {
   });
 });
 
+/**
+ * v1.2.10（2026-11-26 用户反馈）：早餐偏一大碗。
+ * 根因是全天的盖浇饭 / 拌面也被标了 breakfast，按热量贴合度挤掉真正的早餐线。
+ * 现规则：早餐优先池 = 仅早餐供应的菜（plate 允许入组合）+ 常见早餐成品（炒饭/炒面/炒米粉，
+ * 热量限 0.8~1.15 倍目标）；不足 3 套才用完整池补齐。午晚行为不变。
+ */
+function breakfastPool(): Dish[] {
+  return [
+    // 一楼早餐线：plate / weigh，只供早餐
+    mk('b1', '白面小笼包', 'staple', ['breakfast'], [], 300, { serving_mode: 'plate', pricing_mode: 'weigh' }),
+    mk('b2', '酱肉包', 'staple', ['breakfast'], [], 230, { serving_mode: 'plate', pricing_mode: 'weigh' }),
+    mk('b3', '南瓜粥', 'staple', ['breakfast'], [], 110, { serving_mode: 'plate', pricing_mode: 'weigh' }),
+    mk('b4', '茶叶蛋', 'protein', ['breakfast'], [], 70, { serving_mode: 'plate', pricing_mode: 'weigh' }),
+    mk('b5', '盒装牛奶', 'protein', ['breakfast'], [], 130, { serving_mode: 'plate', pricing_mode: 'weigh' }),
+    mk('b6', '肉饼', 'protein', ['breakfast'], [], 290, { serving_mode: 'plate', pricing_mode: 'weigh' }),
+    // 全天供应的盖浇饭 / 拌面：早餐不该推
+    mk('big1', '孜然烧鸡饭', 'staple', ['breakfast', 'lunch', 'dinner'], ['meat'], 562, { serving_mode: 'single', pricing_mode: 'fixed' }),
+    mk('big2', '椒麻鸡丝拌面', 'staple', ['breakfast', 'lunch', 'dinner'], ['meat'], 507, { serving_mode: 'single', pricing_mode: 'fixed' }),
+    // 常见早餐成品：炒饭全天供应，但学生早餐会吃
+    mk('cf1', '蛋炒饭', 'staple', ['breakfast', 'lunch', 'dinner'], [], 550, { serving_mode: 'single', pricing_mode: 'fixed' }),
+  ];
+}
+
+describe('早餐优先池（v1.2.10）', () => {
+  it('早餐不出全天盖浇饭 / 拌面，且 plate 早餐线可入组合', () => {
+    const target = { ...lunchTarget(), kcal: 570 };
+    const { combos } = recommendCombos(breakfastPool(), {
+      meal: 'breakfast', goal: 'health', avoidTags: [], target,
+    });
+    const ids = combos.flatMap((c) => c.dishes.map((d) => d.id));
+    expect(ids).not.toContain('big1');
+    expect(ids).not.toContain('big2');
+    // 早餐线（plate）确实参与了组合，并带称重标记
+    expect(ids.some((id) => ['b1', 'b2', 'b3', 'b4', 'b5', 'b6'].includes(id))).toBe(true);
+    expect(combos.some((c) => c.has_weighed_dish)).toBe(true);
+  });
+
+  it('常见早餐成品炒饭会进早餐；热量超出目标 1.15 倍时不进', () => {
+    const near = recommendCombos(breakfastPool(), {
+      meal: 'breakfast', goal: 'health', avoidTags: [], target: { ...lunchTarget(), kcal: 570 },
+    });
+    expect(near.combos.some((c) => c.dishes.some((d) => d.id === 'cf1'))).toBe(true);
+
+    const small = recommendCombos(breakfastPool(), {
+      meal: 'breakfast', goal: 'health', avoidTags: [], target: { ...lunchTarget(), kcal: 430 },
+    });
+    // 550 kcal > 430 × 1.15，早餐线组合足够 3 套时不该把大碗炒饭塞进来
+    expect(small.combos.flatMap((c) => c.dishes.map((d) => d.id))).not.toContain('cf1');
+  });
+
+  it('早餐线不足 3 套时回退完整池补齐，且第一套仍是早餐线', () => {
+    const thin: Dish[] = [
+      mk('b1', '白面小笼包', 'staple', ['breakfast'], [], 300, { serving_mode: 'plate', pricing_mode: 'weigh' }),
+      mk('b5', '盒装牛奶', 'protein', ['breakfast'], [], 130, { serving_mode: 'plate', pricing_mode: 'weigh' }),
+      mk('big1', '孜然烧鸡饭', 'staple', ['breakfast', 'lunch', 'dinner'], ['meat'], 562, { serving_mode: 'single', pricing_mode: 'fixed' }),
+      mk('big2', '椒麻鸡丝拌面', 'staple', ['breakfast', 'lunch', 'dinner'], ['meat'], 507, { serving_mode: 'single', pricing_mode: 'fixed' }),
+    ];
+    const { combos } = recommendCombos(thin, {
+      meal: 'breakfast', goal: 'health', avoidTags: [], target: { ...lunchTarget(), kcal: 570 },
+    });
+    expect(combos.length).toBe(3);
+    expect(combos[0].dishes.map((d) => d.id)).toContain('b1');
+    const ids = combos.flatMap((c) => c.dishes.map((d) => d.id));
+    expect(ids.some((id) => id === 'big1' || id === 'big2')).toBe(true);
+  });
+
+  it('午晚 plate 仍被排除（早餐例外不扩散）', () => {
+    const { combos } = recommendCombos(v3Pool(), {
+      meal: 'lunch', goal: 'health', avoidTags: [], target: lunchTarget(),
+    });
+    const ids = combos.flatMap((c) => c.dishes.map((d) => d.id));
+    expect(ids).not.toContain('pl1');
+  });
+});
+
 describe('E4 忌口对四路都生效（组合生成前过滤）', () => {
   it('不吃辣时微辣汤底（component 路）不出现', () => {
     const { combos } = recommendCombos(v3Pool(), {
