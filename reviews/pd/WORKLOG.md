@@ -448,3 +448,19 @@ npm run lint            → 0 error
 ```
 
 无代码与契约变更；部署服务仍在运行（内网 200）。
+
+## 16. 开 PR #95（2026-11-26，用户明确「开pr」）
+
+用户原话「我不打算做，开pr」：反馈收集整体取消落档后，授权为待发布分支开 PR。
+
+| 项 | 事实 |
+|---|---|
+| PR | [#95](https://github.com/givehope488/nutritionist-prototype/pull/95)，`open` |
+| base / head | `main`（`f869206`，#94 之后） / `docs/pd-merge-record-2026-11-26` |
+| head SHA | `b19d438`（rebase 后；推送前远端为 `5fceebc`，force-with-lease 成功） |
+| 内容 | 5 commits：`30b0815` #93 合并记录、`369d67f` 无 Docker 部署脚本、`53ea2b4` 部署验证、`02631da` 取消反馈群、`b19d438` 反馈收集整体取消 |
+| Reviewers | 已请求 `givehope488`、`pigQAQ`、`yangelect`（API 201） |
+| 合并 | **未合**，按流程等真人 Approve；Agent 不自批、不改分支保护 |
+| 本地验证 | server 136/136（9 文件）、web 110/110（19 文件，含 #94 新用例）、smoke 14/14、data 383、progress 指纹通过、`git diff --check` 干净 |
+
+冲突处理：rebase 到 `f869206` 时 `docs/PROGRESS.md` 两处冲突，均保留上游 BE-B #94 的「不吃荤」条目在先、PD 条目随后；每次解完重签指纹。
