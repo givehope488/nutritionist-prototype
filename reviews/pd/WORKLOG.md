@@ -314,3 +314,38 @@ web: npm run build                → 149 modules，CSS 35.23 kB / JS 197.87 kB
 1. 真人重新 Approve **#93**；Agent 不自批、不合、不改分支保护。
 2. Approve 后合并 #93，fast-forward 本地 main，在 main 复跑 `npm run check` + web test，记录合并提交。
 3. C4 仍缺可分享地址与反馈渠道；本机无 Docker CLI。
+
+---
+
+## 12. 2026-11-26 追加：#93 真人 Approve 后合并与 main 复验
+
+> 用户告知「#93 通过了」。先经 API 核对：`givehope488` 于 05:27:28Z 提交 **APPROVED**，PR `mergeable=true` / `mergeable_state=clean`，head `36d0744`（13 commits）。确认后由 Agent 代点合并，**未自批、未改分支保护**。
+
+### 12.1 合并与本地同步
+
+| 项 | 结果 |
+|---|---|
+| 合并方式 | merge commit（与 #92 一致） |
+| 合并提交 | `1cc5b91` — `Merge pull request #93 from givehope488/docs/pd-status-2026-11-26` |
+| 本地 main | `ebb81d4..1cc5b91` fast-forward，与 `origin/main` 一致 |
+| 工作区 | 仅剩按要求不提交的 `菜品清单-v3-2026-11-24.csv` |
+
+### 12.2 main 复验（合并后）
+
+```
+npm run check                       → lint / typecheck / server 136/136 / smoke 14/14 / check:data 383 / check:progress 全过
+web npm run typecheck               → 通过
+web npm run lint                    → 0 error（1 条既有 LogView 警告）
+web npm test                        → 103/103（18 文件）
+```
+
+CI：`10e5464` run 45760613597 success；`36d0744` run 45760766306 success（lint / typecheck / test / deploy-config）。
+
+### 12.3 文档回填
+
+`docs/PROGRESS.md`：§1 主干改 `1cc5b91`、契约改 v1.2.12 已生效、三条线状态收口；§2.5 步 5/6 改「已随 #93 合入 main」；§4.1-I 用例数改 136；§5/§6 顶部追加合并与阻塞解除条目；重签 PD 指纹。本日志为 append-only 记录。
+
+### 12.4 剩余
+
+1. **C4 小范围发布**：仍缺可分享的部署地址与反馈群（需要项目负责人提供）；本机无 Docker CLI。
+2. D 组 4 项为发布后观察，C4 完成后启动。
