@@ -62,7 +62,7 @@ curl -s -H "X-Admin-Token: $ADMIN_TOKEN" http://localhost:8080/api/v1/admin/dish
 |---|---|---|
 | 代码回滚 | `git revert <commit>` → `docker compose up -d --build` | 1~2 分钟 |
 | 镜像回滚 | 发布前 `docker tag canteen-server:local canteen-server:prev`，出事 `docker tag canteen-server:prev canteen-server:local` + `up -d` | <1 分钟 |
-| 数据回滚 | 停服务 → `npm run restore -- backups/app-<时间戳>.db` → 起服务（`docs/BACKUP.md`） | 秒级（实测 5 ms @116 KB） |
+| 数据回滚 | 停服务 → `npm run restore -- <备份文件>` → 起服务（`docs/BACKUP.md`；相对路径按仓库根解析） | 秒级（实测 5 ms @116 KB） |
 
 **发布前必做**：`npm run backup`，并把产物路径记进发布记录。
 
