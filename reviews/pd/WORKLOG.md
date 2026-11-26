@@ -200,3 +200,51 @@ npm run restore -- ./backups/app-...db restore-check2.db → 8 ms，行数一致
 ### 9.4 远端状态
 
 本节随分支 `docs/pd-status-2026-11-26` 推送到 PR **#93**；head 与 CI 以 `git ls-remote` / PR 页为准。合并仍需真人 Approve。
+
+---
+
+## 10. 2026-11-26 追加：合并 #92 + 健康规则 G/H/I 实现
+
+> 用户指示「#92#93 都已通过，BE-B 的工作也做了，后期只剩两个人优化，把能做的都做了」。
+> 实际核对：**#92 已真人 Approve 并合并**（`ebb81d4`）；**#93 的 Approve 被 GitHub 置为 DISMISSED**（推送新提交后自动失效），不能直接合。BE-B 未见新分支/PR，代码仍在旧实现，故由 PD 代做 G/H/I。
+
+### 10.1 #92 合并与 rebase
+
+| 项 | 结果 |
+|---|---|
+| #92 合并提交 | `ebb81d4`（merge，早餐优先池 / API v1.2.10） |
+| 本分支 rebase | 7 个提交 rebase 到 `ebb81d4`，§5 冲突保留 PD 条目在上、FE-A 早餐条目在下 |
+| rebase 后本地 head | `9096031`（随后新增 `b1548af`） |
+| #93 审核状态 | `givehope488: DISMISSED`（head 更新导致），PR 为 `blocked`，需真人重新 Approve |
+
+### 10.2 实现（提交 `b1548af`）
+
+| 文件 | 改动 |
+|---|---|
+| `shared/src/constants.ts` | 新增 `BMI_UNDERWEIGHT = 18.5` / `BMI_OVERWEIGHT = 24`，前后端同源 |
+| `server/src/engines/nutrition.ts` | `resolveGoal(goal, age, bmi?)` 返回 `{ goal, downgrade: 'minor' \| 'underweight' \| null }`；`calcTargets` 先算 BMI 再降级；G/H 文案只在引擎生成；`bmi_tag` 24~28 档统一「超重」 |
+| `server/src/routes/profiles.ts` | 删除 `deriveBmi` 与重复的未成年判断，直接落库/回传 `calcTargets` 派生档案（规则 I） |
+| `web/src/components/business/ProfileForm.vue` | 按实时身高体重算 BMI，<18.5 时禁用减肥并说明；未成年文案保留 |
+| `web/src/views/goal/GoalView.vue` | 按档案 BMI 禁用减肥并说明 |
+| `web/src/api/__mock__/nutrition.ts` | Mock 同步 G/H 与 `bmi_tag` 口径 |
+| `docs/API.md` | 升 v1.2.11：§2.2 新增 G/H/I 与 `bmi_tag` 分级；附录 A 增加一行；版本表追加；修掉头部 v1.2.9 标题粘连 |
+| `docs/PROGRESS.md` | §1 更新 main `ebb81d4`、契约 v1.2.10/v1.2.11；§2.5 步 5 标完成；§4.1 G/H/I 标已实现；§5/§6 追加；重签指纹 |
+
+### 10.3 验证（本地，提交前）
+
+```
+npm run typecheck -w @canteen/server   → 通过
+npm run test -w @canteen/server        → 131/131（8 文件）
+web: npm run typecheck                 → 通过
+web: npm test                          → 98/98（17 文件）
+web: npm run lint                      → 0 error（1 条既有 LogView 警告）
+npm run check                          → lint / typecheck / test 131 / smoke 13/13 / check:data 383 / check:progress 全通过
+```
+
+新增断言覆盖：BMI 18.4 降级 + 文案、18.5 临界不降级、24.0 增肌只提示、23.9 不提示、档案接口 G/H 两条、Mock 同口径、建档页实时锁/解锁、个人中心与目标页锁减肥。
+
+### 10.4 待办
+
+1. 真人重新 Approve **#93**（作者是 agent，不能自批；分支保护不可绕过）。
+2. Approve 后合并 #93，fast-forward 本地 main，在 main 上复跑 `npm run check` + web test，记录合并提交。
+3. C4 仍需用户提供可分享地址与反馈群。
