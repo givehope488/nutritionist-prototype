@@ -160,3 +160,43 @@ web npm test       → 17 files, 93 tests passed
 2. BE-B 实现 §4.1 G/H/I，契约 v1.2.11。
 3. C4：给地址 + 建群，然后照发布包执行。
 4. 旧分支：确认 merged 后删除。
+
+---
+
+## 9. 2026-11-26 追加：备份命令选项 A 落地
+
+> 用户选定「A：根目录加转发脚本」。本节记录实现、实测与一次操作事故。
+
+### 9.1 改动
+
+| 文件 | 改动 |
+|---|---|
+| `package.json` | 新增 `"backup": "npm run backup -w @canteen/server"`、`"restore": "npm run restore -w @canteen/server"` |
+| `docs/BACKUP.md` | 顶部注明根目录执行；根脚本转发到 server workspace |
+| `server/scripts/backup.ts` | `BACKUP_DIR` 相对路径改为按仓库根解析（与 compose `./backups` 卷一致） |
+| `server/scripts/restore.ts` | 备份文件与目标库的相对路径改为按仓库根解析；原先按 cwd，`server/data/backups/...` 会变成 `server/server/...` |
+| `docs/DEPLOY.md` | 数据回滚示例改为 `<备份文件>` 占位，避免写死相对路径 |
+| `reviews/pd/C4-RELEASE-KIT-2026-11-26.md` | 命令改回短形式，注明路径解析口径 |
+| `docs/PROGRESS.md` | §5 变更条 + §6「已解决」条，重新签名 |
+
+### 9.2 干净环境实测（独立 worktree + `npm ci`）
+
+```
+npm run seed      → 383 道，server/data/runtime/app.db
+npm run backup    → 9 ms / 132 KB，...\server\data\backups\app-...db
+BACKUP_DIR=./backups npm run backup → 11 ms / 132 KB，落到仓库根 \backups\
+npm run restore -- server/data/backups/app-...db restore-check.db → 3 ms，行数一致、完整性通过
+npm run restore -- ./backups/app-...db restore-check2.db → 8 ms，行数一致
+```
+
+结论：文档里的 `npm run backup` / `npm run restore -- <备份>` 现在从仓库根可直接执行；相对路径不再依赖 cwd。
+
+### 9.3 操作事故与恢复（如实记录）
+
+第一次用 `node -e "..."` 内联脚本插入 PROGRESS 时，正文里的反引号被 **bash 命令替换**执行，实际跑了 `npm ci`、`npm run seed`、`npm run backup`、`npm run restore` 等片段，并因 `>` 重定向在仓库根生成了 4 个乱码未跟踪文件，同时 `npm ci` 中途 `EPERM` 使 `node_modules/.bin/tsx` 丢失。
+
+处置：①按文件名删除 4 个垃圾文件（只保留 `菜品清单-v3-2026-11-24.csv`）；②重新 `npm ci`，`node_modules/.bin/tsx` 恢复，`npm run smoke` 13/13；③改用独立的 `.mjs` 文件插入 PROGRESS，成功并重签。**教训：含反引号/`>` 的多行文本一律写文件执行，不再用 `node -e`。**
+
+### 9.4 远端状态
+
+本节随分支 `docs/pd-status-2026-11-26` 推送到 PR **#93**；head 与 CI 以 `git ls-remote` / PR 页为准。合并仍需真人 Approve。

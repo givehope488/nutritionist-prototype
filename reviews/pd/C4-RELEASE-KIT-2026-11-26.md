@@ -85,7 +85,7 @@ docker compose start server
 
 发布前打镜像标签：`docker tag canteen-server:local canteen-server:prev`。
 
-> 命令口径：根 `package.json` 已补 `backup` / `restore` 转发脚本（2026-11-26），DEPLOY/BACKUP 里的根目录写法现在可直接执行；`-- <文件>` 也会正确转发到 server 脚本。
+> 命令口径：根 `package.json` 已补 `backup` / `restore` 转发脚本（2026-11-26），DEPLOY/BACKUP 里的根目录写法现在可直接执行；`-- <文件>` 会正确转发到 server 脚本，且相对路径（`BACKUP_DIR`、备份文件、目标库）统一按**仓库根目录**解析。
 
 ## 7. 发布记录模板（发完填，贴进 §5）
 
