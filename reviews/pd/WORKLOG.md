@@ -349,3 +349,41 @@ CI：`10e5464` run 45760613597 success；`36d0744` run 45760766306 success（lin
 
 1. **C4 小范围发布**：仍缺可分享的部署地址与反馈群（需要项目负责人提供）；本机无 Docker CLI。
 2. D 组 4 项为发布后观察，C4 完成后启动。
+
+---
+
+## 13. 2026-11-26 追加：无 Docker 部署兜底与内网地址打通
+
+> 用户指示「部署」。本机 **无 Docker CLI**，也没有云主机凭据；`C4-RELEASE-KIT` 要求的是「小范围可达」，因此先落地不依赖 Docker 的等价部署：单进程 Node 静态站 + 同源反代，再把本机内网地址作为 C4 的可分享入口。
+
+### 13.1 实现
+
+| 文件 | 改动 |
+|---|---|
+| `deploy/serve-prod.mjs`（新） | `web/dist` 静态站 + SPA 回落 + `/assets` 长缓存；`/api/*`、`/healthz` 反代 `127.0.0.1:8787`；无 CORS；路径穿越防护；后端不可用返回 502 JSON |
+| `package.json` | 新增根脚本 `serve:prod` |
+| `docs/DEPLOY.md` | 新增 §8：启动四步、内网 IP 分享、Windows 防火墙、权限/HTTPS/常开限制、cloudflared 临时公网地址的边界 |
+
+### 13.2 本地实际部署（正在运行）
+
+| 项 | 结果 |
+|---|---|
+| 构建 | `cd web && VITE_API_BASE="" npm run build` → 149 modules，JS 197.86 kB（gzip 67.26） |
+| 数据 | `npm run seed` → 383 道 |
+| 后端 | `npm start` → `:8787`（text_engine=template） |
+| 静态站/反代 | `npm run serve:prod` → `0.0.0.0:8080` |
+| 内网地址 | `http://192.168.5.8:8080`（WLAN） |
+| 自检 | `/healthz` 200；`/api/v1/menu` 383 道；无令牌 `/api/v1/admin/dishes` 401；`/` 与 `/recommend`（SPA）200 |
+| 真链路 | 经内网地址建档 BMI 22.2 / 2351 kcal → 午餐推荐 3 套（目标 940.4 kcal）→ 删除档案 204 |
+| 检查 | 根 `npm run check`：server 136/136、smoke 14/14、data 383、progress 通过；lint 0 error |
+
+### 13.3 明确未验证 / 限制
+
+- **未验证同学端真机可达**：本机访问成功不等于跨设备可达；校园网若开 AP 隔离会互相不可达。
+- **无 HTTPS、无进程守护**：地址依赖本机 WLAN 与电脑不关机；Qoder 会话结束后后台进程可能被回收，重启命令见 DEPLOY §8.1。
+- **未复跑 Docker**：本机无 Docker CLI，compose 方案仍是 11-23 的既有验证记录。
+- **反馈群仍未建立**，C4 正式勾选还缺这一项。
+
+### 13.4 分支状态
+
+部署兜底与合并记录提交在 `docs/pd-merge-record-2026-11-26`（基于 main `1cc5b91`），**尚未创建 PR**；PR 创建按约定由用户决定。
