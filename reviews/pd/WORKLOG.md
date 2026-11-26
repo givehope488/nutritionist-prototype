@@ -126,3 +126,37 @@ web npm test       → 17 files, 93 tests passed
 2. BE-B 按 §4.1 G/H/I 实现，PD 复核 warnings 文案与 BMI 边界用例（18.4 / 18.5 / 24.0）。
 3. C4 前确认真实地址 + 反馈群，补齐 ACCEPTANCE W3-C4/D1~D4。
 4. 清旧分支（只删已 merged）。
+---
+
+## 8. 2026-11-26 追加：PR #93 已开 + C4 发布包
+
+> 本节补记 §4 之后的进展，不改写 §4 当时状态。
+
+### 8.1 PR #93
+
+| 项 | 值 |
+|---|---|
+| PR | [#93](https://github.com/givehope488/nutritionist-prototype/pull/93) `docs(pd): 状态同步 383 道 + 健康规则 G/H/I 裁决 + PR 收口` |
+| head | `3cfa754`（开 PR 时）→ 本节提交后以远端为准 |
+| base | `main` `7896d6b` |
+| mergeable | `true`，`mergeable_state=blocked`（只差真人 Approve，**无冲突**） |
+| CI @ `3cfa754` | lint / typecheck / test / deploy-config **4/4 success**（API 回读） |
+| reviewers | 已请求 `givehope488` / `pigQAQ` / `yangelect` |
+| #92 reviewers | 补请求到 `givehope488` / `pigQAQ` / `wyf-111` / `yangelect` |
+
+> 用户本轮明确授权「开pr」，故由 agent 代建；不自批、不合，等真人。
+
+### 8.2 C4 发布包
+
+新增 `reviews/pd/C4-RELEASE-KIT-2026-11-26.md`：前置条件、部署与自检命令、群公告文案、反馈收集约定、已知限制话术、回滚、发布记录模板。发布动作本身 11-23 已实测，缺的只有**地址**和**群**。
+
+### 8.3 顺带发现（已登记 §6）
+
+`docs/DEPLOY.md` / `docs/BACKUP.md` 写的根目录 `npm run backup` / `restore` 实际不存在——脚本只在 `server/package.json`。发布包先用 `npm run backup -w @canteen/server`，文档待 BE-B 二选一修（加根转发脚本或改文档）。
+
+### 8.4 下一步（更新 §7）
+
+1. 真人 Approve **#92**（优先合，早餐口径生效）→ 再 Approve/合并 #93；#93 与 main 无冲突，#92 合入后 §5 可能需一次 rebase。
+2. BE-B 实现 §4.1 G/H/I，契约 v1.2.11。
+3. C4：给地址 + 建群，然后照发布包执行。
+4. 旧分支：确认 merged 后删除。

@@ -1,0 +1,104 @@
+# C4 小范围发布包（2026-11-26，PD）
+
+> 用途：把「发布」从口头约定变成可执行清单。**还缺两样外部条件**：一台能跑 Docker 的机器（或已有部署地址）、一个反馈群。补齐后照本文走一遍即可。
+> 依据：`docs/DEPLOY.md`（§2 首次部署 / §3 检查清单 / §7 构建坑）、`reviews/pd/ACCEPTANCE-W2-W3-2026-11-15.md`（W3-C1~C5）。
+
+---
+
+## 1. 发布前置（缺一不可）
+
+| # | 条件 | 现状 | 谁提供 |
+|---|---|---|---|
+| 1 | 可访问的部署地址（`http://<IP>:8080`） | ❌ 未定 | PD / 有机器的同学 |
+| 2 | 反馈群「食堂营养师」 | ❌ 未建 | PD |
+| 3 | `.env` 里的 `ADMIN_TOKEN`（随机 24 字节 hex） | 模板已有，未生成正式值 | 部署人 |
+| 4 | 发布前备份 `npm run backup -w @canteen/server` | 流程已演练（12 ms） | 部署人 |
+| 5 | 小范围名单（同学，不公开推广） | 未定 | PD |
+
+> 地址只要**小范围可达**即可：同一校园网/内网 IP 就行，不要求公网域名。仓库 nginx 只监听 80、无 HTTPS（DEPLOY §4.2），所以不要把含个人信息的链接公开传播。
+
+## 2. 发布步骤（照抄）
+
+```bash
+cp .env.example .env
+node -e "console.log(require('node:crypto').randomBytes(24).toString('hex'))"   # 填入 ADMIN_TOKEN
+
+docker compose up -d --build
+docker compose ps          # web / server 均应为 healthy
+```
+
+> ⚠️ 已有运营修订的库**不要**靠重启容器触发 seed（会清空 dishes 重写），见 DEPLOY §2 注与 BACKUP 恢复流程。
+
+### 2.1 上线自检（四条，缺一不可）
+
+```bash
+curl -s http://localhost:8080/healthz                                  # {"status":"ok",...}
+curl -s http://localhost:8080/api/v1/menu | head -c 120                # 菜品 JSON
+curl -s -o /dev/null -w '%{http_code}\n' http://localhost:8080/api/v1/admin/dishes   # 401
+curl -s -H "X-Admin-Token: $ADMIN_TOKEN" http://localhost:8080/api/v1/admin/dishes   # 200
+```
+
+再走一条真链路：建档 → 目标 → 推荐 → 采纳 → 回填 → 历史。**记下菜单道数**（当前应为 383；若变了先查是不是种子问题）。
+
+## 3. 群公告（可直接发，发布当天）
+
+> 食堂营养师 内测版上线了：http://<地址>:8080
+>
+> 能做什么：填一次身高体重和目标（保持/减肥/增肌/增重），选早/午/晚，它会按食堂当天能买到的菜给 3 套搭配，并给出热量和蛋白质目标；吃完回来点「按这套吃了」或自己选菜回填，就能看到这餐达没达标。
+>
+> 说明三件事：
+> 1. 营养值是**估算值**，不宣称精确，不构成处方或医疗建议；未成年人只提供「保持」，不提供减肥缺口方案。
+> 2. 称重菜（早餐自选线、健康餐、麻辣烫配菜）的份量以**现场称重**为准，页面热量只作参考。
+> 3. 页面不显示价格。数据来自食堂菜单牌与照片识别，菜品有出入请点回填页的「菜品有出入？」一键复制发群里。
+>
+> 只拉了小范围同学试用，先别往外转。
+
+## 4. 反馈收集（与 ACCEPTANCE W3-C5 一致）
+
+| 项 | 约定 |
+|---|---|
+| 唯一入口 | 微信群「食堂营养师」+ 回填页「菜品有出入？」一键复制（只产文本、不落库） |
+| 只读页 | `/feedback` 可看已收集文本 |
+| 谁看 | PD 每天 21:00 过一遍；首周每天，之后每周一 |
+| 菜品数据类 | 24h 内对照片/菜单牌复核，转成 §6 条目；确认后走 `observed-menu.json` → 重建种子，**不手改** `menu-seed.v3.json` |
+| 其他类 | 需求进 §6 观察项；崩溃/报错交给 BE-B 看 `docker compose logs server` |
+
+## 5. 已知限制（被问到时照这个答）
+
+1. 营养值是估算，称重菜尤其只能给参考值。
+2. 无登录、无账号体系：档案靠浏览器本地 `session_id`，换设备/清缓存会丢；删除入口在「我的档案」。
+3. 没有价格，是产品决定，不是漏做。
+4. SQLite 单实例，只适合小范围；人多会慢。
+5. 数据每天备份在本机（`backups/`），只用于恢复，不外传。
+
+## 6. 回滚（出事 1 分钟内）
+
+```bash
+# 代码/镜像回滚
+docker tag canteen-server:prev canteen-server:local && docker compose up -d
+
+# 数据回滚（先停服务）
+docker compose stop server
+npm run restore -w @canteen/server -- ./backups/app-<时间戳>.db
+docker compose start server
+```
+
+发布前打镜像标签：`docker tag canteen-server:local canteen-server:prev`。
+
+> 命令差异：`backup` / `restore` 只定义在 `server/package.json`，根 `package.json` 没有转发脚本；`docs/DEPLOY.md` 与 `docs/BACKUP.md` 里写的根目录 `npm run backup` 实际会报 missing script。本文按可用的 workspace 写法给出，并把该文档不一致登记为待修项（BE-B）。
+
+## 7. 发布记录模板（发完填，贴进 §5）
+
+```
+日期：
+地址：
+commit / 镜像：
+备份文件：
+自检：healthz __ / menu __ 道 / admin 401 __ / admin 200 __ / 业务链路 __
+群：__ 人；公告时间 __
+首日反馈：__ 条（数据类 __ / 其他 __）
+```
+
+---
+
+**结论**：发布动作本身已被 11-23 实机验证过（两容器 healthy、adoption_rate=1、二次 up 2.5s），现在缺的不是技术，而是**地址**与**群**。这两样只能由人来定。

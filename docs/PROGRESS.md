@@ -402,6 +402,8 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 - 2026-11-06 PD | 风险 | **`meal-logs` 一旦落库就是个人信息**（身高体重年龄）。仓库现在还是 public，Free 套餐下转 private 会连带失去分支保护。要转就升级 Pro 当天转，别拖到 W3 | 需要 PD 在 W2 前处理。✅ 已解决 2026-11-17（PD 拍板：**仓库维持 public，不转 private**——用户数据只在运行时 SQLite 与部署实例，`*.db` 已 `.gitignore`，仓库不含真实用户数据；产品侧风险由 W3 A3/A1 承接）
 ## 6. 问题登记
 
+- 2026-11-26 PD | 风险 | **发布文档里的备份命令在根目录跑不通**：`docs/DEPLOY.md` §3.1/§5 与 `docs/BACKUP.md` 都写根目录 `npm run backup` / `npm run restore`，但这两个脚本只定义在 `server/package.json`，根 `package.json` 没有转发脚本，按文档实跑会 `Missing script`。C4 发布前二选一修掉：根 `package.json` 加两条转发脚本，或文档统一改成 `npm run backup -w @canteen/server`。已在 `reviews/pd/C4-RELEASE-KIT-2026-11-26.md` 先用可用的 workspace 写法 | BE-B：改文档或加脚本（二选一），改完在干净 clone 里实跑一次
+
 - 2026-11-26 PD | 阻塞 | **C4 小范围发布缺两个发布要素**：①没有可分享的访问地址（本机 `docker compose` 只能 localhost，未部署到公网 / 校园网可达主机）；②反馈群「食堂营养师」尚未建立。**处置**：地址与群由项目负责人提供 / 确认后，PD 按 §4.1-F 启动收集；在此之前 C4 保持未勾，D 组观察项不启动 | 需要 givehope488 提供部署地址或指定可分享环境；BE-B 可协助部署
 - 2026-11-26 PD | 阻塞 | **#92（早餐优先池）与 PD 文档分支都卡在「需要真人 Approve」**：PR 作者是 agent 账号 `Aredjdhd`，GitHub 禁止作者自批；agent 账号无 admin 权限，也不能改分支保护绕过。**处置**：由真人 `givehope488`（或 CODEOWNERS 里的 pigQAQ / yangelect）在 PR 页面 Approve 后，agent 可代点合并；合并顺序建议 #92 先合，PD 文档分支随后 rebase | givehope488 / pigQAQ / yangelect
 - 2026-11-24 BE-B | 风险 | **实测发现「偏瘦 + 减脂」与「超重 + 增肌」两种组合服务端都不给任何提示**：BMI 16.53（偏瘦）选减脂 → `day_kcal=1355`、`warnings=[]`；BMI 27.7（超重）选增肌 → `day_kcal=3242`、`warnings=[]`。现有 warnings 只覆盖「未满 18 岁 + 减脂」一条（API.md §2.2），而这两条在健康建议上同样属于「不该默默给出」的组合——尤其中学生群体里偏瘦还想减脂的很常见。**建议口径**（需 PD 拍板，属健康建议规则，我不擅自改）：①偏瘦（BMI<18.5）+ 减脂 → 按未成年同款降级为 `health` 并给文案；②超重/肥胖（BMI≥24/28）+ 增肌 → 只加提示、不改目标（增肌未必等于增重）。确定后 BE-B 同步改 `routes/profiles.ts` 与 `engines/nutrition.ts` | ✅ 已裁决 2026-11-26（PD）：①采纳为 §4.1-G、②采纳为 §4.1-H；实现归 BE-B，契约随实现升 v1.2.11
