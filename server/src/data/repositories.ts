@@ -1,4 +1,9 @@
-import type { AdoptedComboSnapshot, MealLogResponse, Profile } from '@canteen/shared';
+import type {
+  AdoptedComboSnapshot,
+  DishExclusion,
+  MealLogResponse,
+  Profile,
+} from '@canteen/shared';
 import { getDb } from './db';
 
 /**
@@ -99,9 +104,9 @@ export const profileRepository = {
   },
 
   /**
-   * 合规删除入口（API.md §2.2，v1.2.4）：删除档案并连带删除该 session 的全部 meal-logs。
-   * 两条 DELETE 放在一个事务里，避免「档案删了、记录还在」这种清不干净的中间态。
-   * 返回 false 表示档案不存在（路由据此回 404）。
+   * 合规删除入口（API.md §2.2，v1.2.4）：删除档案并连带删除该 session 的全部
+   * meal-logs 与个人排除记录（v1.2.12）。三条 DELETE 放在一个事务里，避免
+   * 「档案删了、记录还在」这种清不干净的中间态。返回 false 表示档案不存在。
    *
    * 复核要点（2026-11-17 BE-B，W2 #12）：
    * - **不再在事务外 `SELECT 1` 预检**：检查与删除之间存在 TOCTOU（并发下两个请求都通过预检，
@@ -114,6 +119,7 @@ export const profileRepository = {
     db.exec('BEGIN IMMEDIATE');
     try {
       db.prepare('DELETE FROM meal_logs WHERE session_id = ?').run(sessionId);
+      db.prepare('DELETE FROM dish_exclusions WHERE session_id = ?').run(sessionId);
       const result = db.prepare('DELETE FROM profiles WHERE session_id = ?').run(sessionId);
       db.exec('COMMIT');
       return Number(result.changes) > 0;
@@ -121,6 +127,60 @@ export const profileRepository = {
       db.exec('ROLLBACK');
       throw err;
     }
+  },
+};
+
+interface DishExclusionRow {
+  dish_id: string;
+  dish_name: string;
+}
+
+function toDishExclusion(row: DishExclusionRow): DishExclusion {
+  return { dish_id: row.dish_id, name: row.dish_name };
+}
+
+/**
+ * 个人排除仓储（API.md v1.2.12 §2.6）。
+ *
+ * 主键 (session_id, dish_id) 让「重复排除」天然幂等；`add` 返回 false 表示已存在，
+ * 路由据此回 200 而不是 201。推荐路由只读 `dishIdsBySession`，不做任何营养计算。
+ */
+export const dishExclusionRepository = {
+  listBySession(sessionId: string): DishExclusion[] {
+    const rows = getDb()
+      .prepare(
+        `SELECT dish_id, dish_name FROM dish_exclusions
+         WHERE session_id = ?
+         ORDER BY created_at DESC, dish_id`,
+      )
+      .all(sessionId) as unknown as DishExclusionRow[];
+    return rows.map(toDishExclusion);
+  },
+
+  dishIdsBySession(sessionId: string): string[] {
+    const rows = getDb()
+      .prepare('SELECT dish_id FROM dish_exclusions WHERE session_id = ?')
+      .all(sessionId) as unknown as Array<{ dish_id: string }>;
+    return rows.map((row) => row.dish_id);
+  },
+
+  /** 返回 true 表示新写入，false 表示该菜已在排除列表里 */
+  add(sessionId: string, dishId: string, dishName: string): boolean {
+    const result = getDb()
+      .prepare(
+        `INSERT OR IGNORE INTO dish_exclusions (session_id, dish_id, dish_name)
+         VALUES (?, ?, ?)`,
+      )
+      .run(sessionId, dishId, dishName);
+    return Number(result.changes) > 0;
+  },
+
+  /** 返回 false 表示本来就没有这条排除记录（路由回 404） */
+  remove(sessionId: string, dishId: string): boolean {
+    const result = getDb()
+      .prepare('DELETE FROM dish_exclusions WHERE session_id = ? AND dish_id = ?')
+      .run(sessionId, dishId);
+    return Number(result.changes) > 0;
   },
 };
 

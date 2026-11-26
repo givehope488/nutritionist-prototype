@@ -32,8 +32,8 @@ interface Pool {
   fruit: Dish[];
 }
 
-function pickPool(meal: Meal, avoid: string[]): Pool {
-  const dishes = filterAvoid(activeDishes(meal), avoid);
+function pickPool(meal: Meal, avoid: string[], excluded: ReadonlySet<string> = new Set()): Pool {
+  const dishes = filterAvoid(activeDishes(meal), avoid).filter((dish) => !excluded.has(dish.id));
   const group = (category: Dish['category']) => dishes.filter((dish) => dish.category === category);
   return {
     staple: group('staple'),
@@ -108,8 +108,9 @@ export function buildCombos(
   request: Pick<RecommendationRequest, 'meal'> & { goal: string },
   avoid: string[],
   target: MealTarget,
+  excluded: ReadonlySet<string> = new Set(),
 ): ScoredCombo[] {
-  const pool = pickPool(request.meal, avoid);
+  const pool = pickPool(request.meal, avoid, excluded);
   const ranked = enumerate(pool, request.meal)
     .map((dishes) => ({
       dish_ids: dishes.map((dish) => dish.id),

@@ -4,6 +4,7 @@ import { API_PREFIX } from '@canteen/shared';
 import { config } from './config';
 import { errorHandler, notFoundHandler } from './http/errors';
 import { adminRouter } from './routes/admin';
+import { dishExclusionsRouter } from './routes/dish-exclusions';
 import { insightsRouter } from './routes/insights';
 import { mealLogsRouter } from './routes/meal-logs';
 import { menuRouter } from './routes/menu';
@@ -30,6 +31,7 @@ export function createApp(): Express {
   app.use(`${API_PREFIX}/menu`, menuRouter);
   app.use(`${API_PREFIX}/profiles`, profilesRouter);
   app.use(`${API_PREFIX}/recommendations`, recommendationsRouter);
+  app.use(`${API_PREFIX}/dish-exclusions`, dishExclusionsRouter);
   app.use(`${API_PREFIX}/meal-logs`, mealLogsRouter);
   app.use(`${API_PREFIX}/insights`, insightsRouter);
   app.use(`${API_PREFIX}/admin`, adminRouter);

@@ -15,6 +15,7 @@ import AppLoading from '@/components/base/AppLoading.vue';
 import AppNavBar from '@/components/base/AppNavBar.vue';
 import AppSegmented from '@/components/base/AppSegmented.vue';
 import ComboCard from '@/components/business/ComboCard.vue';
+import DishExclusionsCard from '@/components/business/DishExclusionsCard.vue';
 import NoSolutionNotice from '@/components/business/NoSolutionNotice.vue';
 import { saveRecommendationResponse } from '@/composables/useRecommendationCache';
 import { sessionId } from '@/composables/useSession';
@@ -43,6 +44,15 @@ const mealLabel = computed(
   () => MEAL_OPTIONS.find((option) => option.value === meal.value)?.label ?? meal.value,
 );
 const today = computed(() => formatDateLabel(toDateStr(new Date())));
+
+/** 个人排除入口：当前组合里出现过的菜（去重）；排除后立即重新配一批 */
+const comboDishes = computed(() => {
+  const map = new Map<string, string>();
+  for (const combo of response.value?.combos ?? []) {
+    for (const dish of combo.dishes) map.set(dish.id, dish.name);
+  }
+  return [...map.entries()].map(([id, name]) => ({ id, name }));
+});
 
 async function load(nextMeal: Meal): Promise<void> {
   const seq = ++requestSeq;
@@ -260,6 +270,13 @@ onMounted(async () => {
           <p v-if="response.combos.length" class="foot">
             「换一批」会重新请求；采纳组合后回填页会自动预填，份数仍可在回填时调整。
           </p>
+
+          <DishExclusionsCard
+            :dishes="comboDishes"
+            title="这些菜以后不想看到？"
+            hint="点菜名后立即重新配一批并跳过它；再点一次恢复。只影响你自己。"
+            @changed="refresh"
+          />
         </template>
       </template>
     </div>

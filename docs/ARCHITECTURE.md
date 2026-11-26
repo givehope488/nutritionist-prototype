@@ -110,6 +110,9 @@ meal_logs     id*(uuid，客户端生成，幂等), session_id, date, meal,
               items[{dish_id, servings}], totals{},
               adopted_combo(可空，API v1.2.5 的采纳快照 {id, items[]}，逐菜比对用),
               created_at
+dish_exclusions session_id*, dish_id*, dish_name, created_at
+              # 个人排除（API v1.2.12）：按 session 记住「不想再看到」的菜，
+              # 只影响该用户后续推荐；删除档案时级联清理
 rec_logs      id*, session_id, request_hash, engine, degraded(bool),
               latency_ms, created_at                             # LLM 观测
 ```

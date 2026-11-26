@@ -35,7 +35,7 @@ const check = (name: string, run: () => Promise<void>): void => {
 let baseUrl = '';
 
 async function req(
-  method: 'GET' | 'POST',
+  method: 'GET' | 'POST' | 'DELETE',
   path: string,
   body?: unknown,
 ): Promise<{ status: number; json: unknown }> {
@@ -165,6 +165,34 @@ check('POST /api/v1/recommendations → 200 + ≤3 套 + totals/reason/engine', 
     assert.equal(typeof combo.reason, 'string');
     assert.ok(['template', 'llm'].includes(combo.engine), 'engine 取值非法');
   }
+});
+
+check('个人排除 → 推荐跳过该菜，删除后恢复', async () => {
+  const first = await req('POST', '/api/v1/recommendations', { session_id: SESSION, meal: 'lunch' });
+  const target = (first.json as RecommendationResponse).combos[0]?.dishes[0];
+  assert.ok(target, '推荐没有菜品，无法验证排除');
+
+  const added = await req('POST', '/api/v1/dish-exclusions', {
+    session_id: SESSION,
+    dish_id: target.id,
+  });
+  assert.equal(added.status, 201);
+  assertNoEnvelope(added.json, 'POST /dish-exclusions');
+
+  const filtered = await req('POST', '/api/v1/recommendations', {
+    session_id: SESSION,
+    meal: 'lunch',
+  });
+  const leaked = (filtered.json as RecommendationResponse).combos
+    .flatMap((combo) => combo.dishes)
+    .filter((dish) => dish.id === target.id);
+  assert.deepEqual(leaked, [], '排除后推荐仍出现该菜');
+
+  const removed = await req(
+    'DELETE',
+    `/api/v1/dish-exclusions/${encodeURIComponent(target.id)}?session_id=${SESSION}`,
+  );
+  assert.equal(removed.status, 204);
 });
 
 check('POST /api/v1/meal-logs → 200 + totals/verdict', async () => {

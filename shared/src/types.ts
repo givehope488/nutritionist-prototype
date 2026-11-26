@@ -140,6 +140,26 @@ export interface MenuResponse {
   avoid_options: AvoidOption[];
 }
 
+/* ---------- 个人排除（API.md v1.2.12 §2.6） ---------- */
+
+/**
+ * 用户主动「不想再看到」的菜品（按 session 生效，不影响其他用户）。
+ * 只影响后续推荐候选池；菜单/回填仍保留这道菜，历史记录也不改。
+ */
+export interface DishExclusion {
+  dish_id: string;
+  name: string;
+}
+
+export interface DishExclusionListResponse {
+  dishes: DishExclusion[];
+}
+
+export interface DishExclusionRequest {
+  session_id: string;
+  dish_id: string;
+}
+
 /* ---------- 用户档案（API.md §2.2） ---------- */
 
 /** avoid 元素是 AvoidOption.key（如 "nospicy"），不是 tag */

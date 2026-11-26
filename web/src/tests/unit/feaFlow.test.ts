@@ -253,6 +253,34 @@ describe('推荐页', () => {
     expect(router.currentRoute.value.query.combo).toBeTruthy();
   });
 
+  it('推荐页可直接排除某道菜：自动重新请求，组合里不再出现它', async () => {
+    await seedProfile();
+    const mocked = vi.mocked(createRecommendation);
+    mocked.mockClear();
+
+    const router = await startRouter('/recommend');
+    const wrapper = mount(RecommendView, { global: { plugins: [router] } });
+    await settle();
+
+    const cached = JSON.parse(localStorage.getItem('cn.last_recommendation') ?? 'null') as {
+      response: RecommendationResponse;
+    };
+    const target = cached.response.combos[0]?.dishes[0];
+    expect(target).toBeDefined();
+    if (!target) return;
+
+    const chip = wrapper
+      .findAll('button.chip')
+      .find((button) => button.text() === target.name);
+    expect(chip).toBeDefined();
+    await chip!.trigger('click');
+    await settle(6);
+
+    expect(mocked).toHaveBeenCalledTimes(2);
+    const comboText = wrapper.findAll('.combo__dish').map((node) => node.text()).join('|');
+    expect(comboText).not.toContain(target.name);
+  });
+
   it('忌口无解时展示服务端 notice，放宽入口回到目标页', async () => {
     await seedProfile();
     const empty: ApiResult<RecommendationResponse> = {
