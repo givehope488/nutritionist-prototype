@@ -184,3 +184,49 @@ rolldown 为这些仓库外的文件向上查找 tsconfig 时会命中根文件�
 | 数据卷 | 容器 `/app/server/data/runtime/app.db` ↔ 宿主同路径，双向可见 |
 
 > 注：7.4 的「384 道」是 11-23 当时的记录；菜单已于 11-24 清理为 **383 道**（见 README 与 §5 11-24 条目）。
+
+---
+
+## 8. 无 Docker 兜底（单进程 Node，2026-11-26 增补）
+
+> 适用：手头只有一台能跑 Node 22+ 的电脑（Windows / macOS / Linux），没有 Docker 或云主机。
+> 行为与 `deploy/nginx.conf` 对齐：静态站 + `/api/*` / `/healthz` 同源反代，**不引入 CORS**。
+> 生产仍优先 Docker；这条路径是为「小范围内测、同一校园网」准备的。
+
+### 8.1 启动
+
+```bash
+npm ci                 # 仓库根；web 是独立项目，见 README
+npm run build -w web   # 产物 web/dist
+npm run seed           # 首次/重建数据，383 道
+npm start              # 终端 A：后端 :8787
+npm run serve:prod     # 终端 B：静态站 + 反代 :8080
+```
+
+浏览器打开 `http://localhost:8080/`。自检四条与 §2 相同，把 `<主机>:8080` 换成本机地址即可。
+
+### 8.2 给同一校园网的同学访问
+
+1. 查本机内网 IP：Windows `ipconfig`，macOS/Linux `ip addr` 或 `ifconfig`。
+2. 把 `http://<内网IP>:8080` 发给同学；双方需在同一网段（部分校园网开启 AP 隔离则互相不可达）。
+3. Windows 首次启动如弹出防火墙提示，需允许 Node 在「专用网络」入站；否则外部访问会超时。
+
+可调环境变量：`WEB_PORT`（默认 8080）、`HOST`（默认 `0.0.0.0`）、`API_ORIGIN`（默认 `http://127.0.0.1:8787`）。
+
+### 8.3 局限（对内测足够，对外正式发布不够）
+
+- **无 HTTPS**：只适合小范围、不公开传播；公网发布仍需外层 TLS。
+- **依赖这台电脑常开**：关机 / 休眠即不可访问；没有进程守护，崩溃需手动重启。
+- **SQLite 单实例**：与 Docker 方案相同，不能水平扩展。
+- **备份**：另开终端在仓库根执行 `npm run backup`，产物默认落 `server/data/backups/`。
+
+### 8.4 一条命令的临时公网地址（可选）
+
+若需要跨网络临时演示，可在本机装 `cloudflared` 后执行：
+
+```bash
+cloudflared tunnel --url http://localhost:8080
+```
+
+它会给一个 `https://<随机>.trycloudflare.com` 地址，**随进程退出失效**，且流量经第三方中转。
+只用于临时演示，不作为 C4 的正式发布地址；使用前确认同学数据不含敏感信息。

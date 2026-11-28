@@ -314,3 +314,153 @@ web: npm run build                → 149 modules，CSS 35.23 kB / JS 197.87 kB
 1. 真人重新 Approve **#93**；Agent 不自批、不合、不改分支保护。
 2. Approve 后合并 #93，fast-forward 本地 main，在 main 复跑 `npm run check` + web test，记录合并提交。
 3. C4 仍缺可分享地址与反馈渠道；本机无 Docker CLI。
+
+---
+
+## 12. 2026-11-26 追加：#93 真人 Approve 后合并与 main 复验
+
+> 用户告知「#93 通过了」。先经 API 核对：`givehope488` 于 05:27:28Z 提交 **APPROVED**，PR `mergeable=true` / `mergeable_state=clean`，head `36d0744`（13 commits）。确认后由 Agent 代点合并，**未自批、未改分支保护**。
+
+### 12.1 合并与本地同步
+
+| 项 | 结果 |
+|---|---|
+| 合并方式 | merge commit（与 #92 一致） |
+| 合并提交 | `1cc5b91` — `Merge pull request #93 from givehope488/docs/pd-status-2026-11-26` |
+| 本地 main | `ebb81d4..1cc5b91` fast-forward，与 `origin/main` 一致 |
+| 工作区 | 仅剩按要求不提交的 `菜品清单-v3-2026-11-24.csv` |
+
+### 12.2 main 复验（合并后）
+
+```
+npm run check                       → lint / typecheck / server 136/136 / smoke 14/14 / check:data 383 / check:progress 全过
+web npm run typecheck               → 通过
+web npm run lint                    → 0 error（1 条既有 LogView 警告）
+web npm test                        → 103/103（18 文件）
+```
+
+CI：`10e5464` run 45760613597 success；`36d0744` run 45760766306 success（lint / typecheck / test / deploy-config）。
+
+### 12.3 文档回填
+
+`docs/PROGRESS.md`：§1 主干改 `1cc5b91`、契约改 v1.2.12 已生效、三条线状态收口；§2.5 步 5/6 改「已随 #93 合入 main」；§4.1-I 用例数改 136；§5/§6 顶部追加合并与阻塞解除条目；重签 PD 指纹。本日志为 append-only 记录。
+
+### 12.4 剩余
+
+1. **C4 小范围发布**：仍缺可分享的部署地址与反馈群（需要项目负责人提供）；本机无 Docker CLI。
+2. D 组 4 项为发布后观察，C4 完成后启动。
+
+---
+
+## 13. 2026-11-26 追加：无 Docker 部署兜底与内网地址打通
+
+> 用户指示「部署」。本机 **无 Docker CLI**，也没有云主机凭据；`C4-RELEASE-KIT` 要求的是「小范围可达」，因此先落地不依赖 Docker 的等价部署：单进程 Node 静态站 + 同源反代，再把本机内网地址作为 C4 的可分享入口。
+
+### 13.1 实现
+
+| 文件 | 改动 |
+|---|---|
+| `deploy/serve-prod.mjs`（新） | `web/dist` 静态站 + SPA 回落 + `/assets` 长缓存；`/api/*`、`/healthz` 反代 `127.0.0.1:8787`；无 CORS；路径穿越防护；后端不可用返回 502 JSON |
+| `package.json` | 新增根脚本 `serve:prod` |
+| `docs/DEPLOY.md` | 新增 §8：启动四步、内网 IP 分享、Windows 防火墙、权限/HTTPS/常开限制、cloudflared 临时公网地址的边界 |
+
+### 13.2 本地实际部署（正在运行）
+
+| 项 | 结果 |
+|---|---|
+| 构建 | `cd web && VITE_API_BASE="" npm run build` → 149 modules，JS 197.86 kB（gzip 67.26） |
+| 数据 | `npm run seed` → 383 道 |
+| 后端 | `npm start` → `:8787`（text_engine=template） |
+| 静态站/反代 | `npm run serve:prod` → `0.0.0.0:8080` |
+| 内网地址 | `http://192.168.5.8:8080`（WLAN） |
+| 自检 | `/healthz` 200；`/api/v1/menu` 383 道；无令牌 `/api/v1/admin/dishes` 401；`/` 与 `/recommend`（SPA）200 |
+| 真链路 | 经内网地址建档 BMI 22.2 / 2351 kcal → 午餐推荐 3 套（目标 940.4 kcal）→ 删除档案 204 |
+| 检查 | 根 `npm run check`：server 136/136、smoke 14/14、data 383、progress 通过；lint 0 error |
+
+### 13.3 明确未验证 / 限制
+
+- **未验证同学端真机可达**：本机访问成功不等于跨设备可达；校园网若开 AP 隔离会互相不可达。
+- **无 HTTPS、无进程守护**：地址依赖本机 WLAN 与电脑不关机；Qoder 会话结束后后台进程可能被回收，重启命令见 DEPLOY §8.1。
+- **未复跑 Docker**：本机无 Docker CLI，compose 方案仍是 11-23 的既有验证记录。
+- **反馈群仍未建立**，C4 正式勾选还缺这一项。
+
+### 13.4 分支状态
+
+部署兜底与合并记录提交在 `docs/pd-merge-record-2026-11-26`（基于 main `1cc5b91`），**尚未创建 PR**；PR 创建按约定由用户决定。
+
+---
+
+## 14. 2026-11-26 追加：用户决定「无需反馈群」，C4 取消群前置
+
+> 用户原话「无需反馈群」。按此关闭反馈群事项，不改写历史条目，只追加状态与文档同步。
+
+### 14.1 决定与落地
+
+| 项 | 结果 |
+|---|---|
+| C4 前置 | 从「地址 + 群」改为「地址 + 小范围名单」；地址已就绪 `http://192.168.5.8:8080` |
+| C5 渠道 | 不建群；回填页复制文本后直接私聊/口头发给 PD；PD 收到即看，首周每天主动问、之后每周一 |
+| 闭环标准 | 不变：反馈必须进 §6 才算收到；菜品数据类 24h 内复核 |
+| 代码/契约 | 无变更 |
+
+### 14.2 文档同步
+
+- `docs/PROGRESS.md`：§1 阶段与三条线、§4.1-F 渠道、当前风险、§5/§6 顶部追加决定；重签指纹
+- `reviews/pd/C4-RELEASE-KIT-2026-11-26.md`：前置表、发布消息、反馈约定、发布记录模板与结论删除群
+- `reviews/pd/ACCEPTANCE-W2-W3-2026-11-15.md`：C4 标注地址已就绪待分发；C5 补「不建群」决定
+
+### 14.3 验证与边界
+
+```
+npm run check:progress  → 指纹一致，§5/§6 行格式通过
+npm run lint            → 0 error
+```
+
+C4 仍未勾选：地址需要 PD 实际发给小范围同学；本机常开、同一 WLAN 的限制不变。
+
+---
+
+## 15. 2026-11-26 追加：用户决定「反馈收集不做」，并按指示开 PR
+
+> 用户接续「无需反馈群」后明确「我不打算做，开pr」。前一轮把反馈改为私聊/口头，本轮进一步整体取消 C5 收集流程；同时获得明确授权，用 REST API 代建 PR。
+
+### 15.1 范围调整
+
+| 项 | 结果 |
+|---|---|
+| 群 / 人工收集 | **都不做**：不建群、不安排私聊或口头收集、不设值班人与时效 |
+| 保留能力 | 回填页复制文本、`/feedback` 只读页仍在，但不再对应收集流程 |
+| 菜品数据 | PD 主动巡检（菜单牌/照片/种子体检）→ §6 → `observed-menu.json` 重建种子 |
+| 个人排除 | 不受影响，仍按 §2.6 即时过滤 |
+| C4 | 只差把 `http://192.168.5.8:8080` 发给小范围同学 |
+
+### 15.2 文档同步
+
+- `docs/PROGRESS.md`：§1 阶段、§2 并行事项、当前风险、§4.1-F、§5/§6 追加；已重签指纹
+- `reviews/pd/C4-RELEASE-KIT-2026-11-26.md`：前置表、发布消息、§4 反馈约定、发布记录模板与结论
+- `reviews/pd/ACCEPTANCE-W2-W3-2026-11-15.md`：C5 改记为「用户决定不做」
+
+### 15.3 验证
+
+```
+npm run check:progress  → 指纹一致，§5/§6 行格式通过
+npm run lint            → 0 error
+```
+
+无代码与契约变更；部署服务仍在运行（内网 200）。
+
+## 16. 开 PR #95（2026-11-26，用户明确「开pr」）
+
+用户原话「我不打算做，开pr」：反馈收集整体取消落档后，授权为待发布分支开 PR。
+
+| 项 | 事实 |
+|---|---|
+| PR | [#95](https://github.com/givehope488/nutritionist-prototype/pull/95)，`open` |
+| base / head | `main`（`f869206`，#94 之后） / `docs/pd-merge-record-2026-11-26` |
+| head SHA | `b19d438`（rebase 后；推送前远端为 `5fceebc`，force-with-lease 成功） |
+| 内容 | 5 commits：`30b0815` #93 合并记录、`369d67f` 无 Docker 部署脚本、`53ea2b4` 部署验证、`02631da` 取消反馈群、`b19d438` 反馈收集整体取消 |
+| Reviewers | 已请求 `givehope488`、`pigQAQ`、`yangelect`（API 201） |
+| 合并 | **未合**，按流程等真人 Approve；Agent 不自批、不改分支保护 |
+| 本地验证 | server 136/136（9 文件）、web 110/110（19 文件，含 #94 新用例）、smoke 14/14、data 383、progress 指纹通过、`git diff --check` 干净 |
+
+冲突处理：rebase 到 `f869206` 时 `docs/PROGRESS.md` 两处冲突，均保留上游 BE-B #94 的「不吃荤」条目在先、PD 条目随后；每次解完重签指纹。
