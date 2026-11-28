@@ -287,6 +287,8 @@ W0 没有必须交付的东西。**建议做一件事：把自己 W1 要写的�
 
 ## 5. 变更记录
 
+- 2026-11-28 PD | 变更 | **项目文档 v9 收录入库（`docs/submission/`）**：按最新 main（`1c06714`，#94/#95 之后）修订——①用例数 239→249（后端 136 + 前端 110，#94 新增 7 条互斥用例）；②部署描述由「docker compose 单机」扩为两种形态（服务端版 compose + 纯前端版公网静态托管、档案/记录/排除清单存浏览器 `localStorage`）；③总结与附录（三）同步「公网部署已完成」；④限制段区分「服务端版单机 SQLite 不扩展」与「纯前端版数据仅存本机浏览器、换设备需重填」；⑤引擎段补忌口互斥（不吃荤覆盖猪/牛/海鲜，勾选后置灰并清空冗余）。v8 及更早版本仅留本地 `output/`，不入库 | 部署同学：后续部署章节直接在 `docs/submission/` 的 v9 上改，改完提 PR
+
 - 2026-11-26 PD | 变更 | **PR #95 已开，等待真人 Approve**：用户「我不打算做，开pr」授权为待发布分支开 PR；base `main`（`f869206`，#94 之后）、head `docs/pd-merge-record-2026-11-26`（rebase 后 `b19d438`，force-with-lease 覆盖远端 `5fceebc`），含 #93 合并记录、无 Docker 部署脚本与验证、取消反馈群、反馈收集整体取消 5 个 commit；已请求 `givehope488` / `pigQAQ` / `yangelect` review；本地 server 136 / web 110（19 文件）/ smoke 14 / data 383 / progress 指纹全过，`git diff --check` 干净；**未自批、未合并**，等真人 Approve 后由 Agent 代点 merge | 全队：review 走 PR #95；CI 以最终 head 为准
 
 - 2026-11-26 BE-B | 变更 | **忌口「素食」改名「不吃荤」，并加互斥置灰**（产品要求，跨 4 处同步）：①`server/src/data/avoid-options.ts` 与 `web/src/api/__mock__/avoidOptions.ts` 的 label 改「不吃荤」；②`docs/API.md` 附录 D 表格与两处说明同步（附录 D 是唯一事实源，`server/test/contract.test.ts` 与 `avoidOptionsContract.test.ts` 都直接解析它，不改文档 CI 必红）；③新增 `web/src/utils/avoid.ts` 纯函数 + `GoalView` 接入：**勾「不吃荤」后不吃猪/牛/海鲜三项置灰**，先勾具体项再勾「不吃荤」会把具体项清掉（`nomeat` 的 `excludes_tag: meat` 本就覆盖这三类，冗余组合没有意义）；④补 7 条单测。另修一个本地联调陷阱：`.env.local` 把 `VITE_API_BASE` 置空后，**web 测试会跟着去打真实 HTTP 导致 46 个用例集体失败**，已在 `vite.config.ts` 的 `test.env` 里固定 `mock://local` | FE-A：`GoalView.vue` 与 `utils/avoid.ts` 在你的地盘，请 review 交互；BE-A：`docs/API.md` 附录 D 只改 label 文案与两处说明措辞、未动结构
